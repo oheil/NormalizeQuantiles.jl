@@ -1,5 +1,6 @@
 
 using NormalizeQuantiles
+using DataArray
 using Base.Test
 
 # write your own tests here
