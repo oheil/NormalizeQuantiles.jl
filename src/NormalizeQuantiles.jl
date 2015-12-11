@@ -116,7 +116,7 @@ function normalizeQuantiles(matrix::DataArray{Float})
         naindices=[ isa(x,NAtype) for x in matrix[column,sortp] ]
 		nacount=sum(naindices)
         qnnaindices=[ isa(x,NAtype) for x in qnmatrix[column,:] ]
-        qnmatrix[column,sortp[!naindices]]=qnmatrix[column,!qnnaindices]
+        qnmatrix[column,sortp[!naindices]]=qnmatrix[column,:][!qnnaindices]
         nacount>0?qnmatrix[column,sortp[naindices]]=NA:false
     end
     qnmatrix
