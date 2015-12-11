@@ -17,10 +17,10 @@ Package NormalizeQuantiles implements Quantile normalization.
 	 3.5  5.0  6.5
 	 6.5  3.5  5.0
 	 5.0  3.5  6.5
-	
-# Behaviour of function 'normalizeQuantiles'
-	
+
 `array` is interpreted as a matrix with 4 columns and 3 rows.
+	 
+# Behaviour of function 'normalizeQuantiles'
 
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
