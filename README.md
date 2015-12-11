@@ -46,37 +46,42 @@ You can avoid varying results by seeding the random generator using `srand(...)`
 
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 	julia> dataarray = DataArray(array)
-	julia> dataarray[2,2]=NA
+	julia> column = 3
+	julia> row = 2
+	julia> dataarray = DataArray(array)
+	julia> dataarray[column,row]=NA
 
 Varying results:
 
 	julia> qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 6.66667  5.25  3.5
-	 3.5       NA   5.25
-	 6.66667  3.5   5.25
-	 5.25     3.5   6.66667
+	 5.66667  5.25  3.75
+	 3.75     5.25  5.66667
+	 5.25      NA   3.75
+	 5.25     3.75  5.66667
+
 	julia> qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 6.5   4.75     3.33333
-	 4.75   NA      6.5
-	 6.5   3.33333  4.75
-	 4.75  3.33333  6.5
+	 6.5      5.0      2.33333
+	 2.33333  5.0      6.5
+	 6.5       NA      5.0
+	 5.0      2.33333  6.5
 
 Stable results:
 	 
-	 julia> srand(0);qn = normalizeQuantiles(dataarray)
-	4x3 DataArrays.DataArray{Float64,2}:
-	 6.5   4.75     3.33333
-	 4.75   NA      6.5
-	 6.5   3.33333  4.75
-	 4.75  3.33333  6.5
 	julia> srand(0);qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 6.5   4.75     3.33333
-	 4.75   NA      6.5
-	 6.5   3.33333  4.75
-	 4.75  3.33333  6.5
+	 6.5      5.0      2.33333
+	 2.33333  5.0      6.5
+	 6.5       NA      5.0
+	 5.0      2.33333  6.5
+
+	julia> srand(0);qn = normalizeQuantiles(dataarray)
+	4x3 DataArrays.DataArray{Float64,2}:
+	 6.5      5.0      2.33333
+	 2.33333  5.0      6.5
+	 6.5       NA      5.0
+	 5.0      2.33333  6.5
 
 
 
