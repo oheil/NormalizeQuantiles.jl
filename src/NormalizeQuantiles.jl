@@ -84,11 +84,11 @@ function normalizeQuantiles(matrix::DataArray{Float})
     nrows=size(matrix,2)
 	# preparing the result matrix
     qnmatrix=DataArray(Float,(ncols,nrows))
-	# foreach column: sort the values without NAs; randomly distribute NAs into sorted list
+	# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
     for column = 1:ncols
         sortp=sortperm(vec(matrix[column,:]))
         naindices=[ isa(x,NAtype) for x in matrix[column,sortp] ]
-        nacount=length(matrix[column,naindices])
+        nacount=sum(naindices)
         sortcol=matrix[column,sortp[!naindices]]
         for n = 1:nacount
             lcol=length(sortcol)
@@ -106,16 +106,18 @@ function normalizeQuantiles(matrix::DataArray{Float})
 	# foreach row: set all values to the mean of the row, except NAs
     for row = 1:nrows
         naindices=[ isa(x,NAtype) for x in qnmatrix[:,row] ]
+		nacount=sum(naindices)
         qnmatrix[:,row]=mean(qnmatrix[!naindices,row])
-        qnmatrix[naindices,row]=NA
+        nacount>0?qnmatrix[naindices,row]=NA:false
     end
 	# foreach column: reorder the values back to the original order
     for column = 1:ncols
         sortp=sortperm(vec(matrix[column,:]))
         naindices=[ isa(x,NAtype) for x in matrix[column,sortp] ]
+		nacount=sum(naindices)
         qnnaindices=[ isa(x,NAtype) for x in qnmatrix[column,:] ]
         qnmatrix[column,sortp[!naindices]]=qnmatrix[column,!qnnaindices]
-        qnmatrix[column,sortp[naindices]]=NA
+        nacount>0?qnmatrix[column,sortp[naindices]]=NA:false
     end
     qnmatrix
 end

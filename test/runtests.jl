@@ -28,4 +28,10 @@ dafloat[2,2]=NA
 srand(0);qn = normalizeQuantiles(dafloat)
 @test isa(qn[2,2],NAtype)
 
+dafloat[2,:]=NA
+srand(0);qn = normalizeQuantiles(dafloat)
+@test isa(qn[2,1],NAtype)
+@test isa(qn[2,2],NAtype)
+@test isa(qn[2,3],NAtype)
+
 
