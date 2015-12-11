@@ -25,6 +25,27 @@ function normalizeQuantiles(matrix::DataArray{Int})
     normalizeQuantiles(dafloat)
 end
 
+#' @description
+#' calculate the quantile normalized data for the input matrix
+#'
+#' @param matrix::DataArray{Float} The input data as a DataArray of float values interpreted as DataArray(columns,rows)
+#'
+#' @returns qnmatrix::DataArray{Float}  The quantile normalized data as DataArray{Float} 
+#'
+#' @examples
+#'
+#' using NormalizeQuantiles
+#' using DataArrays
+#' 
+#' array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+#' da = DataArray(array)
+#' qn = normalizeQuantiles(da)
+#' 
+#' column = 2
+#' row = 2
+#' da[column,row] = NA
+#' qn = normalizeQuantiles(da)
+#' 
 function normalizeQuantiles(matrix::DataArray{Float})
     ncols=size(matrix,1)
     nrows=size(matrix,2)
