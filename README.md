@@ -48,6 +48,7 @@ You can avoid varying results by seeding the random generator using `srand(...)`
 	julia> dataarray = DataArray(array)
 	julia> dataarray[2,2]=NA
 
+	Varying results:
 
 	julia> qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
@@ -62,7 +63,8 @@ You can avoid varying results by seeding the random generator using `srand(...)`
 	 6.5   3.33333  4.75
 	 4.75  3.33333  6.5
 
-
+	Stable results:
+	 
 	 julia> srand(0);qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
 	 6.5   4.75     3.33333
