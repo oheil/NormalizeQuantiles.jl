@@ -44,6 +44,9 @@ the mean of the rows. Therefore successive calls of normalizeQuantiles will give
 
 You can avoid varying results by seeding the random generator using `srand(...)`:
 
+	julia> using NormalizeQuantiles
+	julia> using DataArrays
+	
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 	julia> dataarray = DataArray(array)
 	julia> column = 3
