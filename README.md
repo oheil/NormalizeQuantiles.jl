@@ -7,12 +7,17 @@ Package NormalizeQuantiles implements Quantile normalization.
 
 # Usage example
 
-	Pkg.add("NormalizeQuantiles")
-	using NormalizeQuantiles
+	julia> Pkg.add("NormalizeQuantiles")
+	julia> using NormalizeQuantiles
 	
-	array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	qn = normalizeQuantiles(array)
-
+	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+	julia> qn = normalizeQuantiles(array)
+	4x3 DataArrays.DataArray{Float64,2}:
+	 6.5  5.0  3.5
+	 3.5  5.0  6.5
+	 6.5  3.5  5.0
+	 5.0  3.5  6.5
+	
 # Behaviour of function 'normalizeQuantiles'
 	
 `array` is interpreted as a matrix with 4 columns and 3 rows.
