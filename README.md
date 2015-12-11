@@ -15,14 +15,14 @@ Package NormalizeQuantiles implements Quantile normalization.
 
 # Behaviour of function 'normalizeQuantiles'
 	
-'array' is interpreted as a matrix with 4 columns and 3 rows.
+`array` is interpreted as a matrix with 4 columns and 3 rows.
 
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
 The function 'normalizeQuantiles' always returns a DataArray of equal dimension as the input matrix.
 
-'NA' values are treated as random missing values and the result value will be NA again. Because of this expected randomness the function returns varying results on successive calls with the same array containing 'NA' values.
+`NA` values are treated as random missing values and the result value will be NA again. Because of this expected randomness the function returns varying results on successive calls with the same array containing 'NA' values.
 	
 # Data prerequisites
 
