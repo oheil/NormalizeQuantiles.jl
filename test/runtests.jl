@@ -34,4 +34,23 @@ srand(0);qn = normalizeQuantiles(dafloat)
 @test isa(qn[2,2],NAtype)
 @test isa(qn[2,3],NAtype)
 
+dafloat[1,:]=NA
+dafloat[2,:]=NA
+dafloat[3,:]=NA
+dafloat[4,:]=NA
+srand(0);qn = normalizeQuantiles(dafloat)
+@test isa(qn[1,1],NAtype)
+@test isa(qn[1,2],NAtype)
+@test isa(qn[1,3],NAtype)
+@test isa(qn[2,1],NAtype)
+@test isa(qn[2,2],NAtype)
+@test isa(qn[2,3],NAtype)
+@test isa(qn[3,1],NAtype)
+@test isa(qn[3,2],NAtype)
+@test isa(qn[3,3],NAtype)
+@test isa(qn[4,1],NAtype)
+@test isa(qn[4,2],NAtype)
+@test isa(qn[4,3],NAtype)
+
+
 
