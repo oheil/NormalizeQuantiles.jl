@@ -1,7 +1,7 @@
 # NormalizeQuantiles
 
 [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
-
+[![Build Status](https://ci.appveyor.com/api/projects/status/p9mn801agxihtnx3wdn1)](https://ci.appveyor.com/api/projects/status/p9mn801agxihtnx3wdn1)
 
 Package NormalizeQuantiles implements Quantile normalization.
 
