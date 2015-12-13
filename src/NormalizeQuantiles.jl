@@ -98,7 +98,7 @@ function normalizeQuantiles(matrix::DataArray{Float})
 					sortcol=DataArray([1.0])
 				else
 					napos=rand(1:(lcol+1))
-					sortcol=DataArray(vcat(sortcol[1:napos-1],1.0,sortcol[napos:lcol]))
+					sortcol=vcat(sortcol[1:napos-1],1.0,sortcol[napos:lcol])
 				end
 				sortcol[napos]=NA
 			end
@@ -119,7 +119,7 @@ function normalizeQuantiles(matrix::DataArray{Float})
 			nacount=sum(naindices)
 			qncol=qnmatrix[column,:]
 			for i in 1:length(sortp[!naindices])
-				qncol[sortp[!naindices][i]]=qnmatrix[column,:][!naindices2][i]
+				qncol[sortp[!naindices][i]]=qnmatrix[column,:][:,!naindices2][i]
 			end
 			for i in 1:length(sortp[naindices])
 				qncol[sortp[naindices][i]]=NA
