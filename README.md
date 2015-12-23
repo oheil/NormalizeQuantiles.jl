@@ -1,14 +1,7 @@
-
-# Important:
-
-Current versions are Alpha-Releases!
-
-Expect heavy changes in future releases!
-
 # NormalizeQuantiles
 
 [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/24mlc8g1x65a57h7?svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl)
+
 
 Package NormalizeQuantiles implements Quantile normalization.
 
@@ -25,7 +18,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	 6.5  3.5  5.0
 	 5.0  3.5  6.5
 
-`array` is interpreted as a matrix with 4 columns and 3 rows.
+`array` is interpreted as a matrix with 4 rows and 3 columns.
 	 
 # Behaviour of function 'normalizeQuantiles'
 
@@ -56,43 +49,42 @@ You can avoid varying results by seeding the random generator using `srand(...)`
 	
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 	julia> dataarray = DataArray(array)
-	julia> column = 3
-	julia> row = 2
+	julia> column = 2
+	julia> row = 3
 	julia> dataarray = DataArray(array)
-	julia> dataarray[column,row]=NA
+	julia> dataarray[row,column]=NA
 
 Varying results:
 
 	julia> qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 5.66667  5.25  3.75
-	 3.75     5.25  5.66667
-	 5.25      NA   3.75
-	 5.25     3.75  5.66667
+     2.0      3.5      2.0
+     5.0      7.33333  5.0
+     7.33333   NA      6.16667
+     5.0      3.5      6.16667
 
 	julia> qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 6.5      5.0      2.33333
-	 2.33333  5.0      6.5
-	 6.5       NA      5.0
-	 5.0      2.33333  6.5
+     2.0  3.0  2.0
+     4.0  6.0  4.0
+     8.5   NA  7.25
+     6.0  3.0  7.25
 
 Stable results:
 	 
 	julia> srand(0);qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 6.5      5.0      2.33333
-	 2.33333  5.0      6.5
-	 6.5       NA      5.0
-	 5.0      2.33333  6.5
+     2.0      4.5      2.0
+     4.0      7.33333  4.0
+     7.33333   NA      6.16667
+     5.0      4.5      6.16667
 
 	julia> srand(0);qn = normalizeQuantiles(dataarray)
 	4x3 DataArrays.DataArray{Float64,2}:
-	 6.5      5.0      2.33333
-	 2.33333  5.0      6.5
-	 6.5       NA      5.0
-	 5.0      2.33333  6.5
-
+     2.0      4.5      2.0
+     4.0      7.33333  4.0
+     7.33333   NA      6.16667
+     5.0      4.5      6.16667
 
 
 
