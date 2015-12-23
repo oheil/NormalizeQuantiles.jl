@@ -6,8 +6,24 @@ using Base.Test
 # write your own tests here
 @test 1 == 1
 
+testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
+dafloat=DataArray(testfloat)
+r=normalizeQuantiles(dafloat)
+@test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
+@test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
+@test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
+@test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
+
+testfloat = [ 3.5 2.0 8.1 1.0 ; 4.5 5.0 6.0 2.0 ; 9.0 7.6 8.2 3.0 ; 5.0 2.0 8.0 4.0 ]
+dafloat=DataArray(testfloat)
+r=normalizeQuantiles(dafloat)
+@test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
+@test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
+@test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
+@test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
+
 testfloat = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-check = [ 6.5  5.0  3.5 ; 3.5  5.0  6.5 ; 6.5  3.5  5.0 ; 5.0  3.5  6.5 ]
+check = [ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn = normalizeQuantiles(testfloat)
 @test qn == check
 
@@ -33,6 +49,11 @@ srand(0);qn = normalizeQuantiles(dafloat)
 @test isa(qn[2,1],NAtype)
 @test isa(qn[2,2],NAtype)
 @test isa(qn[2,3],NAtype)
+
+dafloat[3,1:2]=NA
+srand(0);qn = normalizeQuantiles(dafloat)
+@test isa(qn[3,1],NAtype)
+@test isa(qn[3,2],NAtype)
 
 dafloat[1,:]=NA
 dafloat[2,:]=NA

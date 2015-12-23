@@ -80,17 +80,17 @@ Examples:
 
 """
 function normalizeQuantiles(matrix::DataArray{Float})
-    ncols=size(matrix,1)
-    nrows=size(matrix,2)
+    nrows=size(matrix,1)
+    ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=DataArray(Float,(ncols,nrows))
+    qnmatrix=DataArray(Float,(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
 		for column = 1:ncols
-			sortp=sortperm(vec(matrix[column,:]))
-			naindices=[ isa(x,NAtype) for x in matrix[column,:][sortp] ]
+			sortp=sortperm(vec(matrix[:,column]))
+			naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
 			nacount=sum(naindices)
-			sortcol=matrix[column,:][sortp[!naindices]]
+			sortcol=matrix[:,column][sortp[!naindices]]
 			for n = 1:nacount
 				lcol=length(sortcol)
 				if lcol==0
@@ -102,29 +102,58 @@ function normalizeQuantiles(matrix::DataArray{Float})
 				end
 				sortcol[napos]=NA
 			end
-			qnmatrix[column,:]=sortcol
+			qnmatrix[:,column]=sortcol
 		end
 		# foreach row: set all values to the mean of the row, except NAs
 		for row = 1:nrows
-			naindices=[ isa(x,NAtype) for x in qnmatrix[:,row] ]
+			naindices=[ isa(x,NAtype) for x in qnmatrix[row,:] ]
 			nacount=sum(naindices)
-			qnmatrix[:,row]=mean(qnmatrix[!naindices,row])
-			nacount>0?qnmatrix[naindices,row]=NA:false
+			indices=(1:ncols)[!naindices]
+			naindices=(1:ncols)[naindices]
+			qnmatrix[row,:]=mean(qnmatrix[row,:][indices])
+			nacount>0?qnmatrix[row,naindices]=NA:false
+		end
+		# foreach column: equal values in original column should all be mean of normalized values
+		for column = 1:ncols
+			sortp=sortperm(vec(matrix[:,column]))
+			naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
+			nacount=sum(naindices)
+			sortp=sortp[!naindices]
+			sortcol=matrix[:,column][sortp]
+			ranks=Array(Int,(length(sortcol),1))
+			if nacount < nrows
+				ranks[1]=1
+				lastrank=1
+				lastvalue=sortcol[1]
+				for i in 2:length(sortcol)
+					nextvalue=sortcol[i]
+					nextvalue==lastvalue?ranks[i]=ranks[i-1]:ranks[i]=ranks[i-1]+1
+					lastrank=ranks[i]
+					lastvalue=sortcol[i]
+				end
+				indices=1:nrows
+				naindices=[ isa(x,NAtype) for x in qnmatrix[:,column] ]
+				indices=indices[!naindices]
+				for i in 1:lastrank
+					values=i.==vec(ranks)
+					qnmatrix[indices[values],column]=mean(qnmatrix[indices[values],column])
+				end
+			end
 		end
 		# foreach column: reorder the values back to the original order
 		for column = 1:ncols
-			sortp=sortperm(vec(matrix[column,:]))
-			naindices=[ isa(x,NAtype) for x in matrix[column,:][sortp] ]
-			naindices2=[ isa(x,NAtype) for x in qnmatrix[column,:] ]
+			sortp=sortperm(vec(matrix[:,column]))
+			naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
+			naindices2=[ isa(x,NAtype) for x in qnmatrix[:,column] ]
 			nacount=sum(naindices)
-			qncol=vec(qnmatrix[column,:])
+			qncol=vec(qnmatrix[:,column])
 			for i in 1:length(sortp[!naindices])
-				qncol[sortp[!naindices][i]]=vec(qnmatrix[column,:])[!naindices2][i]
+				qncol[sortp[!naindices][i]]=vec(qnmatrix[:,column])[!naindices2][i]
 			end
 			for i in 1:length(sortp[naindices])
 				qncol[sortp[naindices][i]]=NA
 			end
-			qnmatrix[column,:]=qncol
+			qnmatrix[:,column]=qncol
 		end
 	end
     qnmatrix
