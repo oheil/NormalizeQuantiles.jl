@@ -261,7 +261,7 @@ function normalizeQuantiles(matrix::DataArray{Float})
 		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
-		meanRows(qnmatrix,nrows)
+		meanRows(qnmatrix,nrows,ncols)
 		# foreach column: equal values in original column should all be mean of normalized values
 		equalValuesInColumn(matrix,qnmatrix,nrows,ncols)
 		# foreach column: reorder the values back to the original order
@@ -291,7 +291,7 @@ function sortColumns(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,n
 	end
 end
 
-function meanRows(qnmatrix::Array{Nullable{Float}},nrows)
+function meanRows(qnmatrix::DataArray{Float},nrows,ncols)
 	for row = 1:nrows
 		naindices=[ isa(x,NAtype) for x in qnmatrix[row,:] ]
 		nacount=sum(naindices)
@@ -302,7 +302,7 @@ function meanRows(qnmatrix::Array{Nullable{Float}},nrows)
 	end
 end
 
-function equalValuesInColumn(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function equalValuesInColumn(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
 	for column = 1:ncols
 		sortp=sortperm(vec(matrix[:,column]))
 		naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
@@ -331,7 +331,7 @@ function equalValuesInColumn(matrix::Array{Nullable{Float}},qnmatrix::Array{Null
 	end
 end
 
-function orderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function orderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
 	for column = 1:ncols
 		sortp=sortperm(vec(matrix[:,column]))
 		naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
