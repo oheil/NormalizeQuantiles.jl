@@ -174,7 +174,8 @@ Method for input type Array{Float}
 """
 function normalizeQuantiles(matrix::Array{Float})
     damatrix=DataArray(matrix)
-    normalizeQuantiles(damatrix)
+    r=normalizeQuantiles(damatrix)
+	convert(Array{Float64},reshape([r[i] for i=1:length(r)],size(r)))
 end
 
 """
@@ -184,7 +185,8 @@ Method for input type Array{Int}
 """
 function normalizeQuantiles(matrix::Array{Int})
     dafloat=DataArray(convert(Array{Float},matrix))
-    normalizeQuantiles(dafloat)
+    r=normalizeQuantiles(dafloat)
+	convert(Array{Float64},reshape([r[i] for i=1:length(r)],size(r)))
 end
 
 """
