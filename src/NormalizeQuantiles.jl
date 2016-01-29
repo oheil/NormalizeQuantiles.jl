@@ -10,42 +10,46 @@ else
 	typealias Float Float32
 end
 
+if VERSION < v"0.4.0-"
+	macro doc(string)
+	end
+end # if VERSION < v"0.4.0-"
 
 if VERSION >= v"0.4.0-"
 
-"""
+@doc "
 ### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Float})
 
 Method for input type Array{Float}
-"""
+" ->
 function normalizeQuantiles(matrix::Array{Float})
     damatrix=Array{Nullable{Float}}(matrix)
     r=normalizeQuantiles(damatrix)
 	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
-"""
+@doc "
 ### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Int})
 
 Method for input type Array{Int}
-"""
+" ->
 function normalizeQuantiles(matrix::Array{Int})
     dafloat=Array{Nullable{Float}}(convert(Array{Float},matrix))
     r=normalizeQuantiles(dafloat)
 	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
-"""
+@doc "
 ### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Int}})
 
 Method for input type Array{Nullable{Int}}
-"""
+" ->
 function normalizeQuantiles(matrix::Array{Nullable{Int}})
     nullable=Array{Nullable{Float}}(matrix)
     normalizeQuantiles(nullable)
 end
 
-"""
+@doc "
 ### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Float}})
 Calculate the quantile normalized data for the input matrix
 
@@ -66,7 +70,7 @@ Examples:
 
     array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 
-    da = Array{Nullable{Float64}}(array)
+    a = Array{Nullable{Float64}}(array)
 
     qn = normalizeQuantiles(da)
 
@@ -75,11 +79,11 @@ Examples:
 
     row = 2
 
-    da[row,column] = Nullable{Float64}()
+    a[row,column] = Nullable{Float64}()
 
     qn = normalizeQuantiles(da)
 
-"""
+" ->
 function normalizeQuantiles(matrix::Array{Nullable{Float}})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
