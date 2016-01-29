@@ -1,6 +1,5 @@
 
 using NormalizeQuantiles
-using DataArrays
 using Base.Test
 
 # write your own tests here
@@ -68,6 +67,8 @@ srand(0);qn = normalizeQuantiles(dafloat)
 end # if VERSION >= v"0.4.0-"
 
 if VERSION < v"0.4.0-"
+
+using DataArrays
 
 testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
 dafloat=DataArray(testfloat)
