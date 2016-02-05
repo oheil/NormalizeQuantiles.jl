@@ -25,7 +25,7 @@ Method for input type Array{Float}
 function normalizeQuantiles(matrix::Array{Float})
     damatrix=Array{Nullable{Float}}(matrix)
     r=normalizeQuantiles(damatrix)
-	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
+	convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
 @doc "
@@ -36,7 +36,7 @@ Method for input type Array{Int}
 function normalizeQuantiles(matrix::Array{Int})
     dafloat=Array{Nullable{Float}}(convert(Array{Float},matrix))
     r=normalizeQuantiles(dafloat)
-	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
+	convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
 @doc "
@@ -191,7 +191,7 @@ Method for input type Array{Float}
 function normalizeQuantiles(matrix::Array{Float})
     damatrix=DataArray(matrix)
     r=normalizeQuantiles(damatrix)
-	convert(Array{Float64},reshape([r[i] for i=1:length(r)],size(r)))
+	convert(Array{Float},reshape([r[i] for i=1:length(r)],size(r)))
 end
 
 """
@@ -202,7 +202,7 @@ Method for input type Array{Int}
 function normalizeQuantiles(matrix::Array{Int})
     dafloat=DataArray(convert(Array{Float},matrix))
     r=normalizeQuantiles(dafloat)
-	convert(Array{Float64},reshape([r[i] for i=1:length(r)],size(r)))
+	convert(Array{Float},reshape([r[i] for i=1:length(r)],size(r)))
 end
 
 """
