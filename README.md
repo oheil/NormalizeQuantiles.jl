@@ -5,7 +5,7 @@
 
 Package NormalizeQuantiles implements Quantile normalization.
 
-# Usage example
+# Usage examples
 	
 `array` is interpreted as a matrix with 4 rows and 3 columns.
 	 
