@@ -62,7 +62,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	# example for julia version 0.3
 	julia> Pkg.add("NormalizeQuantiles")
 	julia> using NormalizeQuantiles
-	julia> using DataDataArrays
+	julia> using DataArrays
 	
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 	julia> qn = normalizeQuantiles(array)
@@ -77,13 +77,14 @@ Package NormalizeQuantiles implements Quantile normalization.
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-For julia version > 0.4:
+For julia version >= 0.4:
 
-The function 'normalizeQuantiles' always returns an array of equal dimension as the input matrix and of type Array{Float} or Array{Nullable{Float},2}.
+The function 'normalizeQuantiles' always returns an array of equal dimension as the input matrix and of type Array{Float} or Array{Nullable{Float}}.
 
-`NA` values are of type Nullable{Float}() and are treated as random missing values and the result value will be Nullable{Float}() again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. 
+`NA` values are of type Nullable{Float} and are treated as random missing values and the result value will be Nullable{Float} again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. See "Remarks on data with `NA`" below.
 
 Float can be Float64 or Float32 depending on your environment
+
 
 
 For julia version 0.3:
@@ -102,12 +103,12 @@ To use quantile normalization your data should have the following properties:
 
 # Remarks on data with `NA`
 
-In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays.
+In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is droped in favor of Arrays of Nullables.
 
 Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we distribute the given number of `NA` randomly back into the sorted list of values for each column before calculating
 the mean of the rows. Therefore successive calls of normalizeQuantiles will give different results. On large datasets with small number of `NA` these difference should be marginal.
 
-You can avoid varying results by seeding the random generator using `srand(...)`:
+You can avoid varying results by seeding the random generator using `srand(...)`. See following example for julia 0.3:
 
 	julia> using NormalizeQuantiles
 	julia> using DataArrays
