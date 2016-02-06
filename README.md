@@ -120,7 +120,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	julia> using DataArrays
 	
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> qn = normalizeQuantiles(array)
+	julia> srand(0);qn = normalizeQuantiles(array)
 	4x3 DataArrays.DataArray{Float64,2}:
      2.0  3.0  2.0
      4.0  6.0  4.0
@@ -130,7 +130,12 @@ Package NormalizeQuantiles implements Quantile normalization.
 	julia> da = DataArray(array)
 	julia> da[2,2] = NA
 	julia> daqn = normalizeQuantiles(da)
-
+	4x3 DataArray{Float64,2}:
+	 2.0  4.5  2.0
+	 4.0   NA  4.0
+	 8.0  8.0  6.5
+	 5.0  4.5  6.5
+ 
 # Behaviour of function 'normalizeQuantiles'
 
 After quantile normalization the sets of values of each column have the same statistical properties.
