@@ -129,7 +129,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	
 	julia> da = DataArray(array)
 	julia> da[2,2] = NA
-	julia> daqn = normalizeQuantiles(da)
+	julia> srand(0);daqn = normalizeQuantiles(da)
 	4x3 DataArray{Float64,2}:
 	 2.0  4.5  2.0
 	 4.0   NA  4.0
