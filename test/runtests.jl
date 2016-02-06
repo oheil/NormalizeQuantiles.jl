@@ -9,7 +9,6 @@ using Base.Test
 if VERSION >= v"0.4.0-"
 
 testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
-testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
 r=normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
