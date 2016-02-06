@@ -9,7 +9,8 @@ Package NormalizeQuantiles implements Quantile normalization.
 	
 `array` is interpreted as a matrix with 4 rows and 3 columns.
 	 
-	# example for julia version >= 0.4
+### example for julia version >= 0.4
+
 	julia> Pkg.add("NormalizeQuantiles")
 	julia> using NormalizeQuantiles
 
@@ -40,7 +41,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	julia> isnull(qn[2,2])
 	true
 	
-	julia> qn[2,2]=0.0
+	julia> qn[2,2] = 0.0
 	julia> isnull(qn[2,2])
 	false
 	
@@ -50,10 +51,37 @@ Package NormalizeQuantiles implements Quantile normalization.
 	 4.0  0.0  4.0
 	 8.0  8.0  6.5
 	 5.0  4.5  6.5
-
-
 	 
-	# example for julia version 0.3
+	julia> using NullableArrays
+	
+	julia> na = NullableArray(array)
+	julia> na[2,2] = Nullable()
+	julia> na
+	4x3 NullableArrays.NullableArray{Float64,2}:
+	 3.0      2.0  1.0
+	 4.0  #NULL    6.0
+	 9.0      7.0  8.0
+	 5.0      2.0  8.0	
+
+	julia> arrayOfNullables = convert(Array{Nullable{Float64}},reshape([na[i] for i=1:length(na)],size(na)))
+	julia> srand(0);qn = normalizeQuantiles(arrayOfNullables)
+	4x3 Array{Nullable{Float64},2}:
+	 Nullable(2.0)  Nullable(4.5)        Nullable(2.0)
+	 Nullable(4.0)  Nullable{Float64}()  Nullable(4.0)
+	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
+	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)	
+
+	julia> isn = convert(Array{Bool},reshape([isnull(qn[i]) for i=1:length(qn)],size(qn)))
+	julia> qn[isn] = 0.0
+	julia> qna = NullableArray(convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn))),isn)
+	4x3 NullableArrays.NullableArray{Float64,2}:
+	 2.0      4.5  2.0
+	 4.0  #NULL    4.0
+	 8.0      8.0  6.5
+	 5.0      4.5  6.5	
+
+### example for julia version 0.3
+
 	julia> Pkg.add("NormalizeQuantiles")
 	julia> using NormalizeQuantiles
 	julia> using DataArrays
