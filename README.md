@@ -81,7 +81,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	 5.0      4.5  6.5
 
 	julia> using DataArrays
-	julia> 
+	
 	julia> da = DataArray(array)
 	4x3 DataArrays.DataArray{Float64,2}:
 	 3.0  2.0  1.0
