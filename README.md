@@ -126,6 +126,10 @@ Package NormalizeQuantiles implements Quantile normalization.
      4.0  6.0  4.0
      8.0  8.0  7.0
      6.0  3.0  7.0
+	
+	julia> da = DataArray(array)
+	julia> da[2,2] = NA
+	julia> daqn = normalizeQuantiles(da)
 
 # Behaviour of function 'normalizeQuantiles'
 
