@@ -9,7 +9,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	
 `array` is interpreted as a matrix with 4 rows and 3 columns.
 	 
-### example for julia version >= 0.4
+#### Example for julia version >= 0.4
 
 	julia> Pkg.add("NormalizeQuantiles")
 	julia> using NormalizeQuantiles
@@ -80,7 +80,7 @@ Package NormalizeQuantiles implements Quantile normalization.
 	 8.0      8.0  6.5
 	 5.0      4.5  6.5	
 
-### example for julia version 0.3
+#### Example for julia version 0.3
 
 	julia> Pkg.add("NormalizeQuantiles")
 	julia> using NormalizeQuantiles
