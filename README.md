@@ -165,7 +165,47 @@ To use quantile normalization your data should have the following properties:
 
 # Remarks on data with `NA`
 
-In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables.
+In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
+
+#### julia version 0.3:
+
+	julia> using NormalizeQuantiles
+	
+	julia> r=randn((1000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	elapsed time: 14.095581822 seconds (333478396 bytes allocated, 74.58% gc time)
+	
+	julia> r=randn((10000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+	elapsed time: 1022.546972627 seconds (27043119092 bytes allocated, 77.33% gc time)
+	
+	julia> r=randn((1000,100));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	elapsed time: 117.107284172 seconds (3325883092 bytes allocated, 78.65% gc time)
+
+#### julia version 0.4:
+
+	julia> using NormalizeQuantiles
+	
+	julia> r=randn((1000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	0.860034 seconds (183.47 k allocations: 49.989 MB, 4.92% gc time)
+	
+	julia> r=randn((10000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+	66.305552 seconds (2.25 M allocations: 623.611 MB, 1.03% gc time)
+	
+	julia> r=randn((1000,100));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	9.421312 seconds (1.72 M allocations: 496.723 MB, 4.37% gc time)
+
+(performed on a low performance netbook)
 
 Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we distribute the given number of `NA` randomly back into the sorted list of values for each column before calculating
 the mean of the rows. Therefore successive calls of normalizeQuantiles will give different results. On large datasets with small number of `NA` these difference should be marginal.
