@@ -101,7 +101,7 @@ function normalizeQuantiles(matrix::Array{Nullable{Float}})
     qnmatrix
 end
 
-function normalizeQuantilesOld(matrix::Array{Nullable{Float}})
+function Old_normalizeQuantiles(matrix::Array{Nullable{Float}})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
@@ -193,19 +193,17 @@ function orderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function Old_equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
-			ranks=getRanks(matrix[:,column][indices][sortp])
-			lastrank=ranks[length(ranks)]
+			ranks=getRankMatrix(matrix[:,column][indices][sortp])
 			indices3=(1:nrows)[indices2]
-			for i in 1:lastrank
-				values=i.==vec(ranks)
-				qnmatrix[indices3[values],column]=mean([ get(x) for x in qnmatrix[indices3[values],column] ])
+			for i in 1:(size(ranks)[2])
+				qnmatrix[indices3[ranks[:,i]],column]=mean([ get(x) for x in qnmatrix[indices3[ranks[:,i]],column] ])
 			end
 		end
 		qncol=Array{Nullable{Float}}(nrows,1)
@@ -215,16 +213,89 @@ function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qn
 	end
 end
 
-function getRanks(sortedArrayNoNAs::Array{Nullable{Float}})
-	ranks=Array(Int,(length(sortedArrayNoNAs),1))
-	ranks[1]=1
+function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+	for column = 1:ncols
+		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
+		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
+		sortp=sortperm(sortp)
+		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
+		if length(matrix[:,column][indices][sortp])>0
+			allranks=falses((length(indices),round(Int,nrows/2)))
+			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
+			indices3=(1:nrows)[indices2]
+			for i in 1:rankColumns
+				qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
+			end
+		end
+		qncol=Array{Nullable{Float}}(nrows,1)
+		fill!(qncol,Nullable{Float}())
+		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
+		qnmatrix[:,column]=qncol
+	end
+end
+
+function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::BitArray,indices::Array{Bool})
+	rankColumns=0
+	nrows=length(sortedArrayNoNAs)
 	lastvalue=sortedArrayNoNAs[1]
-	for i in 2:length(sortedArrayNoNAs)
+	indices2=(1:length(indices))[indices]
+	count=1
+	for i in 2:nrows
 		nextvalue=sortedArrayNoNAs[i]
-		get(nextvalue)==get(lastvalue)?ranks[i]=ranks[i-1]:ranks[i]=ranks[i-1]+1
+		if !isnull(nextvalue) && !isnull(lastvalue) && get(nextvalue)==get(lastvalue)
+			allranks[indices2[i-1],rankColumns+1]=true
+			allranks[indices2[i],rankColumns+1]=true
+			count+=1
+		else
+			if count>1
+				rankColumns+=1
+			end
+			count=1
+		end
 		lastvalue=sortedArrayNoNAs[i]
 	end
-	ranks
+	if count>1
+		rankColumns+=1
+	end
+	rankColumns
+end
+
+function Old_getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}})
+	nrows=length(sortedArrayNoNAs)
+	allranks=Array{Bool}((0,0))
+	ranks=Array{Bool}((nrows,1))
+	fill!(ranks,false)
+	lastvalue=sortedArrayNoNAs[1]
+	ranks[1]=true
+	count=1
+	for i in 2:nrows
+		nextvalue=sortedArrayNoNAs[i]
+		if !isnull(nextvalue) && !isnull(lastvalue) && get(nextvalue)==get(lastvalue)
+			ranks[i]=true
+			count+=1
+		else
+			if count>1
+				if length(allranks)==0
+					allranks=ranks
+				else
+					allranks=hcat(allranks,ranks)
+				end
+			end
+			ranks=Array{Bool}((nrows,1))
+			fill!(ranks,false)
+			ranks[i]=true
+			count=1
+		end
+		lastvalue=sortedArrayNoNAs[i]
+	end
+	if count>1
+		if length(allranks)==0
+			allranks=ranks
+		else
+			allranks=hcat(allranks,ranks)
+		end
+	end
+	allranks
 end
 
 end # if VERSION >= v"0.4.0-"
