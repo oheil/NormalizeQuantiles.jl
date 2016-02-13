@@ -16,13 +16,13 @@ No dependencies
 [DataArrays](https://github.com/JuliaStats/DataArrays.jl) ([StatsBase](https://github.com/JuliaStats/StatsBase.jl),[Compat](https://github.com/JuliaLang/Compat.jl),[Reexport](https://github.com/simonster/Reexport.jl))
 
 ## Usage examples
-	
-`array` is interpreted as a matrix with 4 rows and 3 columns.
-	 
+ 
 #### Example for julia version >= 0.4
 
 	julia> Pkg.add("NormalizeQuantiles")
 	julia> using NormalizeQuantiles
+
+`array` is interpreted as a matrix with 4 rows and 3 columns.
 
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 	julia> qn = normalizeQuantiles(array)
@@ -31,6 +31,8 @@ No dependencies
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
+
+Missing values (`NA`) are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
 
 	julia> arrayWithNA = Array{Nullable{Float64}}(array)
 	julia> arrayWithNA[2,2] = Nullable{Float64}()
