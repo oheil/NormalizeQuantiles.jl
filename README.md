@@ -178,7 +178,7 @@ The function 'normalizeQuantiles' always returns an array of equal dimension as 
 
 #### For julia version 0.3:
 
-The function 'normalizeQuantiles` always returns a `DataArray` of equal dimension as the input matrix.
+The function `normalizeQuantiles` always returns a `DataArray` of equal dimension as the input matrix.
 
 `NA` values are treated as random missing values and the result value will be `NA` again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. 
 	
