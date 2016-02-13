@@ -32,7 +32,7 @@ No dependencies
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
 
-Missing values (`NA`) are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
+Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
 
 	julia> arrayWithNA = Array{Nullable{Float64}}(array)
 	julia> arrayWithNA[2,2] = Nullable{Float64}()
@@ -53,7 +53,7 @@ Missing values (`NA`) are handled using [Nullables](http://docs.julialang.org/en
 	julia> isnull(qn[2,2])
 	true
 
-The result must be of type Array{Nullable{Float64}}, because `NAs` stay `NAs` after quantile normalization. Setting the `NA` to 0.0 we can convert the result back to an Array of Floats `Array{Float64}`:
+The result must be of type `Array{Nullable{Float64}}`, because `NAs` stay `NAs` after quantile normalization. Setting the `NA` to `0.0` we can convert the result back to `Array{Float64}`:
 
 	julia> qn[2,2] = 0.0
 	julia> isnull(qn[2,2])
@@ -66,7 +66,7 @@ The result must be of type Array{Nullable{Float64}}, because `NAs` stay `NAs` af
 	 8.0  8.0  6.5
 	 5.0  4.5  6.5
 
-How to deal with NullableArrays:
+How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.jl):
 
 	julia> using NullableArrays
 	
@@ -79,7 +79,7 @@ How to deal with NullableArrays:
 	 9.0      7.0  8.0
 	 5.0      2.0  8.0	
 
-Convert the NullableArray to an Array{Nullable{Float64}}:
+Convert the `NullableArray` `na` to `Array{Nullable{Float64}}`:
 
 	julia> arrayOfNullables = convert(Array{Nullable{Float64}},reshape([na[i] for i=1:length(na)],size(na)))
 	julia> srand(0);qn = normalizeQuantiles(arrayOfNullables)
@@ -89,7 +89,7 @@ Convert the NullableArray to an Array{Nullable{Float64}}:
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
 	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)	
 
-Convert the result Array{Nullable{Float64}} nack to NullableArray:
+Convert the result `Array{Nullable{Float64}}` back to `NullableArray`:
 
 	julia> isn = convert(Array{Bool},reshape([isnull(qn[i]) for i=1:length(qn)],size(qn)))
 	julia> qn[isn] = 0.0
@@ -100,7 +100,7 @@ Convert the result Array{Nullable{Float64}} nack to NullableArray:
 	 8.0      8.0  6.5
 	 5.0      4.5  6.5
 
-Dealing with DataArrays in julia version >= 0.4 (if you use julia 0.3 and DataArrays see below the examples for julia version 0.3):
+Dealing with `DataArrays` in julia version >= 0.4 (if you use julia 0.3 and DataArrays see below the examples for julia version 0.3):
 
 	julia> using DataArrays
 	
@@ -113,7 +113,7 @@ Dealing with DataArrays in julia version >= 0.4 (if you use julia 0.3 and DataAr
 	
 	julia> da[2,2] = NA
 
-Converting the DataArray `da` containing `NAs` to an Array{Nullable{Float64}}:
+Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 
 	julia> arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(da[i])?Nullable{Float64}():Nullable{Float64}(da[i]) for i=1:length(da)],size(da)))
 	4x3 Array{Nullable{Float64},2}:
@@ -129,7 +129,7 @@ Converting the DataArray `da` containing `NAs` to an Array{Nullable{Float64}}:
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
 	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)
 
-Converting the result Array{Nullable{Float64}} back to a DataArray containg `NAs`:
+Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `NAs`:
 
 	julia> daqn = DataArray(Float64,size(qn))
 	julia> daqn[1:length(qn)] = DataArray(reshape([isnull(qn[i])?NA:get(qn[i]) for i=1:length(qn)],size(qn)))[1:length(qn)]
