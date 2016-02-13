@@ -170,17 +170,17 @@ This is quantile normalization without a reference column.
 
 #### For julia version >= 0.4:
 
-The function 'normalizeQuantiles' always returns an array of equal dimension as the input matrix and of type Array{Float} or Array{Nullable{Float}}.
+The function 'normalizeQuantiles' always returns an array of equal dimension as the input matrix and of type `Array{Float}` or `Array{Nullable{Float}}`.
 
-`NA` values are of type Nullable{Float} and are treated as random missing values and the result value will be Nullable{Float} again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. See "Remarks on data with `NA`" below.
+`NA` values are of type `Nullable{Float}` and are treated as random missing values and the result value will be `Nullable{Float}` again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. See "Remarks on data with `NA`" below.
 
-Float can be Float64 or Float32 depending on your environment
+`Float` can be `Float64` or `Float32` depending on your environment
 
 #### For julia version 0.3:
 
-The function 'normalizeQuantiles' always returns a DataArray of equal dimension as the input matrix.
+The function 'normalizeQuantiles` always returns a `DataArray` of equal dimension as the input matrix.
 
-`NA` values are treated as random missing values and the result value will be NA again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. 
+`NA` values are treated as random missing values and the result value will be `NA` again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. 
 	
 ## Data prerequisites
 
@@ -190,7 +190,7 @@ To use quantile normalization your data should have the following properties:
 * number of values for each column should be large
 * number of `NA` in the data should be small and of random nature
 
-## Remarks on data with `NA`
+## Remarks on performance
 
 In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
 
@@ -234,8 +234,9 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 
 (performed on a low performance netbook)
 
-Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we distribute the given number of `NA` randomly back into the sorted list of values for each column before calculating
-the mean of the rows. Therefore successive calls of normalizeQuantiles will give different results. On large datasets with small number of `NA` these difference should be marginal.
+## Remarks on data with `NA`
+
+Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we distribute the given number of `NA` randomly back into the sorted list of values for each column before calculating the mean of the rows. Therefore successive calls of normalizeQuantiles will give different results. On large datasets with small number of `NA` these difference should be marginal.
 
 You can avoid varying results by seeding the random generator using `srand(...)`. See following example for julia 0.3:
 
