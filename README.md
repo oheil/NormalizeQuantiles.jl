@@ -5,7 +5,7 @@
 
 Package NormalizeQuantiles implements Quantile normalization.
 
-# Dependencies
+## Dependencies
 
 #### julia version >= 0.4
 
@@ -15,7 +15,7 @@ No dependencies
 
 [DataArrays](https://github.com/JuliaStats/DataArrays.jl) ([StatsBase](https://github.com/JuliaStats/StatsBase.jl),[Compat](https://github.com/JuliaLang/Compat.jl),[Reexport](https://github.com/simonster/Reexport.jl))
 
-# Usage examples
+## Usage examples
 	
 `array` is interpreted as a matrix with 4 rows and 3 columns.
 	 
@@ -146,7 +146,7 @@ No dependencies
 	 8.0  8.0  6.5
 	 5.0  4.5  6.5
  
-# Behaviour of function 'normalizeQuantiles'
+## Behaviour of function 'normalizeQuantiles'
 
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
@@ -165,7 +165,7 @@ The function 'normalizeQuantiles' always returns a DataArray of equal dimension 
 
 `NA` values are treated as random missing values and the result value will be NA again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. 
 	
-# Data prerequisites
+## Data prerequisites
 
 To use quantile normalization your data should have the following properties:
 
@@ -173,7 +173,7 @@ To use quantile normalization your data should have the following properties:
 * number of values for each column should be large
 * number of `NA` in the data should be small and of random nature
 
-# Remarks on data with `NA`
+## Remarks on data with `NA`
 
 In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
 
