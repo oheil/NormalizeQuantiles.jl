@@ -95,6 +95,23 @@ function normalizeQuantiles(matrix::Array{Nullable{Float}})
 		# foreach row: set all values to the mean of the row, except NAs
 		meanRows(qnmatrix,nrows)
 		# foreach column: equal values in original column should all be mean of normalized values
+		# foreach column: reorder the values back to the original order
+		equalValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
+	end
+    qnmatrix
+end
+
+function normalizeQuantilesOld(matrix::Array{Nullable{Float}})
+    nrows=size(matrix,1)
+    ncols=size(matrix,2)
+	# preparing the result matrix
+    qnmatrix=Array{Nullable{Float}}((nrows,ncols))
+	if ncols>0 && nrows>0
+		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
+		sortColumns(matrix,qnmatrix,nrows,ncols)
+		# foreach row: set all values to the mean of the row, except NAs
+		meanRows(qnmatrix,nrows)
+		# foreach column: equal values in original column should all be mean of normalized values
 		equalValuesInColumn(matrix,qnmatrix,nrows,ncols)
 		# foreach column: reorder the values back to the original order
 		orderToOriginal(matrix,qnmatrix,nrows,ncols)
@@ -119,7 +136,6 @@ function sortColumns(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Flo
 				napos=rand(1:(lcol+1))
 				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:lcol])
 			end
-		
 		end
 		qnmatrix[:,column]=sortcol
 	end
@@ -175,6 +191,40 @@ function orderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable
 		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
 		qnmatrix[:,column]=qncol
 	end
+end
+
+function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+	for column = 1:ncols
+		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
+		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
+		sortp=sortperm(sortp)
+		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
+		if length(matrix[:,column][indices][sortp])>0
+			ranks=getRanks(matrix[:,column][indices][sortp])
+			lastrank=ranks[length(ranks)]
+			indices3=(1:nrows)[indices2]
+			for i in 1:lastrank
+				values=i.==vec(ranks)
+				qnmatrix[indices3[values],column]=mean([ get(x) for x in qnmatrix[indices3[values],column] ])
+			end
+		end
+		qncol=Array{Nullable{Float}}(nrows,1)
+		fill!(qncol,Nullable{Float}())
+		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
+		qnmatrix[:,column]=qncol
+	end
+end
+
+function getRanks(sortedArrayNoNAs::Array{Nullable{Float}})
+	ranks=Array(Int,(length(sortedArrayNoNAs),1))
+	ranks[1]=1
+	lastvalue=sortedArrayNoNAs[1]
+	for i in 2:length(sortedArrayNoNAs)
+		nextvalue=sortedArrayNoNAs[i]
+		get(nextvalue)==get(lastvalue)?ranks[i]=ranks[i-1]:ranks[i]=ranks[i-1]+1
+		lastvalue=sortedArrayNoNAs[i]
+	end
+	ranks
 end
 
 end # if VERSION >= v"0.4.0-"
