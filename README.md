@@ -5,6 +5,16 @@
 
 Package NormalizeQuantiles implements Quantile normalization.
 
+# Dependencies
+
+#### julia version >= 0.4
+
+No dependencies
+
+####  julia version 0.3
+
+[DataArrays](https://github.com/JuliaStats/DataArrays.jl) ([StatsBase](https://github.com/JuliaStats/StatsBase.jl),[Compat](https://github.com/JuliaLang/Compat.jl),[Reexport](https://github.com/simonster/Reexport.jl))
+
 # Usage examples
 	
 `array` is interpreted as a matrix with 4 rows and 3 columns.
