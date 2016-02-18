@@ -384,6 +384,23 @@ function normalizeQuantiles(matrix::DataArray{Float})
 		# foreach row: set all values to the mean of the row, except NAs
 		meanRows(qnmatrix,nrows,ncols)
 		# foreach column: equal values in original column should all be mean of normalized values
+		# foreach column: reorder the values back to the original order
+		equalValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
+	end
+    qnmatrix
+end
+
+function OLD_normalizeQuantiles(matrix::DataArray{Float})
+    nrows=size(matrix,1)
+    ncols=size(matrix,2)
+	# preparing the result matrix
+    qnmatrix=DataArray(Float,(nrows,ncols))
+	if ncols>0 && nrows>0
+		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
+		sortColumns(matrix,qnmatrix,nrows,ncols)
+		# foreach row: set all values to the mean of the row, except NAs
+		meanRows(qnmatrix,nrows,ncols)
+		# foreach column: equal values in original column should all be mean of normalized values
 		equalValuesInColumn(matrix,qnmatrix,nrows,ncols)
 		# foreach column: reorder the values back to the original order
 		orderToOriginal(matrix,qnmatrix,nrows,ncols)
@@ -450,6 +467,53 @@ function equalValuesInColumn(matrix::DataArray{Float},qnmatrix::DataArray{Float}
 			end
 		end
 	end
+end
+
+function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
+	for column = 1:ncols
+		indices=[ !isa(x,NAtype) for x in matrix[:,column] ]
+		sortp=matrix[:,column][indices]
+		sortp=sortperm(sortp)
+		indices2=[ !isa(x,NAtype) for x in qnmatrix[:,column] ]
+		if length(matrix[:,column][indices][sortp])>0
+			allranks=falses((length(indices),round(Int,nrows/2)))
+			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
+			indices3=(1:nrows)[indices2]
+			for i in 1:rankColumns
+				qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
+			end
+		end
+		qncol=vec(qnmatrix[:,column])
+		fill!(qncol,NA)
+		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
+		qnmatrix[:,column]=qncol
+	end
+end
+
+function getRankMatrix(sortedArrayNoNAs::DataArray{Float},allranks::BitArray,indices::Array{Bool})
+	rankColumns=0
+	nrows=length(sortedArrayNoNAs)
+	lastvalue=sortedArrayNoNAs[1]
+	indices2=(1:length(indices))[indices]
+	count=1
+	for i in 2:nrows
+		nextvalue=sortedArrayNoNAs[i]
+		if !isa(nextvalue,NAtype) && !isa(lastvalue,NAtype) && nextvalue==lastvalue
+			allranks[indices2[i-1],rankColumns+1]=true
+			allranks[indices2[i],rankColumns+1]=true
+			count+=1
+		else
+			if count>1
+				rankColumns+=1
+			end
+			count=1
+		end
+		lastvalue=sortedArrayNoNAs[i]
+	end
+	if count>1
+		rankColumns+=1
+	end
+	rankColumns
 end
 
 function orderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
