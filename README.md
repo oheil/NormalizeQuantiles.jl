@@ -192,7 +192,7 @@ To use quantile normalization your data should have the following properties:
 
 ## Remarks on performance
 
-In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is vastly superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
+In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
 
 #### julia version 0.3:
 
@@ -201,17 +201,22 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 	julia> r=randn((1000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 14.095581822 seconds (333478396 bytes allocated, 74.58% gc time)
+	elapsed time: 0.008827794 seconds (7270064 bytes allocated)
 	
 	julia> r=randn((10000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	elapsed time: 1022.546972627 seconds (27043119092 bytes allocated, 77.33% gc time)
+	elapsed time: 0.158171015 seconds (128127184 bytes allocated, 43.12% gc time)
 	
 	julia> r=randn((1000,100));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 117.107284172 seconds (3325883092 bytes allocated, 78.65% gc time)
+	elapsed time: 0.092005873 seconds (58145024 bytes allocated, 46.90% gc time)
+	
+	julia> r=randn((100000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+	elapsed time: 2.815940259 seconds (6905248304 bytes allocated, 28.01% gc time)
 
 #### julia version 0.4:
 
@@ -220,19 +225,22 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 	julia> r=randn((1000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	0.860034 seconds (183.47 k allocations: 49.989 MB, 4.92% gc time)
+	  0.002710 seconds (13.35 k allocations: 5.106 MB)
 	
 	julia> r=randn((10000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	66.305552 seconds (2.25 M allocations: 623.611 MB, 1.03% gc time)
+	  0.044568 seconds (148.46 k allocations: 104.682 MB, 20.59% gc time)
 	
 	julia> r=randn((1000,100));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	9.421312 seconds (1.72 M allocations: 496.723 MB, 4.37% gc time)
-
-(performed on a low performance netbook)
+	  0.024416 seconds (19.96 k allocations: 46.611 MB, 13.98% gc time)
+	  
+	julia> r=randn((100000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	  1.979233 seconds (1.50 M allocations: 6.261 GB, 26.02% gc time)
 
 ## Remarks on data with `NA`
 
