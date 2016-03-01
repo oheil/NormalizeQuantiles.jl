@@ -51,7 +51,7 @@ srand(0);qn = normalizeQuantiles(dafloat)
 @test isnull(qn[2,2])
 @test get(qn[1,2])==4.5
 @test get(qn[2,1])==4.0
-@everywhere srand(0);qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+srand(0);qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
 @test isnull(qn[2,2])
 @test get(qn[1,2])==4.5
 @test get(qn[2,1])==4.0
@@ -144,7 +144,7 @@ srand(0);qn = normalizeQuantiles(dafloat)
 @test isa(qn[2,2],NAtype)
 @test qn[1,2]==4.5
 @test qn[2,1]==4.0
-@everywhere srand(0);qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+srand(0);qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
 @test isa(qn[2,2],NAtype)
 @test qn[1,2]==4.5
 @test qn[2,1]==4.0
