@@ -15,8 +15,20 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
+r=NormalizeQuantiles.normalizeQuantilesMultiCore(testfloat)
+@test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
+@test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
+@test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
+@test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
+
 testfloat = [ 3.5 2.0 8.1 1.0 ; 4.5 5.0 6.0 2.0 ; 9.0 7.6 8.2 3.0 ; 5.0 2.0 8.0 4.0 ]
 r=normalizeQuantiles(testfloat)
+@test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
+@test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
+@test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
+@test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
+
+r=NormalizeQuantiles.normalizeQuantilesMultiCore(testfloat)
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
@@ -25,6 +37,8 @@ r=normalizeQuantiles(testfloat)
 testfloat = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check = [ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn = normalizeQuantiles(testfloat)
+@test qn == check
+qn = NormalizeQuantiles.normalizeQuantilesMultiCore(testfloat)
 @test qn == check
 
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
@@ -35,6 +49,12 @@ dafloat=Array{Nullable{Float64}}(testfloat)
 dafloat[2,2]=Nullable{Float64}()
 srand(0);qn = normalizeQuantiles(dafloat)
 @test isnull(qn[2,2])
+@test get(qn[1,2])==4.5
+@test get(qn[2,1])==4.0
+@everywhere srand(0);qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+@test isnull(qn[2,2])
+@test get(qn[1,2])==4.5
+@test get(qn[2,1])==4.0
 
 dafloat[2,:]=Nullable{Float64}()
 srand(0);qn = normalizeQuantiles(dafloat)
@@ -78,6 +98,11 @@ r=normalizeQuantiles(dafloat)
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
+r=NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+@test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
+@test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
+@test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
+@test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
 testfloat = [ 3.5 2.0 8.1 1.0 ; 4.5 5.0 6.0 2.0 ; 9.0 7.6 8.2 3.0 ; 5.0 2.0 8.0 4.0 ]
 dafloat=DataArray(testfloat)
@@ -86,10 +111,17 @@ r=normalizeQuantiles(dafloat)
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
+r=NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+@test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
+@test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
+@test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
+@test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
 
 testfloat = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check = [ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn = normalizeQuantiles(testfloat)
+@test qn == check
+qn = NormalizeQuantiles.normalizeQuantilesMultiCore(testfloat)
 @test qn == check
 
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
@@ -100,6 +132,8 @@ dafloat = DataArray(testfloat)
 dacheck = DataArray(check)
 qn = normalizeQuantiles(dafloat)
 @test qn == check
+qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+@test qn == check
 
 daint = DataArray(testint)
 qn = normalizeQuantiles(daint)
@@ -108,6 +142,12 @@ qn = normalizeQuantiles(daint)
 dafloat[2,2]=NA
 srand(0);qn = normalizeQuantiles(dafloat)
 @test isa(qn[2,2],NAtype)
+@test qn[1,2]==4.5
+@test qn[2,1]==4.0
+@everywhere srand(0);qn = NormalizeQuantiles.normalizeQuantilesMultiCore(dafloat)
+@test isa(qn[2,2],NAtype)
+@test qn[1,2]==4.5
+@test qn[2,1]==4.0
 
 dafloat[2,:]=NA
 srand(0);qn = normalizeQuantiles(dafloat)
