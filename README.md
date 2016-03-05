@@ -43,12 +43,12 @@ Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/r
 	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
 	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
 	
-	julia> srand(0);qn = normalizeQuantiles(arrayWithNA)
+	julia> qn = normalizeQuantiles(arrayWithNA)
 	4x3 Array{Nullable{Float64},2}:
-	 Nullable(2.0)  Nullable(4.5)        Nullable(2.0)
-	 Nullable(4.0)  Nullable{Float64}()  Nullable(4.0)
+	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
+	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
-	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)
+	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
 
 	julia> isnull(qn[2,2])
 	true
@@ -82,7 +82,7 @@ How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.j
 Convert the `NullableArray` `na` to `Array{Nullable{Float64}}`:
 
 	julia> arrayOfNullables = convert(Array{Nullable{Float64}},reshape([na[i] for i=1:length(na)],size(na)))
-	julia> srand(0);qn = normalizeQuantiles(arrayOfNullables)
+	julia> qn = normalizeQuantiles(arrayOfNullables)
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(4.5)        Nullable(2.0)
 	 Nullable(4.0)  Nullable{Float64}()  Nullable(4.0)
@@ -95,10 +95,10 @@ Convert the result `Array{Nullable{Float64}}` back to `NullableArray`:
 	julia> qn[isn] = 0.0
 	julia> qna = NullableArray(convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn))),isn)
 	4x3 NullableArrays.NullableArray{Float64,2}:
-	 2.0      4.5  2.0
-	 4.0  #NULL    4.0
+	 2.0      3.5  2.0
+	 5.0  #NULL    5.0
 	 8.0      8.0  6.5
-	 5.0      4.5  6.5
+	 5.0      3.5  6.5
 
 Dealing with `DataArrays` in julia version >= 0.4 (if you use julia 0.3 and DataArrays see below the examples for julia version 0.3):
 
@@ -122,12 +122,12 @@ Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
 	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
 	
-	julia> srand(0);qn = normalizeQuantiles(arrayWithNA)
+	julia> qn = normalizeQuantiles(arrayWithNA)
 	4x3 Array{Nullable{Float64},2}:
-	 Nullable(2.0)  Nullable(4.5)        Nullable(2.0)
-	 Nullable(4.0)  Nullable{Float64}()  Nullable(4.0)
+	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
+	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
-	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)
+	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
 
 Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `NAs`:
 
@@ -135,11 +135,35 @@ Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `N
 	julia> daqn[1:length(qn)] = DataArray(reshape([isnull(qn[i])?NA:get(qn[i]) for i=1:length(qn)],size(qn)))[1:length(qn)]
 	julia> daqn
 	4x3 DataArrays.DataArray{Float64,2}:
-	 2.0  4.5  2.0
-	 4.0   NA  4.0
+	 2.0  3.5  2.0
+	 5.0   NA  5.0
 	 8.0  8.0  6.5
-	 5.0  4.5  6.5
+	 5.0  3.5  6.5
+
+#### Multicore usage examples for julia version >= 0.4
+
+To use multiple cores on a single machine you can use `SharedArray{Nullable{Float64}}`:
+
+	julia> addprocs()
+	julia> using NormalizeQuantiles
 	
+	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+	julia> sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));
+	julia> sa[:]=array[:]
+	julia> sa
+	4x3 SharedArray{Nullable{Float64},2}:
+	 Nullable(3.0)  Nullable(2.0)  Nullable(1.0)
+	 Nullable(4.0)  Nullable(5.0)  Nullable(6.0)
+	 Nullable(9.0)  Nullable(7.0)  Nullable(8.0)
+	 Nullable(5.0)  Nullable(2.0)  Nullable(8.0)
+	
+	julia> qn = normalizeQuantiles(sa)
+	4x3 SharedArray{Nullable{Float64},2}:
+	 Nullable(2.0)  Nullable(3.0)  Nullable(2.0)
+	 Nullable(4.0)  Nullable(6.0)  Nullable(4.0)
+	 Nullable(8.0)  Nullable(8.0)  Nullable(7.0)
+	 Nullable(6.0)  Nullable(3.0)  Nullable(7.0)	
+
 #### Example for julia version 0.3
 
 	julia> Pkg.add("NormalizeQuantiles")
@@ -147,7 +171,7 @@ Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `N
 	julia> using DataArrays
 	
 	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> srand(0);qn = normalizeQuantiles(array)
+	julia> qn = normalizeQuantiles(array)
 	4x3 DataArrays.DataArray{Float64,2}:
      2.0  3.0  2.0
      4.0  6.0  4.0
@@ -156,12 +180,36 @@ Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `N
 	
 	julia> da = DataArray(array)
 	julia> da[2,2] = NA
-	julia> srand(0);daqn = normalizeQuantiles(da)
+	julia> daqn = normalizeQuantiles(da)
 	4x3 DataArray{Float64,2}:
-	 2.0  4.5  2.0
-	 4.0   NA  4.0
+	 2.0  3.5  2.0
+	 5.0   NA  5.0
 	 8.0  8.0  6.5
-	 5.0  4.5  6.5
+	 5.0  3.5  6.5
+
+#### Multicore usage examples for julia version 0.3
+
+To use multiple cores on a single machine you can use `SharedArray{Float64}`. Using multiple cores for data with `NA` is not implemented for julia 0.3:
+
+	julia> addprocs(8)
+	julia> using NormalizeQuantiles
+	
+	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+	julia> sa=SharedArray(Float64,(size(array,1),size(array,2)));
+	julia> sa[:]=array[:]
+	julia> sa
+	4x3 SharedArray{Float64,2}:
+	 3.0  2.0  1.0
+	 4.0  5.0  6.0
+	 9.0  7.0  8.0
+	 5.0  2.0  8.0
+	
+	julia> qn = normalizeQuantiles(sa)
+	4x3 SharedArray{Float64,2}:
+	 2.0  3.0  2.0
+	 4.0  6.0  4.0
+	 8.0  8.0  7.0
+	 6.0  3.0  7.0
  
 ## Behaviour of function 'normalizeQuantiles'
 
@@ -172,7 +220,7 @@ This is quantile normalization without a reference column.
 
 The function 'normalizeQuantiles' always returns an array of equal dimension as the input matrix and of type `Array{Float}` or `Array{Nullable{Float}}`.
 
-`NA` values are of type `Nullable{Float}` and are treated as random missing values and the result value will be `Nullable{Float}` again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. See "Remarks on data with `NA`" below.
+`NA` values are of type `Nullable{Float}` and are treated as random missing values and the result value will be `Nullable{Float}` again. See "Remarks on data with `NA`" below.
 
 `Float` can be `Float64` or `Float32` depending on your environment
 
@@ -180,7 +228,7 @@ The function 'normalizeQuantiles' always returns an array of equal dimension as 
 
 The function `normalizeQuantiles` always returns a `DataArray` of equal dimension as the input matrix.
 
-`NA` values are treated as random missing values and the result value will be `NA` again. Because of this expected randomness the function returns varying results on successive calls with the same array containing `NA` values. 
+`NA` values are treated as random missing values and the result value will be `NA` again. See "Remarks on data with `NA`" below.
 	
 ## Data prerequisites
 
@@ -201,22 +249,22 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 	julia> r=randn((1000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 0.008827794 seconds (7270064 bytes allocated)
+	elapsed time: 0.021892844 seconds (6432744 bytes allocated)
 	
 	julia> r=randn((10000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	elapsed time: 0.158171015 seconds (128127184 bytes allocated, 43.12% gc time)
+	elapsed time: 0.307518666 seconds (64381344 bytes allocated, 32.34% gc time)
 	
 	julia> r=randn((1000,100));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 0.092005873 seconds (58145024 bytes allocated, 46.90% gc time)
+	elapsed time: 0.127257423 seconds (49638624 bytes allocated, 33.66% gc time)
 	
 	julia> r=randn((100000,10));
 	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	elapsed time: 2.815940259 seconds (6905248304 bytes allocated, 28.01% gc time)
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	elapsed time: 2.527081368 seconds (637277984 bytes allocated, 23.32% gc time)
 
 #### julia version 0.4:
 
@@ -225,70 +273,27 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 	julia> r=randn((1000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	  0.002710 seconds (13.35 k allocations: 5.106 MB)
+	  0.004806 seconds (13.39 k allocations: 4.605 MB)
 	
 	julia> r=randn((10000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	  0.044568 seconds (148.46 k allocations: 104.682 MB, 20.59% gc time)
+	  0.055855 seconds (148.48 k allocations: 46.976 MB, 10.61% gc time)
 	
 	julia> r=randn((1000,100));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	  0.024416 seconds (19.96 k allocations: 46.611 MB, 13.98% gc time)
+	  0.032935 seconds (20.36 k allocations: 41.598 MB, 11.14% gc time)
 	  
 	julia> r=randn((100000,10));
 	
 	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	  1.979233 seconds (1.50 M allocations: 6.261 GB, 26.02% gc time)
+	  0.556000 seconds (1.50 M allocations: 464.510 MB, 8.81% gc time)
 
 ## Remarks on data with `NA`
 
-Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we distribute the given number of `NA` randomly back into the sorted list of values for each column before calculating the mean of the rows. Therefore successive calls of normalizeQuantiles will give different results. On large datasets with small number of `NA` these difference should be marginal.
+Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we put any given `NA` back into the sorted column at the original position before calculating the mean of the rows.
 
-You can avoid varying results by seeding the random generator using `srand(...)`. See following example for julia 0.3:
-
-	julia> using NormalizeQuantiles
-	julia> using DataArrays
-	
-	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> dataarray = DataArray(array)
-	julia> column = 2
-	julia> row = 3
-	julia> dataarray = DataArray(array)
-	julia> dataarray[row,column]=NA
-
-Varying results:
-
-	julia> qn = normalizeQuantiles(dataarray)
-	4x3 DataArrays.DataArray{Float64,2}:
-     2.0      3.5      2.0
-     5.0      7.33333  5.0
-     7.33333   NA      6.16667
-     5.0      3.5      6.16667
-
-	julia> qn = normalizeQuantiles(dataarray)
-	4x3 DataArrays.DataArray{Float64,2}:
-     2.0  3.0  2.0
-     4.0  6.0  4.0
-     8.5   NA  7.25
-     6.0  3.0  7.25
-
-Stable results:
-	 
-	julia> srand(0);qn = normalizeQuantiles(dataarray)
-	4x3 DataArrays.DataArray{Float64,2}:
-     2.0      4.5      2.0
-     4.0      7.33333  4.0
-     7.33333   NA      6.16667
-     5.0      4.5      6.16667
-
-	julia> srand(0);qn = normalizeQuantiles(dataarray)
-	4x3 DataArrays.DataArray{Float64,2}:
-     2.0      4.5      2.0
-     4.0      7.33333  4.0
-     7.33333   NA      6.16667
-     5.0      4.5      6.16667
 
 
 

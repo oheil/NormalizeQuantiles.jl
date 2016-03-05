@@ -1,7 +1,9 @@
 module NormalizeQuantiles
 
 export normalizeQuantiles
-#export normalizeQuantilesMultiCore
+
+export sampleRanks
+export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
 if isa(1.0,Float64)
 	"Float is a type alias to Float64"
@@ -14,7 +16,11 @@ end
 if VERSION < v"0.4.0-"
 	macro doc(string)
 	end
+	macro enum(x...)
+	end
 end # if VERSION < v"0.4.0-"
+
+@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
 if VERSION >= v"0.4.0-"
 
@@ -26,12 +32,6 @@ Method for input type Array{Float}
 function normalizeQuantiles(matrix::Array{Float})
     damatrix=Array{Nullable{Float}}(matrix)
     r=normalizeQuantiles(damatrix)
-	convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
-end
-
-function normalizeQuantilesMultiCore(matrix::Array{Float})
-    damatrix=Array{Nullable{Float}}(matrix)
-    r=normalizeQuantilesMultiCore(damatrix)
 	convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
@@ -97,8 +97,8 @@ function normalizeQuantiles(matrix::Array{Nullable{Float}})
 	# preparing the result matrix
     qnmatrix=Array{Nullable{Float}}((nrows,ncols))
 	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
-		sortColumns(matrix,qnmatrix,ncols)
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
+		sortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		meanRows(qnmatrix,nrows)
 		# foreach column: equal values in original column should all be mean of normalized values
@@ -109,8 +109,9 @@ function normalizeQuantiles(matrix::Array{Nullable{Float}})
 end
 
 @doc "
-### qnmatrix::Array{Nullable{Float}} function normalizeQuantilesMultiCore(matrix::Array{Nullable{Float}})
-Make use of multiple cores
+### qnmatrix::SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})
+
+Quantile normalization using multiple cores (see ?normalizeQuantiles)
 
 Example:
 
@@ -121,17 +122,21 @@ Example:
     array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 
     a = Array{Nullable{Float64}}(array)
+	
+	sa = SharedArray(Nullable{Float64},(size(a,1),size(a,2)))
+	
+	sa[:]=a[:]
 
-    qn = normalizeQuantilesMultiCore(a)
+    qn = normalizeQuantiles(sa)
 
 " ->
-function normalizeQuantilesMultiCore(matrix::Array{Nullable{Float}})
+function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=Array{Nullable{Float}}((nrows,ncols))
+    qnmatrix=SharedArray(Nullable{Float},(nrows,ncols))
 	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		multicoreMeanRows(qnmatrix,nrows,ncols)
@@ -148,8 +153,8 @@ function Old_normalizeQuantiles(matrix::Array{Nullable{Float}})
 	# preparing the result matrix
     qnmatrix=Array{Nullable{Float}}((nrows,ncols))
 	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
-		sortColumns(matrix,qnmatrix,ncols)
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
+		sortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		meanRows(qnmatrix,nrows)
 		# foreach column: equal values in original column should all be mean of normalized values
@@ -160,71 +165,45 @@ function Old_normalizeQuantiles(matrix::Array{Nullable{Float}})
     qnmatrix
 end
 
-function sortColumns(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},ncols)
+function sortColumns(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
 		sortcol=[Float(get(x)) for x in sortcol]
 		sort!(sortcol)
 		sortcol=Array{Nullable{Float}}(sortcol)
-		nacount=sum(!indices)
-		for n = 1:nacount
-			lcol=length(sortcol)
-			if lcol==0
-				napos=1
+		naindices=(1:nrows)[!indices]
+		empty=sum(indices)==0
+		for napos in naindices
+			if empty
+				empty = false
 				sortcol=Array{Nullable{Float}}([Nullable{Float}()])
 			else
-				napos=rand(1:(lcol+1))
-				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:lcol])
+				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:end])
 			end
 		end
 		qnmatrix[:,column]=sortcol
 	end
 end
 
-function sortSubsetCol(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
-	for column = 1:ncols
+function multicoreSortColumns(matrix::SharedArray{Nullable{Float}},qnmatrix::SharedArray{Nullable{Float}},nrows,ncols)
+	@sync @parallel for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
 		sortcol=[Float(get(x)) for x in sortcol]
 		sort!(sortcol)
 		sortcol=Array{Nullable{Float}}(sortcol)
-		nacount=sum(!indices)
-		for n = 1:nacount
-			lcol=length(sortcol)
-			if lcol==0
-				napos=1
+		naindices=(1:nrows)[!indices]
+		empty=sum(indices)==0
+		for napos in naindices
+			if empty
+				empty = false
 				sortcol=Array{Nullable{Float}}([Nullable{Float}()])
 			else
-				napos=rand(1:(lcol+1))
-				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:lcol])
+				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:end])
 			end
 		end
 		qnmatrix[:,column]=sortcol
-	end
-	qnmatrix
-end
-
-function multicoreSortColumns(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
-	np=nprocs()
-	step=cld(ncols,nworkers())
-	col=1
-	nextidx()=(idx=col; col+=step; idx)
-	@sync begin
-		for p=1:np
-			if p != myid() || np == 1
-				@async begin
-					while true
-						idx=nextidx()
-						if idx > ncols
-							break
-						end
-						idx+step-1>ncols?step=ncols+1-idx:false
-						qnmatrix[:,idx:(idx+step-1)]=remotecall_fetch(p,(args)->sortSubsetCol(args...),Any[matrix[:,idx:(idx+step-1)],qnmatrix[:,idx:(idx+step-1)],nrows,step])
-					end
-				end
-			end
-		end
 	end
 end
 
@@ -238,37 +217,13 @@ function meanRows(qnmatrix::Array{Nullable{Float}},nrows)
 	end
 end
 
-function meanSubsetRows(qnmatrix::Array{Nullable{Float}},nrows,ncols)
-	for row = 1:nrows
+function multicoreMeanRows(qnmatrix::SharedArray{Nullable{Float}},nrows,ncols)
+	@sync @parallel for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
 		nacount=sum(!indices)
 		rowmean=mean([Float(get(x)) for x in qnmatrix[row,indices]])
 		qnmatrix[row,:]=Nullable{Float}(rowmean)
 		nacount>0?qnmatrix[row,!indices]=Nullable{Float}():false
-	end
-	qnmatrix
-end
-
-function multicoreMeanRows(qnmatrix::Array{Nullable{Float}},nrows,ncols)
-	np=nprocs()
-	step=cld(nrows,nworkers())
-	row=1
-	nextidx()=(idx=row; row+=step; idx)
-	@sync begin
-		for p=1:np
-			if p != myid() || np == 1
-				@async begin
-					while true
-						idx=nextidx()
-						if idx > nrows
-							break
-						end
-						idx+step-1>nrows?step=nrows+1-idx:false
-						qnmatrix[idx:(idx+step-1),:]=remotecall_fetch(p,(args)->meanSubsetRows(args...),Any[qnmatrix[idx:(idx+step-1),:],step,ncols])
-					end
-				end
-			end
-		end
 	end
 end
 
@@ -314,48 +269,28 @@ function orderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable
 	end
 end
 
-function equalValuesInSubsetColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
-	for column = 1:ncols
+function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Nullable{Float}},qnmatrix::SharedArray{Nullable{Float}},nrows,ncols)
+	@sync @parallel for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
-			allranks=falses((length(indices),round(Int,nrows/2)))
+			#allranks=falses((length(indices),round(Int,nrows/2)))
+			allranks=Dict{Int,Array{Int}}()
+			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			indices3=(1:nrows)[indices2]
+			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
+				#qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
+				rankIndices=unique(allranks[i])
+				qnmatrix[rankIndices,column]=mean([ get(x) for x in qnmatrix[rankIndices,column] ])
 			end
 		end
 		qncol=Array{Nullable{Float}}(nrows,1)
 		fill!(qncol,Nullable{Float}())
 		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
 		qnmatrix[:,column]=qncol
-	end
-	qnmatrix
-end
-
-function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
-	np=nprocs()
-	step=cld(ncols,nworkers())
-	col=1
-	nextidx()=(idx=col; col+=step; idx)
-	@sync begin
-		for p=1:np
-			if p != myid() || np == 1
-				@async begin
-					while true
-						idx=nextidx()
-						if idx > ncols
-							break
-						end
-						idx+step-1>ncols?step=ncols+1-idx:false
-						qnmatrix[:,idx:(idx+step-1)]=remotecall_fetch(p,(args)->equalValuesInSubsetColumnAndOrderToOriginal(args...),Any[matrix[:,idx:(idx+step-1)],qnmatrix[:,idx:(idx+step-1)],nrows,step])
-					end
-				end
-			end
-		end
 	end
 end
 
@@ -366,11 +301,15 @@ function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qn
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
-			allranks=falses((length(indices),round(Int,nrows/2)))
+			#allranks=falses((length(indices),round(Int,nrows/2)))
+			allranks=Dict{Int,Array{Int}}()
+			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			indices3=(1:nrows)[indices2]
+			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
+				#qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
+				rankIndices=unique(allranks[i])
+				qnmatrix[rankIndices,column]=mean([ get(x) for x in qnmatrix[rankIndices,column] ])
 			end
 		end
 		qncol=Array{Nullable{Float}}(nrows,1)
@@ -380,7 +319,7 @@ function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qn
 	end
 end
 
-function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::BitArray,indices::Array{Bool})
+function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
 	rankColumns=0
 	nrows=length(sortedArrayNoNAs)
 	lastvalue=sortedArrayNoNAs[1]
@@ -389,8 +328,13 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::BitArr
 	for i in 2:nrows
 		nextvalue=sortedArrayNoNAs[i]
 		if !isnull(nextvalue) && !isnull(lastvalue) && get(nextvalue)==get(lastvalue)
-			allranks[indices2[i-1],rankColumns+1]=true
-			allranks[indices2[i],rankColumns+1]=true
+			#allranks[indices2[i-1],rankColumns+1]=true
+			#allranks[indices2[i],rankColumns+1]=true
+			if haskey(allranks,rankColumns+1)
+				allranks[rankColumns+1]=vcat(allranks[rankColumns+1],Array{Int}([indices2[i-1],indices2[i]]))
+			else
+				allranks[rankColumns+1]=Array{Int}([indices2[i-1],indices2[i]])
+			end
 			count+=1
 		else
 			if count>1
@@ -406,6 +350,82 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::BitArr
 	rankColumns
 end
 
+function sampleRanks(array::Array{Nullable{Float}},resultMatrix=false,naIncreasesRank=false,tiesMethod::qnTiesMethods=tmMin)
+	nrows=length(array)
+	indices=[ !isnull(x) for x in array ]
+	reducedArray=[ Float(get(x)) for x in array[indices] ]
+	sortp=sortperm(reducedArray)
+	result=Array{Nullable{Int}}(nrows)
+	result[:]=Nullable{Int}()
+	#resultMatrix?rankMatrix=falses((nrows,nrows)):rankMatrix=null
+	#spRankMatrix=sparse([nrows],[nrows],[false])
+	resultMatrix?begin rankMatrix=Dict{Int,Array{Int}}();sizehint!(rankMatrix,nrows) end:rankMatrix=null
+	indices2=(1:nrows)[indices][sortp]
+	rank=1
+	narank=0
+	lastvalue=reducedArray[sortp[1]]
+	ties=Array{Int}(0)
+	tieIndices=Array{Int}(0)
+	tiesCount=0
+	index=1
+	for i in 1:(nrows+1)
+		last=i>nrows
+		if !last 
+			newvalue=reducedArray[sortp[index]]
+		end
+		if !last && !indices[i]
+			if naIncreasesRank
+				rank+=1
+				tiesCount>0?narank+=1:false
+			end
+		else
+			if last || newvalue != lastvalue
+				if tiesMethod==tmMin
+					ties[:]=minimum(ties)
+					rank=ties[end]+narank+1
+				elseif tiesMethod==tmMax
+					ties[:]=maximum(ties)
+					rank=ties[end]+narank+1
+				elseif tiesMethod==tmReverse
+					ties=flipdim(ties,1)
+					rank=ties[1]+narank+1
+				elseif tiesMethod==tmRandom
+					rank=ties[end]+narank+1
+					ties=ties[randperm(tiesCount)]
+				elseif tiesMethod==tmAverage
+					ties[:]=round(Int,mean(ties))
+					rank=ties[end]+narank+1
+				end
+				narank=0
+				for j in 1:tiesCount
+					if resultMatrix
+						#rankMatrix[tieIndices[j],ties[j]]=true
+						#spRankMatrix[tieIndices[j],ties[j]]=true
+						if haskey(rankMatrix,ties[j])
+							rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
+						else
+							rankMatrix[ties[j]]=Array{Int}([tieIndices[j]])
+						end
+					end
+					result[tieIndices[j]]=ties[j]
+				end
+				ties=Array{Int}(0)
+				tieIndices=Array{Int}(0)
+				tiesCount=0
+			end
+			if !last
+				tieIndices=vcat(tieIndices,Array{Int}([indices2[index]]))
+				ties=vcat(ties,Array{Int}([rank]))
+				tiesCount+=1
+				rank+=1
+				lastvalue=newvalue
+				index+=1
+			end
+		end
+	end
+	(result,rankMatrix)
+end
+
 end # if VERSION >= v"0.4.0-"
 
 if VERSION < v"0.4.0-"
@@ -418,12 +438,6 @@ using DataArrays
 Method for input type Array{Float}
 """
 function normalizeQuantiles(matrix::Array{Float})
-    damatrix=DataArray(matrix)
-    r=normalizeQuantiles(damatrix)
-	convert(Array{Float},reshape([r[i] for i=1:length(r)],size(r)))
-end
-
-function normalizeQuantilesMultiCore(matrix::Array{Float})
     damatrix=DataArray(matrix)
     r=normalizeQuantiles(damatrix)
 	convert(Array{Float},reshape([r[i] for i=1:length(r)],size(r)))
@@ -492,7 +506,7 @@ function normalizeQuantiles(matrix::DataArray{Float})
 	# preparing the result matrix
     qnmatrix=DataArray(Float,(nrows,ncols))
 	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		meanRows(qnmatrix,nrows,ncols)
@@ -504,28 +518,32 @@ function normalizeQuantiles(matrix::DataArray{Float})
 end
 
 """
-### qnmatrix::DataArray{Float} function normalizeQuantilesMultiCore(matrix::DataArray{Float})
-Make use of multiple cores
+### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})
+
+Quantile normalization using of multiple cores (see ?normalizeQuantiles)
+
 Example:
 
-	addprocs(4)
+	addprocs()
 	
 	using NormalizeQuantiles
 	
-    array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+    a = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 
-    da = DataArray(array)
+	sa = SharedArray(Float64,(size(a,1),size(a,2)))
+	
+	sa[:]=a[:]
 
-    qn = normalizeQuantilesMultiCore(da)
+    qn = normalizeQuantilesMultiCore(sa)
 
 """
-function normalizeQuantilesMultiCore(matrix::DataArray{Float})
+function normalizeQuantiles(matrix::SharedArray{Float})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=DataArray(Float,(nrows,ncols))
+    qnmatrix=SharedArray(Float,(nrows,ncols))
 	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		multicoreMeanRows(qnmatrix,nrows,ncols)
@@ -542,7 +560,7 @@ function OLD_normalizeQuantiles(matrix::DataArray{Float})
 	# preparing the result matrix
     qnmatrix=DataArray(Float,(nrows,ncols))
 	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; randomly distribute NAs (if any) into sorted list
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		meanRows(qnmatrix,nrows,ncols)
@@ -556,67 +574,28 @@ end
 
 function sortColumns(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
 	for column = 1:ncols
-		sortp=sortperm(vec(matrix[:,column]))
-		naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
-		nacount=sum(naindices)
-		sortcol=matrix[:,column][sortp[!naindices]]
-		for n = 1:nacount
-			lcol=length(sortcol)
-			if lcol==0
-				napos=1
-				sortcol=DataArray([1.0])
+		indices=[ !isa(x,NAtype) for x in vec(matrix[:,column]) ]
+		sortcol=vec(matrix[:,column])[indices]
+		sort!(sortcol)
+		naindices=(1:nrows)[!indices]
+		empty=sum(indices)==0
+		for napos in naindices
+			if empty
+				empty = false
+				sortcol=[NA]
 			else
-				napos=rand(1:(lcol+1))
-				sortcol=vcat(sortcol[1:napos-1],1.0,sortcol[napos:lcol])
+				sortcol=vcat(sortcol[1:napos-1],NA,sortcol[napos:end])
 			end
-			sortcol[napos]=NA
 		end
 		qnmatrix[:,column]=sortcol
 	end
 end
 
-function sortSubsetCol(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
-	for column = 1:ncols
+function multicoreSortColumns(matrix::SharedArray{Float},qnmatrix::SharedArray{Float},nrows,ncols)
+	@sync @parallel for column = 1:ncols
 		sortp=sortperm(vec(matrix[:,column]))
-		naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
-		nacount=sum(naindices)
-		sortcol=matrix[:,column][sortp[!naindices]]
-		for n = 1:nacount
-			lcol=length(sortcol)
-			if lcol==0
-				napos=1
-				sortcol=DataArray([1.0])
-			else
-				napos=rand(1:(lcol+1))
-				sortcol=vcat(sortcol[1:napos-1],1.0,sortcol[napos:lcol])
-			end
-			sortcol[napos]=NA
-		end
+		sortcol=matrix[:,column][sortp]
 		qnmatrix[:,column]=sortcol
-	end
-	qnmatrix
-end
-
-function multicoreSortColumns(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
-	np=nprocs()
-	step=convert(Int,floor(ncols,nworkers())+1)
-	col=1
-	nextidx()=(idx=col; col+=step; idx)
-	@sync begin
-		for p=1:np
-			if p != myid() || np == 1
-				@async begin
-					while true
-						idx=nextidx()
-						if idx > ncols
-							break
-						end
-						idx+step-1>ncols?step=ncols+1-idx:false
-						qnmatrix[:,idx:(idx+step-1)]=remotecall_fetch(p,(args)->sortSubsetCol(args...),Any[matrix[:,idx:(idx+step-1)],qnmatrix[:,idx:(idx+step-1)],nrows,step])
-					end
-				end
-			end
-		end
 	end
 end
 
@@ -631,38 +610,10 @@ function meanRows(qnmatrix::DataArray{Float},nrows,ncols)
 	end
 end
 
-function meanSubsetRows(qnmatrix::DataArray{Float},nrows,ncols)
-	for row = 1:nrows
-		naindices=[ isa(x,NAtype) for x in qnmatrix[row,:] ]
-		nacount=sum(naindices)
-		indices=(1:ncols)[!naindices]
-		naindices=(1:ncols)[naindices]
+function multicoreMeanRows(qnmatrix::SharedArray{Float},nrows,ncols)
+	@sync @parallel for row = 1:nrows
+		indices=(1:ncols)
 		qnmatrix[row,:]=mean(qnmatrix[row,:][indices])
-		nacount>0?qnmatrix[row,naindices]=NA:false
-	end
-	qnmatrix
-end
-
-function multicoreMeanRows(qnmatrix::DataArray{Float},nrows,ncols)
-	np=nprocs()
-	step=convert(Int,floor(nrows,nworkers())+1)
-	row=1
-	nextidx()=(idx=row; row+=step; idx)
-	@sync begin
-		for p=1:np
-			if p != myid() || np == 1
-				@async begin
-					while true
-						idx=nextidx()
-						if idx > nrows
-							break
-						end
-						idx+step-1>nrows?step=nrows+1-idx:false
-						qnmatrix[idx:(idx+step-1),:]=remotecall_fetch(p,(args)->meanSubsetRows(args...),Any[qnmatrix[idx:(idx+step-1),:],step,ncols])
-					end
-				end
-			end
-		end
 	end
 end
 
@@ -712,48 +663,27 @@ function orderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nro
 	end
 end
 
-function equalValuesInSubsetColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
-	for column = 1:ncols
-		indices=[ !isa(x,NAtype) for x in matrix[:,column] ]
+function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Float},qnmatrix::SharedArray{Float},nrows,ncols)
+	@sync @parallel for column = 1:ncols
+		indices=[ true for x in matrix[:,column] ]
 		sortp=matrix[:,column][indices]
 		sortp=sortperm(sortp)
-		indices2=[ !isa(x,NAtype) for x in qnmatrix[:,column] ]
+		indices2=[ true for x in qnmatrix[:,column] ]
 		if length(matrix[:,column][indices][sortp])>0
-			allranks=falses((length(indices),round(Int,nrows/2)))
+			#allranks=falses((length(indices),round(Int,nrows/2)))
+			allranks=Dict{Int,Array{Int}}()
+			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			indices3=(1:nrows)[indices2]
+			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
+				#qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
+				rankIndices=unique(allranks[i])
+				qnmatrix[rankIndices,column]=mean(qnmatrix[rankIndices,column])
 			end
 		end
 		qncol=vec(qnmatrix[:,column])
-		fill!(qncol,NA)
 		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
 		qnmatrix[:,column]=qncol
-	end
-	qnmatrix
-end
-
-function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
-	np=nprocs()
-	step=convert(Int,floor(ncols,nworkers())+1)
-	col=1
-	nextidx()=(idx=col; col+=step; idx)
-	@sync begin
-		for p=1:np
-			if p != myid() || np == 1
-				@async begin
-					while true
-						idx=nextidx()
-						if idx > ncols
-							break
-						end
-						idx+step-1>ncols?step=ncols+1-idx:false
-						qnmatrix[:,idx:(idx+step-1)]=remotecall_fetch(p,(args)->equalValuesInSubsetColumnAndOrderToOriginal(args...),Any[matrix[:,idx:(idx+step-1)],qnmatrix[:,idx:(idx+step-1)],nrows,step])
-					end
-				end
-			end
-		end
 	end
 end
 
@@ -764,11 +694,15 @@ function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix
 		sortp=sortperm(sortp)
 		indices2=[ !isa(x,NAtype) for x in qnmatrix[:,column] ]
 		if length(matrix[:,column][indices][sortp])>0
-			allranks=falses((length(indices),round(Int,nrows/2)))
+			#allranks=falses((length(indices),round(Int,nrows/2)))
+			allranks=Dict{Int,Array{Int}}()
+			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			indices3=(1:nrows)[indices2]
+			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
+				#qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
+				rankIndices=unique(allranks[i])
+				qnmatrix[rankIndices,column]=mean(qnmatrix[rankIndices,column])
 			end
 		end
 		qncol=vec(qnmatrix[:,column])
@@ -778,7 +712,38 @@ function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix
 	end
 end
 
-function getRankMatrix(sortedArrayNoNAs::DataArray{Float},allranks::BitArray,indices::Array{Bool})
+function getRankMatrix(sortedArrayNoNAs::Array{Float},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
+	rankColumns=0
+	nrows=length(sortedArrayNoNAs)
+	lastvalue=sortedArrayNoNAs[1]
+	indices2=(1:length(indices))[indices]
+	count=1
+	for i in 2:nrows
+		nextvalue=sortedArrayNoNAs[i]
+		if nextvalue==lastvalue
+			#allranks[indices2[i-1],rankColumns+1]=true
+			#allranks[indices2[i],rankColumns+1]=true
+			if haskey(allranks,rankColumns+1)
+				allranks[rankColumns+1]=vcat(allranks[rankColumns+1],[indices2[i-1],indices2[i]])
+			else
+				allranks[rankColumns+1]=[indices2[i-1],indices2[i]]
+			end			
+			count+=1
+		else
+			if count>1
+				rankColumns+=1
+			end
+			count=1
+		end
+		lastvalue=sortedArrayNoNAs[i]
+	end
+	if count>1
+		rankColumns+=1
+	end
+	rankColumns
+end
+
+function getRankMatrix(sortedArrayNoNAs::DataArray{Float},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
 	rankColumns=0
 	nrows=length(sortedArrayNoNAs)
 	lastvalue=sortedArrayNoNAs[1]
@@ -787,8 +752,13 @@ function getRankMatrix(sortedArrayNoNAs::DataArray{Float},allranks::BitArray,ind
 	for i in 2:nrows
 		nextvalue=sortedArrayNoNAs[i]
 		if !isa(nextvalue,NAtype) && !isa(lastvalue,NAtype) && nextvalue==lastvalue
-			allranks[indices2[i-1],rankColumns+1]=true
-			allranks[indices2[i],rankColumns+1]=true
+			#allranks[indices2[i-1],rankColumns+1]=true
+			#allranks[indices2[i],rankColumns+1]=true
+			if haskey(allranks,rankColumns+1)
+				allranks[rankColumns+1]=vcat(allranks[rankColumns+1],[indices2[i-1],indices2[i]])
+			else
+				allranks[rankColumns+1]=[indices2[i-1],indices2[i]]
+			end
 			count+=1
 		else
 			if count>1
