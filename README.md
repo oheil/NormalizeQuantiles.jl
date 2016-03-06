@@ -32,6 +32,8 @@ No dependencies
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
 
+The columns are now quantile normalized to each other.
+
 Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
 
 	julia> arrayWithNA = Array{Nullable{Float64}}(array)
@@ -218,7 +220,7 @@ This is quantile normalization without a reference column.
 
 #### For julia version >= 0.4:
 
-The function 'normalizeQuantiles' always returns an array of equal dimension as the input matrix and of type `Array{Float}` or `Array{Nullable{Float}}`.
+The function 'normalizeQuantiles' always returns a matrix of equal dimension as the input matrix and of type `Array{Float}` or `Array{Nullable{Float}}`. In case of Float-type input matrices 'normalizeQuantiles' returns the same type, in case of Int-type matrices the result matrix will be of the same except that the values will be Float, e.g. a `Array{Nullable{Int}}` will result in `Array{Nullable{Float}}`.
 
 `NA` values are of type `Nullable{Float}` and are treated as random missing values and the result value will be `Nullable{Float}` again. See "Remarks on data with `NA`" below.
 
