@@ -25,7 +25,7 @@ end # if VERSION < v"0.4.0-"
 if VERSION >= v"0.4.0-"
 
 @doc "
-### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Float})
+### qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})
 
 Method for input type Array{Float}
 " ->
@@ -36,7 +36,7 @@ function normalizeQuantiles(matrix::Array{Float})
 end
 
 @doc "
-### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Int})
+### qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Int})
 
 Method for input type Array{Int}
 " ->
@@ -106,6 +106,49 @@ function normalizeQuantiles(matrix::Array{Nullable{Float}})
 		equalValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
 	end
     qnmatrix
+end
+
+@doc "
+### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})
+
+Method for input type SharedArray{Float}
+" ->
+function normalizeQuantiles(matrix::SharedArray{Float})
+    nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
+	nullable[:]=matrix[:]
+    r=normalizeQuantiles(nullable)
+	nullable=null
+	ra=SharedArray(Float,(size(r,1),size(r,2)))
+	ra[:]=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
+	r=null
+	ra
+end
+
+@doc "
+### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})
+
+Method for input type SharedArray{Float}
+" ->
+function normalizeQuantiles(matrix::SharedArray{Int})
+    nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
+	nullable[:]=[ Float(x) for x in matrix ][:]
+    r=normalizeQuantiles(nullable)
+	nullable=null
+	ra=SharedArray(Float,(size(r,1),size(r,2)))
+	ra[:]=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
+	r=null
+	ra
+end
+
+@doc "
+### qnmatrix::SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
+
+Method for input type SharedArray{Float}
+" ->
+function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
+	nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
+	nullable[:]=matrix[:]
+	normalizeQuantiles(nullable)
 end
 
 @doc "
@@ -515,6 +558,17 @@ function normalizeQuantiles(matrix::DataArray{Float})
 		equalValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
 	end
     qnmatrix
+end
+
+"""
+### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})
+
+Method for input type SharedArray{Float}
+"""
+function normalizeQuantiles(matrix::SharedArray{Int})
+    sa=SharedArray(Float,(size(matrix,1),size(matrix,2)))
+	sa[:]=matrix[:]
+    normalizeQuantiles(sa)
 end
 
 """

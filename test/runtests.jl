@@ -61,6 +61,15 @@ qn=convert(Array{Float},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
 qn=normalizeQuantiles(testint)
 @test qn == testint
+sa=SharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
+sa[:]=testint[:]
+qn=normalizeQuantiles(sa)
+qn=convert(Array{Float},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
+@test qn == testint
+sa=SharedArray(Int,(size(testint,1),size(testint,2)));
+sa[:]=testint[:]
+qn=normalizeQuantiles(sa)
+
 
 dafloat=Array{Nullable{Float}}(testfloat)
 dafloat[2,2]=Nullable{Float}()
