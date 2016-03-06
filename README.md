@@ -5,13 +5,30 @@
 
 Package NormalizeQuantiles implements Quantile normalization.
 
+**Table of Contents**
+
+- [Dependencies](#dependencies)
+  - [julia version >= 0.4](#julia-version--04)
+  - [julia version 0.3](#julia-version-03)
+- [Usage examples](#usage-examples)
+  - [Example for julia version >= 0.4](#example-for-julia-version--04)
+  - [Multicore usage examples for julia version >= 0.4](#multicore-usage-examples-for-julia-version--04)
+  - [Example for julia version 0.3](#example-for-julia-version-03)
+  - [Multicore usage examples for julia version 0.3](#multicore-usage-examples-for-julia-version-03)
+- [Behaviour of function 'normalizeQuantiles'](#behaviour-of-function-normalizequantiles)
+  - [For julia version >= 0.4](#for-julia-version--04)
+  - [For julia version 0.3](#for-julia-version-03)
+- [Data prerequisites](#data-prerequisites)
+- [Remarks on performance](#remarks-on-performance)
+- [Remarks on data with `NA`](#remarks-on-data-with-na)
+
 ## Dependencies
 
 #### julia version >= 0.4
 
 No dependencies
 
-####  julia version 0.3
+#### julia version 0.3
 
 [DataArrays](https://github.com/JuliaStats/DataArrays.jl) ([StatsBase](https://github.com/JuliaStats/StatsBase.jl),[Compat](https://github.com/JuliaLang/Compat.jl),[Reexport](https://github.com/simonster/Reexport.jl))
 
