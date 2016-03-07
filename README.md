@@ -10,7 +10,7 @@ Package NormalizeQuantiles implements quantile normalization and provide a funct
 - [Dependencies](#dependencies)
   - [julia version >= 0.4](#julia-version--04)
   - [julia version 0.3](#julia-version-03)
-- [Usage examples `normalizeQuantiles`](#usage-examples)
+- [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
   - [Example for julia version >= 0.4](#example-for-julia-version--04)
   - [Multicore usage examples for julia version >= 0.4](#multicore-usage-examples-for-julia-version--04)
   - [Example for julia version 0.3](#example-for-julia-version-03)
@@ -19,6 +19,7 @@ Package NormalizeQuantiles implements quantile normalization and provide a funct
   - [For julia version >= 0.4](#for-julia-version--04)
   - [For julia version 0.3](#for-julia-version-03)
 - [Data prerequisites](#data-prerequisites)
+- [Usage examples `sampleRanks`](#usage-examples-sampleranks)
 - [Remarks on performance](#remarks-on-performance)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
 
@@ -256,6 +257,11 @@ To use quantile normalization your data should have the following properties:
 * the distribution of values in each column should be similar
 * number of values for each column should be large
 * number of `NA` in the data should be small and of random nature
+
+## Usage examples `sampleRanks`
+
+
+
 
 ## Remarks on performance
 
