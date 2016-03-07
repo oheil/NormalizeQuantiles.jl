@@ -261,6 +261,7 @@ To use quantile normalization your data should have the following properties:
 ## Usage examples `sampleRanks`
 
 
+Description TODO here
 
 
 ## Remarks on performance
