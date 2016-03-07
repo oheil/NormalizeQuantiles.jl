@@ -15,7 +15,7 @@ Package NormalizeQuantiles implements quantile normalization and provide a funct
   - [Multicore usage examples for julia version >= 0.4](#multicore-usage-examples-for-julia-version--04)
   - [Example for julia version 0.3](#example-for-julia-version-03)
   - [Multicore usage examples for julia version 0.3](#multicore-usage-examples-for-julia-version-03)
-- [Behaviour of function 'normalizeQuantiles'](#behaviour-of-function-normalizequantiles)
+- [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
   - [For julia version >= 0.4](#for-julia-version--04)
   - [For julia version 0.3](#for-julia-version-03)
 - [Data prerequisites](#data-prerequisites)
