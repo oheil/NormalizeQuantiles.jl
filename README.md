@@ -268,7 +268,7 @@ To use quantile normalization your data should have the following properties:
 	
 	julia> a = [ 5.0 2.0 4.0 3.0 1.0 ];
 	
-	julia> (r,m)=sampleRanks(a);
+	julia> (r,m)=sampleRanks(a);   # here only return value r is relevant, for m see below
 	
 	julia> r
 	5-element Array{Int64,1}:
