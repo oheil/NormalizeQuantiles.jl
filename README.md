@@ -3,14 +3,14 @@
 [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/24mlc8g1x65a57h7?svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl)
 
-Package NormalizeQuantiles implements quantile normalization.
+Package NormalizeQuantiles implements quantile normalization and provide a function (julia>=0.4) to calculate sample ranks of a given vector.
 
 **Table of Contents**
 
 - [Dependencies](#dependencies)
   - [julia version >= 0.4](#julia-version--04)
   - [julia version 0.3](#julia-version-03)
-- [Usage examples](#usage-examples)
+- [Usage examples `normalizeQuantiles`](#usage-examples)
   - [Example for julia version >= 0.4](#example-for-julia-version--04)
   - [Multicore usage examples for julia version >= 0.4](#multicore-usage-examples-for-julia-version--04)
   - [Example for julia version 0.3](#example-for-julia-version-03)
@@ -32,7 +32,7 @@ No dependencies
 
 [DataArrays](https://github.com/JuliaStats/DataArrays.jl) ([StatsBase](https://github.com/JuliaStats/StatsBase.jl),[Compat](https://github.com/JuliaLang/Compat.jl),[Reexport](https://github.com/simonster/Reexport.jl))
 
-## Usage examples
+## Usage examples `normalizeQuantiles`
  
 #### Example for julia version >= 0.4
 

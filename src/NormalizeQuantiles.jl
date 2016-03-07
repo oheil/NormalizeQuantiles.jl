@@ -127,7 +127,7 @@ end
 @doc "
 ### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})
 
-Method for input type SharedArray{Float}
+Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Int})
     nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
@@ -143,7 +143,7 @@ end
 @doc "
 ### qnmatrix::SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
 
-Method for input type SharedArray{Float}
+Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
 	nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
@@ -319,13 +319,10 @@ function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Null
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
-			#allranks=falses((length(indices),round(Int,nrows/2)))
 			allranks=Dict{Int,Array{Int}}()
 			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				#qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
 				rankIndices=unique(allranks[i])
 				qnmatrix[rankIndices,column]=mean([ get(x) for x in qnmatrix[rankIndices,column] ])
 			end
@@ -344,13 +341,10 @@ function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qn
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
-			#allranks=falses((length(indices),round(Int,nrows/2)))
 			allranks=Dict{Int,Array{Int}}()
 			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				#qnmatrix[indices3[allranks[indices,i]],column]=mean([ get(x) for x in qnmatrix[indices3[allranks[indices,i]],column] ])
 				rankIndices=unique(allranks[i])
 				qnmatrix[rankIndices,column]=mean([ get(x) for x in qnmatrix[rankIndices,column] ])
 			end
@@ -371,8 +365,6 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{I
 	for i in 2:nrows
 		nextvalue=sortedArrayNoNAs[i]
 		if !isnull(nextvalue) && !isnull(lastvalue) && get(nextvalue)==get(lastvalue)
-			#allranks[indices2[i-1],rankColumns+1]=true
-			#allranks[indices2[i],rankColumns+1]=true
 			if haskey(allranks,rankColumns+1)
 				allranks[rankColumns+1]=vcat(allranks[rankColumns+1],Array{Int}([indices2[i-1],indices2[i]]))
 			else
@@ -393,15 +385,13 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{I
 	rankColumns
 end
 
-function sampleRanks(array::Array{Nullable{Float}},resultMatrix=false,naIncreasesRank=false,tiesMethod::qnTiesMethods=tmMin)
+function sampleRanks(array::Array{Nullable{Float}},naIncreasesRank=false,tiesMethod::qnTiesMethods=tmMin,resultMatrix=false)
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
 	reducedArray=[ Float(get(x)) for x in array[indices] ]
 	sortp=sortperm(reducedArray)
 	result=Array{Nullable{Int}}(nrows)
 	result[:]=Nullable{Int}()
-	#resultMatrix?rankMatrix=falses((nrows,nrows)):rankMatrix=null
-	#spRankMatrix=sparse([nrows],[nrows],[false])
 	resultMatrix?begin rankMatrix=Dict{Int,Array{Int}}();sizehint!(rankMatrix,nrows) end:rankMatrix=null
 	indices2=(1:nrows)[indices][sortp]
 	rank=1
@@ -442,8 +432,6 @@ function sampleRanks(array::Array{Nullable{Float}},resultMatrix=false,naIncrease
 				narank=0
 				for j in 1:tiesCount
 					if resultMatrix
-						#rankMatrix[tieIndices[j],ties[j]]=true
-						#spRankMatrix[tieIndices[j],ties[j]]=true
 						if haskey(rankMatrix,ties[j])
 							rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
 						else
@@ -563,7 +551,7 @@ end
 """
 ### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})
 
-Method for input type SharedArray{Float}
+Method for input type SharedArray{Int}
 """
 function normalizeQuantiles(matrix::SharedArray{Int})
     sa=SharedArray(Float,(size(matrix,1),size(matrix,2)))
@@ -724,13 +712,10 @@ function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Floa
 		sortp=sortperm(sortp)
 		indices2=[ true for x in qnmatrix[:,column] ]
 		if length(matrix[:,column][indices][sortp])>0
-			#allranks=falses((length(indices),round(Int,nrows/2)))
 			allranks=Dict{Int,Array{Int}}()
 			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				#qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
 				rankIndices=unique(allranks[i])
 				qnmatrix[rankIndices,column]=mean(qnmatrix[rankIndices,column])
 			end
@@ -748,13 +733,10 @@ function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix
 		sortp=sortperm(sortp)
 		indices2=[ !isa(x,NAtype) for x in qnmatrix[:,column] ]
 		if length(matrix[:,column][indices][sortp])>0
-			#allranks=falses((length(indices),round(Int,nrows/2)))
 			allranks=Dict{Int,Array{Int}}()
 			sizehint!(allranks,nrows)
 			rankColumns=getRankMatrix(matrix[:,column][indices][sortp],allranks,indices)
-			#indices3=(1:nrows)[indices2]
 			for i in 1:rankColumns
-				#qnmatrix[indices3[allranks[indices,i]],column]=mean(qnmatrix[indices3[allranks[indices,i]],column])
 				rankIndices=unique(allranks[i])
 				qnmatrix[rankIndices,column]=mean(qnmatrix[rankIndices,column])
 			end
@@ -775,8 +757,6 @@ function getRankMatrix(sortedArrayNoNAs::Array{Float},allranks::Dict{Int,Array{I
 	for i in 2:nrows
 		nextvalue=sortedArrayNoNAs[i]
 		if nextvalue==lastvalue
-			#allranks[indices2[i-1],rankColumns+1]=true
-			#allranks[indices2[i],rankColumns+1]=true
 			if haskey(allranks,rankColumns+1)
 				allranks[rankColumns+1]=vcat(allranks[rankColumns+1],[indices2[i-1],indices2[i]])
 			else
@@ -806,8 +786,6 @@ function getRankMatrix(sortedArrayNoNAs::DataArray{Float},allranks::Dict{Int,Arr
 	for i in 2:nrows
 		nextvalue=sortedArrayNoNAs[i]
 		if !isa(nextvalue,NAtype) && !isa(lastvalue,NAtype) && nextvalue==lastvalue
-			#allranks[indices2[i-1],rankColumns+1]=true
-			#allranks[indices2[i],rankColumns+1]=true
 			if haskey(allranks,rankColumns+1)
 				allranks[rankColumns+1]=vcat(allranks[rankColumns+1],[indices2[i-1],indices2[i]])
 			else
