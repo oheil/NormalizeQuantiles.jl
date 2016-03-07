@@ -385,6 +385,21 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{I
 	rankColumns
 end
 
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
+function sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float}}(Array{Float}(array))
+	(rn,m)=sampleRanks(nullable,tiesMethod,naIncreasesRank,resultMatrix)
+	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
+	(r,m)
+end
+
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
 function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nullable=Array{Nullable{Float}}(array)
 	(rn,m)=sampleRanks(nullable,tiesMethod,naIncreasesRank,resultMatrix)
@@ -392,6 +407,37 @@ function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncre
 	(r,m)
 end
 
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+Calculate ranks of the values of a given vector.
+
+Parameters:
+
+	array: the input array
+	tiesMethod: the method how ties (equal values) are treated
+	   possible values: tmMin tmMax tmOrder tmReverse tmRandom tmAverage
+	   default is tmMin
+	naIncreasesRank: if true than any NA increases the following ranks by 1
+	resultMatrix: if true than return a dictionary of rank keys and array of indices values
+
+Example:
+	
+	using NormalizeQuantiles
+	
+    a = [ 5.0 2.0 4.0 3.0 1.0 ]
+	
+	n = Array{Nullable{Float64}}(a)
+
+    (r,m)=sampleRanks(n)
+
+    (r,m)=sampleRanks(n,tmMin,false,true)
+	
+r is the vector of ranks.
+
+m is a dictionary with rank as keys and as value the indices of all values of this rank.
+
+" ->
 function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
