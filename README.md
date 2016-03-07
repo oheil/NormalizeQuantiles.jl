@@ -231,7 +231,7 @@ To use multiple cores on a single machine you can use `SharedArray{Float64}`. Us
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
  
-## Behaviour of function 'normalizeQuantiles'
+## Behaviour of function `normalizeQuantiles`
 
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
