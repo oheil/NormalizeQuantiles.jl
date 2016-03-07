@@ -144,7 +144,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r[4]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,4,0,2])
@@ -153,7 +153,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmOrder,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmOrder,true,true)
 r[4]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,2,5,0,3])
@@ -162,7 +162,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,false,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,false,true)
 r[4]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,3,0,2])
@@ -170,7 +170,7 @@ r=[ Int(get(x)) for x in r ]
 testfloat = [ 5.0 2.0 4.0 3.0 1.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([5,2,4,3,1])
 
@@ -178,7 +178,7 @@ testfloat = [ 2.0 2.0 0.0 2.0 2.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r[3]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,1,1])
@@ -187,7 +187,7 @@ testfloat = [ 2.0 2.0 0.0 2.0 4.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r[3]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,1,3])
@@ -196,7 +196,7 @@ testfloat = [ 2.0 2.0 0.0 2.0 4.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,false,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,false,true)
 r[3]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,1,2])
@@ -205,7 +205,7 @@ testfloat = [ 2.0 2.0 0.0 3.0 4.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r[3]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,3,4])
@@ -214,7 +214,7 @@ testfloat = [ 2.0 2.0 0.0 3.0 4.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,false,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,false,true)
 r[3]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,2,3])
@@ -223,7 +223,7 @@ testfloat = [ 0.0 2.0 5.0 3.0 4.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[1]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r[1]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([0,2,5,3,4])
@@ -232,7 +232,7 @@ testfloat = [ 0.0 2.0 5.0 3.0 4.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[1]=Nullable{Float64}()
-(r,m)=NormalizeQuantiles.sampleRanks(a,false,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,false,true)
 r[1]=Nullable{Int}(0)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([0,1,4,2,3])
@@ -240,14 +240,14 @@ r=[ Int(get(x)) for x in r ]
 testfloat = [ 2.0 2.0 2.0 2.0 2.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmMin,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmMin,true,true)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,1,1,1])
 
 testfloat = [ 2.0 2.0 2.0 2.0 2.0 ]
 a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
-(r,m)=NormalizeQuantiles.sampleRanks(a,true,tmReverse,true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tmReverse,true,true)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([5,4,3,2,1])
 

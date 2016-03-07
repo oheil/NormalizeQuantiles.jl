@@ -385,7 +385,7 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{I
 	rankColumns
 end
 
-function sampleRanks(array::Array{Nullable{Float}},naIncreasesRank=false,tiesMethod::qnTiesMethods=tmMin,resultMatrix=false)
+function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
 	reducedArray=[ Float(get(x)) for x in array[indices] ]

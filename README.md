@@ -260,6 +260,49 @@ To use quantile normalization your data should have the following properties:
 
 ## Usage examples `sampleRanks`
 
+##### Only available for julia>=0.4
+
+`sampleRanks` of a given vector calculates for each element the rank, which is the position of the element in the sorted vector.
+
+	julia> using NormalizeQuantiles
+	
+	julia> a = [ 5.0 2.0 4.0 3.0 1.0 ];
+	
+	julia> na = Array(Nullable{Float64},(size(a,1),size(a,2)));
+	
+	julia> na[:]=a[:];
+	
+	julia> (r,m)=sampleRanks(na)
+	
+	julia> r
+	5-element Array{Nullable{Int64},1}:
+	 Nullable(5)
+	 Nullable(2)
+	 Nullable(4)
+	 Nullable(3)
+	 Nullable(1)
+	
+Equal values in the vector are called ties. There are several methods available on how to treat ties:
+* tmMin : the smallest rank for all ties (default)
+* tmMax : the largest rank
+* tmOrder : increasing ranks
+* tmReverse : decreasing ranks
+* tmRandom : the ranks are randomly distributed
+* tmAverage : the average rounded to the next integer
+These methodds are defined and exported as
+	
+	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
+
+Example:
+
+	julia>
+	
+	julia>
+	
+	julia>
+	
+	julia>
+
 
 Description TODO here
 
