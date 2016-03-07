@@ -289,7 +289,8 @@ Equal values in the vector are called ties. There are several methods available 
 * tmReverse : decreasing ranks
 * tmRandom : the ranks are randomly distributed
 * tmAverage : the average rounded to the next integer
-These methodds are defined and exported as
+
+These methods are defined and exported as
 	
 	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
