@@ -385,6 +385,13 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{I
 	rankColumns
 end
 
+function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float}}(array)
+	(rn,m)=sampleRanks(nullable,tiesMethod,naIncreasesRank,resultMatrix)
+	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
+	(r,m)
+end
+
 function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
