@@ -14,10 +14,6 @@ end
 # write your own tests here
 @test 1 == 1
 
-if VERSION >= v"0.5.0-"
-	@test 1 == 0
-end
-
 if VERSION >= v"0.4.0-"
 
 testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
