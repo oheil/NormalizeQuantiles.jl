@@ -117,10 +117,10 @@ function normalizeQuantiles(matrix::SharedArray{Float})
     nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
     r=normalizeQuantiles(nullable)
-	nullable=null
+	nullable=SharedArray(Nullable{Float},(0,0))
 	ra=SharedArray(Float,(size(r,1),size(r,2)))
 	ra[:]=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
-	r=null
+	r=SharedArray(Nullable{Float},(0,0))
 	ra
 end
 
@@ -133,10 +133,10 @@ function normalizeQuantiles(matrix::SharedArray{Int})
     nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
 	nullable[:]=[ Float(x) for x in matrix ][:]
     r=normalizeQuantiles(nullable)
-	nullable=null
+	nullable=SharedArray(Nullable{Float},(0,0))
 	ra=SharedArray(Float,(size(r,1),size(r,2)))
 	ra[:]=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
-	r=null
+	r=SharedArray(Nullable{Float},(0,0))
 	ra
 end
 
@@ -445,7 +445,11 @@ function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmM
 	sortp=sortperm(reducedArray)
 	result=Array{Nullable{Int}}(nrows)
 	result[:]=Nullable{Int}()
-	resultMatrix?begin rankMatrix=Dict{Int,Array{Int}}();sizehint!(rankMatrix,nrows) end:rankMatrix=null
+	#resultMatrix?begin rankMatrix=Dict{Int,Array{Int}}();sizehint!(rankMatrix,nrows) end:rankMatrix=nothing
+	rankMatrix=Dict{Int,Array{Int}}()
+	if resultMatrix
+		sizehint!(rankMatrix,nrows)
+	end	
 	indices2=(1:nrows)[indices][sortp]
 	rank=1
 	narank=0
