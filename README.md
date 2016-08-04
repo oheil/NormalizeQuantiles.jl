@@ -363,6 +363,12 @@ The third optional parameter lets you generate a dictionary of rank indices to a
 	 2.0
 	 2.0
 
+The three optional parameters can also be used using keyword argument syntax:
+
+	julia> (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
+	
+	julia> (r,m)=sampleRanks(a,resultMatrix=true);
+	 
 ## Remarks on performance
 
 In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:

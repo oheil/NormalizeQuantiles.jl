@@ -391,7 +391,7 @@ end
 " ->
 function sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nullable=Array{Nullable{Float}}(Array{Float}(array))
-	(rn,m)=sampleRanks(nullable,tiesMethod,naIncreasesRank,resultMatrix)
+	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
 	(r,m)
 end
@@ -402,13 +402,43 @@ end
 " ->
 function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nullable=Array{Nullable{Float}}(array)
-	(rn,m)=sampleRanks(nullable,tiesMethod,naIncreasesRank,resultMatrix)
+	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
+	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
+	(r,m)
+end
+
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
+function sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float}}(Array{Float}(array))
+	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
+	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
+	(r,m)
+end
+
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
+function sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float}}(array)
+	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
 	(r,m)
 end
 
 @doc "
 ### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
+function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	sampleRanks(array,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
+end
+
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 Calculate ranks of the values of a given vector.
 
@@ -431,14 +461,14 @@ Example:
 
     (r,m)=sampleRanks(n)
 
-    (r,m)=sampleRanks(n,tmMin,false,true)
+    (r,m)=sampleRanks(n,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
 	
 r is the vector of ranks.
 
 m is a dictionary with rank as keys and as value the indices of all values of this rank.
 
 " ->
-function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+function sampleRanks(array::Array{Nullable{Float}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
 	reducedArray=[ Float(get(x)) for x in array[indices] ]
