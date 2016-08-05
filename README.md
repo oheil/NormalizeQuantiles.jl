@@ -554,5 +554,45 @@ end
 | Input type: | `bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
 
+# julia version 0.3:
+
+# function normalizeQuantiles
+
+| Definition: | `DataArray{Float} function normalizeQuantiles(matrix::Array{Float})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `Array{Float}` |
+| Return type: | `DataArray{Float}` |
+
+| Definition: | `DataArray{Float} function normalizeQuantiles(matrix::Array{Int})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `Array{Int}` |
+| Return type: | `DataArray{Float}` |
+
+| Definition: | `DataArray{Float} function normalizeQuantiles(matrix::DataArray{Float})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `DataArray{Float}` |
+| Return type: | `DataArray{Float}` |
+
+| Definition: | `DataArray{Float} function normalizeQuantiles(matrix::DataArray{Int})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `DataArray{Int}` |
+| Return type: | `DataArray{Float}` |
+
+| Definition: | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `SharedArray{Float}` |
+| Return type: | `SharedArray{Float}` |
+
+| Definition: | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `SharedArray{Int}` |
+| Return type: | `SharedArray{Float}` |
+
+
+
+
+
+
+
 
 
