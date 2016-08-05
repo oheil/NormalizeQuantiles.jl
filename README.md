@@ -458,7 +458,7 @@ end
 
 | Definition: | `Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Float}})` |
 | -----------------------: | ----------------------- | 
-| Input type: | `Array{Nullable{Int}}` |
+| Input type: | `Array{Nullable{Float}}` |
 | Return type: | `Array{Nullable{Float}}` |
 
 | Definition: | `Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
@@ -500,11 +500,11 @@ end
 
 | Definition: | `sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)` ||
 | -----------------------: | ----------------------- | ----------------------- | 
-| Input type: | `array::Array{Int}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
+| Input type: | data | `array::Array{Int}` |
+| Input type: | how to treat ties (default: `tmMin`) | `qnTiesMethods` |
+| Input type: | increase rank by one if NA (default: `false`) | `bool` |
+| Input type: | create rank dictionary (default: `false`) | `bool` |
+| Return type: || `(Array{Int},Dict{Int,Array{Int}})` |
 
 
 
