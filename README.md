@@ -442,9 +442,9 @@ else
 end
 ```
 
-#### julia version 0.4:
+# julia version 0.4:
 
-##### function normalizeQuantiles
+# function normalizeQuantiles
 
 | Definition: | `Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
 | -----------------------: | ----------------------- | 
@@ -486,7 +486,7 @@ end
 | Input type: | `SharedArray{Nullable{Int}}` |
 | Return type: | `SharedArray{Nullable{Float}}` |
 
-##### function sampleRanks
+# function sampleRanks
 
 | Definition: | `@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage` |
 | -----------------------: | ----------------------- | 
