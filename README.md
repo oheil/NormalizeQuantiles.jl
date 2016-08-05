@@ -430,7 +430,7 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 
 Depending on your environment `Float` can be `Float64` or `Float32`
 
-Code snippet not exported:
+Internally (not exported) this code snippet is used:
 
 ```julia
 if isa(1.0,Float64)
@@ -444,21 +444,67 @@ end
 
 #### julia version 0.4:
 
-| Definition: | `qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
+##### function normalizeQuantiles
+
+| Definition: | `Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
 | -----------------------: | ----------------------- | 
 | Input type: | `Array{Float}` |
 | Return type: | `Array{Float}` |
 
-| Definition: | `qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
+| Definition: | `Array{Float} function normalizeQuantiles(matrix::Array{Int})` |
 | -----------------------: | ----------------------- | 
-| Input type: | `Array{Float}` |
+| Input type: | `Array{Int}` |
 | Return type: | `Array{Float}` |
 
+| Definition: | `Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Float}})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `Array{Nullable{Int}}` |
+| Return type: | `Array{Nullable{Float}}` |
 
-`@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage`
+| Definition: | `Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `Array{Nullable{Int}}` |
+| Return type: | `Array{Nullable{Float}}` |
 
+| Definition: | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `SharedArray{Float}` |
+| Return type: | `SharedArray{Float}` |
 
+| Definition: | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `SharedArray{Int}` |
+| Return type: | `SharedArray{Float}` |
 
+| Definition: | `SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `SharedArray{Nullable{Float}}` |
+| Return type: | `SharedArray{Nullable{Float}}` |
+
+| Definition: | `SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `SharedArray{Nullable{Int}}` |
+| Return type: | `SharedArray{Nullable{Float}}` |
+
+##### function sampleRanks
+
+| Definition: | `@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage` |
+| -----------------------: | ----------------------- | 
+| Description: ||
+| tmMin | the smallest rank for all ties |
+| tmMax | the largest rank |
+| tmOrder | increasing ranks |
+| tmReverse | decreasing ranks |
+| tmRandom | the ranks are randomly distributed |
+| tmAverage | the average rounded to the next integer |
+
+| Definition: | `sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)` ||
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `array::Array{Int}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
 
 
 
