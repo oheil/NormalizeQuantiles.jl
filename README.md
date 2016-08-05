@@ -361,7 +361,7 @@ The third optional parameter lets you generate a dictionary of rank indices to a
 	julia> haskey(m,2)   #does rank 2 exist?
 	true
 	
-	julia> a[m[2]]   #all values if rank 2
+	julia> a[m[2]]   #all values of rank 2
 	2-element Array{Float64,1}:
 	 2.0
 	 2.0
