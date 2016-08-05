@@ -428,6 +428,21 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 
 ## List of all function and method definitions
 
+Depending on your environment `Float` can be `Float64` or `Float32`
+
+#### julia version 0.4:
+
+	qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})
+	
+		Input type: Array{Float}
+		Return type: Array{Float}
+
+	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
+
+
+
+
+
 
 
 
