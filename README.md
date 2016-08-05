@@ -498,13 +498,45 @@ end
 | tmRandom | the ranks are randomly distributed |
 | tmAverage | the average rounded to the next integer |
 
-| Definition: | `sampleRanks(array::Array{Int}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
+| Definition: | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
 | -----------------------: | ----------------------- | ----------------------- | 
-| Input type: | `array::Array{Int}` | data |
+| Input type: | `Array{Int}` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
+
+| Definition: | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `Array{Float}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
+
+| Definition: | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `Array{Int}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
+
+| Definition: | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | |
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `Array{Nullable{Float}}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
+
+| Definition: | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `Array{Nullable{Float}}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
 
 
 
