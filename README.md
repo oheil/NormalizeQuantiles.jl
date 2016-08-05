@@ -22,7 +22,7 @@ Package NormalizeQuantiles implements quantile normalization and provide a funct
 - [Usage examples `sampleRanks`](#usage-examples-sampleranks)
 - [Remarks on performance](#remarks-on-performance)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
-- [List of all function and method definitions](#list-of-all-function-and-method-definitions)
+- [List of all exported definitions](#list-of-all-exported-definitions)
 
 ## Dependencies
 
@@ -426,18 +426,36 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 
 Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we put any given `NA` back into the sorted column at the original position before calculating the mean of the rows.
 
-## List of all function and method definitions
+## List of all exported definitions
 
 Depending on your environment `Float` can be `Float64` or `Float32`
 
+Code snippet not exported:
+
+```julia
+if isa(1.0,Float64)
+        "Float is a type alias to Float64"
+        typealias Float Float64
+else
+        "Float is a type alias to Float32"
+        typealias Float Float32
+end
+```
+
 #### julia version 0.4:
 
-	qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})
-	
-		Input type: Array{Float}
-		Return type: Array{Float}
+| Definition: | `qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `Array{Float}` |
+| Return type: | `Array{Float}` |
 
-	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
+| Definition: | `qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
+| -----------------------: | ----------------------- | 
+| Input type: | `Array{Float}` |
+| Return type: | `Array{Float}` |
+
+
+`@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage`
 
 
 
