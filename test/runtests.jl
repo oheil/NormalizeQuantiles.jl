@@ -251,6 +251,26 @@ a[:]=testfloat[:]
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([5,4,3,2,1])
 
+testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
+a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a[:]=testfloat[:]
+a[4]=Nullable{Float64}()
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+r[4]=Nullable{Int}(0)
+r=[ Int(get(x)) for x in r ]
+@test r==Array{Int}([1,1,4,0,2])
+
+testint = [ 2 2 8 0 7 ]
+a=Array(Nullable{Int},(size(testint,1),size(testint,2)));
+a[:]=testint[:]
+a[4]=Nullable{Int}()
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+r[4]=Nullable{Int}(0)
+r=[ Int(get(x)) for x in r ]
+@test r==Array{Int}([1,1,4,0,2])
+
+
+
 end # if VERSION >= v"0.4.0-"
 
 if VERSION < v"0.4.0-"
