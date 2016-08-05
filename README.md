@@ -442,12 +442,9 @@ else
 end
 ```
 
-# julia version 0.4:
-
-# function normalizeQuantiles
-
-| Definition: | `Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
+| | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
+| **Definition:** | `Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
 | Input type: | `Array{Float}` |
 | Return type: | `Array{Float}` |
 
