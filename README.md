@@ -22,6 +22,7 @@ Package NormalizeQuantiles implements quantile normalization and provide a funct
 - [Usage examples `sampleRanks`](#usage-examples-sampleranks)
 - [Remarks on performance](#remarks-on-performance)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
+- [List of all function and method definitions](#list-of-all-function-and-method-definitions)
 
 ## Dependencies
 
@@ -424,6 +425,8 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 ## Remarks on data with `NA`
 
 Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we put any given `NA` back into the sorted column at the original position before calculating the mean of the rows.
+
+## List of all function and method definitions
 
 
 
