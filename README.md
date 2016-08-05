@@ -291,6 +291,8 @@ These methods are defined and exported as
 	
 	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
+Internally ties have increasing ranks. On these the chosen method is applied.
+	
 Example:
 
 	julia> a = [ 7.0 2.0 4.0 2.0 1.0 ];
