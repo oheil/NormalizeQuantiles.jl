@@ -386,7 +386,7 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{I
 end
 
 @doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
 function sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
@@ -397,7 +397,7 @@ function sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreas
 end
 
 @doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
 function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
@@ -408,7 +408,7 @@ function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncre
 end
 
 @doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
 function sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
@@ -419,7 +419,7 @@ function sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreas
 end
 
 @doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
 function sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
@@ -435,6 +435,24 @@ end
 " ->
 function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	sampleRanks(array,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
+end
+
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
+function sampleRanks(array::Array{Nullable{Int}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float}}(array)
+	sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
+end
+
+@doc "
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+
+" ->
+function sampleRanks(array::Array{Nullable{Int}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float}}(array)
+	sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 end
 
 @doc "

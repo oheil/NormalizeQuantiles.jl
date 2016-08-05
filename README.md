@@ -530,6 +530,14 @@ end
 | Input type: | `bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
 
+| Definition: | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | |
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `Array{Nullable{Int}}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
+
 | Definition: | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
 | -----------------------: | ----------------------- | ----------------------- | 
 | Input type: | `Array{Nullable{Float}}` | data |
@@ -538,7 +546,13 @@ end
 | Input type: | `bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
 
-
+| Definition: | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| -----------------------: | ----------------------- | ----------------------- | 
+| Input type: | `Array{Nullable{Int}}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
 
 
 
