@@ -498,7 +498,7 @@ end
 | tmRandom | the ranks are randomly distributed |
 | tmAverage | the average rounded to the next integer |
 
-| Definition: | `sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)` ||
+| Definition: | `sampleRanks(array::Array{Int}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
 | -----------------------: | ----------------------- | ----------------------- | 
 | Input type: | data | `array::Array{Int}` |
 | Input type: | how to treat ties (default: `tmMin`) | `qnTiesMethods` |
