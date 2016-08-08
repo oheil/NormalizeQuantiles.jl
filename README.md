@@ -239,11 +239,9 @@ This is quantile normalization without a reference column.
 
 #### For julia version >= 0.4:
 
-The function 'normalizeQuantiles' always returns a matrix of equal dimension as the input matrix and of type `Array{Float}` or `Array{Nullable{Float}}`. In case of Float-type input matrices `normalizeQuantiles` returns the same type, in case of Int-type matrices the result matrix will be of the same except that the values will be Float, e.g. a `Array{Nullable{Int}}` will result in `Array{Nullable{Float}}`.
+The function 'normalizeQuantiles' always returns a matrix of equal dimension as the input matrix and of type `Array{Float64}` or `Array{Nullable{Float64}}`. In case of Float64-type input matrices `normalizeQuantiles` returns the same type, in case of Int-type input matrices the result matrix will be the same but with base type Float64, e.g. a `Array{Nullable{Int}}` will result in `Array{Nullable{Float64}}`.
 
-`NA` values are of type `Nullable{Float}` and are treated as random missing values and the result value will be `Nullable{Float}` again. See "Remarks on data with `NA`" below.
-
-`Float` can be `Float64` or `Float32` depending on your environment
+`NA` values are of type `Nullable{Float64}` and are treated as random missing values and the result value will be `Nullable{Float64}` again. See "Remarks on data with `NA`" below.
 
 #### For julia version 0.3:
 
@@ -430,67 +428,53 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 
 ## List of all exported definitions
 
-Depending on your environment `Float` can be `Float64` or `Float32`
-
-Internally (not exported) this code snippet is used:
-
-```julia
-if isa(1.0,Float64)
-        "Float is a type alias to Float64"
-        typealias Float Float64
-else
-        "Float is a type alias to Float32"
-        typealias Float Float32
-end
-```
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
+| Input type: | `Array{Float64}` |
+| Return type: | `Array{Float64}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float} function normalizeQuantiles(matrix::Array{Float})` |
-| Input type: | `Array{Float}` |
-| Return type: | `Array{Float}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float} function normalizeQuantiles(matrix::Array{Int})` |
+| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Int})` |
 | Input type: | `Array{Int}` |
-| Return type: | `Array{Float}` |
+| Return type: | `Array{Float64}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Float}})` |
-| Input type: | `Array{Nullable{Float}}` |
-| Return type: | `Array{Nullable{Float}}` |
+| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Float64}})` |
+| Input type: | `Array{Nullable{Float64}}` |
+| Return type: | `Array{Nullable{Float64}}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
+| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
 | Input type: | `Array{Nullable{Int}}` |
-| Return type: | `Array{Nullable{Float}}` |
+| Return type: | `Array{Nullable{Float64}}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})` |
-| Input type: | `SharedArray{Float}` |
-| Return type: | `SharedArray{Float}` |
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
+| Input type: | `SharedArray{Float64}` |
+| Return type: | `SharedArray{Float64}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})` |
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
 | Input type: | `SharedArray{Int}` |
-| Return type: | `SharedArray{Float}` |
+| Return type: | `SharedArray{Float64}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})` |
-| Input type: | `SharedArray{Nullable{Float}}` |
-| Return type: | `SharedArray{Nullable{Float}}` |
+| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})` |
+| Input type: | `SharedArray{Nullable{Float64}}` |
+| Return type: | `SharedArray{Nullable{Float64}}` |
 
 | | normalizeQuantiles, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})` |
+| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})` |
 | Input type: | `SharedArray{Nullable{Int}}` |
-| Return type: | `SharedArray{Nullable{Float}}` |
+| Return type: | `SharedArray{Nullable{Float64}}` |
 
 | | sampleRanks, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
@@ -514,8 +498,8 @@ end
 
 | | sampleRanks, julia version >= 0.4 | |
 | -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
-| Input type: | `Array{Float}` | data |
+| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
+| Input type: | `Array{Float64}` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
@@ -532,8 +516,8 @@ end
 
 | | sampleRanks, julia version >= 0.4 | |
 | -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | |
-| Input type: | `Array{Nullable{Float}}` | data |
+| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | |
+| Input type: | `Array{Nullable{Float64}}` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
@@ -550,8 +534,8 @@ end
 
 | | sampleRanks, julia version >= 0.4 | |
 | -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `Array{Nullable{Float}}` | data |
+| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| Input type: | `Array{Nullable{Float64}}` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
@@ -568,39 +552,39 @@ end
 
 | | normalizeQuantiles, julia version = 0.3 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float} function normalizeQuantiles(matrix::Array{Float})` |
-| Input type: | `Array{Float}` |
-| Return type: | `DataArray{Float}` |
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
+| Input type: | `Array{Float64}` |
+| Return type: | `DataArray{Float64}` |
 
 | | normalizeQuantiles, julia version = 0.3 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float} function normalizeQuantiles(matrix::Array{Int})` |
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::Array{Int})` |
 | Input type: | `Array{Int}` |
-| Return type: | `DataArray{Float}` |
+| Return type: | `DataArray{Float64}` |
 
 | | normalizeQuantiles, julia version = 0.3 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float} function normalizeQuantiles(matrix::DataArray{Float})` |
-| Input type: | `DataArray{Float}` |
-| Return type: | `DataArray{Float}` |
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Float64})` |
+| Input type: | `DataArray{Float64}` |
+| Return type: | `DataArray{Float64}` |
 
 | | normalizeQuantiles, julia version = 0.3 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float} function normalizeQuantiles(matrix::DataArray{Int})` |
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Int})` |
 | Input type: | `DataArray{Int}` |
-| Return type: | `DataArray{Float}` |
+| Return type: | `DataArray{Float64}` |
 
 | | normalizeQuantiles, julia version = 0.3 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})` |
-| Input type: | `SharedArray{Float}` |
-| Return type: | `SharedArray{Float}` |
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
+| Input type: | `SharedArray{Float64}` |
+| Return type: | `SharedArray{Float64}` |
 
 | | normalizeQuantiles, julia version = 0.3 |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})` |
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
 | Input type: | `SharedArray{Int}` |
-| Return type: | `SharedArray{Float}` |
+| Return type: | `SharedArray{Float64}` |
 
 
 

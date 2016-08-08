@@ -5,14 +5,6 @@ export normalizeQuantiles
 export sampleRanks
 export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
-if isa(1.0,Float64)
-	"Float is a type alias to Float64"
-	typealias Float Float64
-else
-	"Float is a type alias to Float32"
-	typealias Float Float32
-end
-
 if VERSION < v"0.4.0-"
 	macro doc(string)
 	end
@@ -25,51 +17,48 @@ end # if VERSION < v"0.4.0-"
 if VERSION >= v"0.4.0-"
 
 @doc "
-### qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Float})
+### qnmatrix::Array{Float64} function normalizeQuantiles(matrix::Array{Float64})
 
-Method for input type Array{Float}
+Method for input type Array{Float64}
 " ->
-function normalizeQuantiles(matrix::Array{Float})
-    damatrix=Array{Nullable{Float}}(matrix)
+function normalizeQuantiles(matrix::Array{Float64})
+    damatrix=Array{Nullable{Float64}}(matrix)
     r=normalizeQuantiles(damatrix)
-	convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
+	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
 @doc "
-### qnmatrix::Array{Float} function normalizeQuantiles(matrix::Array{Int})
+### qnmatrix::Array{Float64} function normalizeQuantiles(matrix::Array{Int})
 
 Method for input type Array{Int}
 " ->
 function normalizeQuantiles(matrix::Array{Int})
-    dafloat=Array{Nullable{Float}}(convert(Array{Float},matrix))
+    dafloat=Array{Nullable{Float64}}(convert(Array{Float64},matrix))
     r=normalizeQuantiles(dafloat)
-	convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
+	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
 @doc "
-### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Int}})
+### qnmatrix::Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Int}})
 
 Method for input type Array{Nullable{Int}}
 " ->
 function normalizeQuantiles(matrix::Array{Nullable{Int}})
-    nullable=Array{Nullable{Float}}(matrix)
+    nullable=Array{Nullable{Float64}}(matrix)
     normalizeQuantiles(nullable)
 end
 
 @doc "
-### qnmatrix::Array{Nullable{Float}} function normalizeQuantiles(matrix::Array{Nullable{Float}})
+### qnmatrix::Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Float64}})
 Calculate the quantile normalized data for the input matrix
 
 Parameter:
-    matrix::Array{Nullable{Float}}
-The input data as a Array{Nullable{Float}} of float values interpreted as Array{Nullable{Float}}(rows,columns)
+    matrix::Array{Nullable{Float64}}
+The input data as a Array{Nullable{Float64}} of float values interpreted as Array{Nullable{Float64}}(rows,columns)
 
 Return value: 
-    qnmatrix::Array{Nullable{Float}}
-The quantile normalized data as Array{Nullable{Float}}
-
-Type Float:
-	Float is a type alias to Float64 or Float32
+    qnmatrix::Array{Nullable{Float64}}
+The quantile normalized data as Array{Nullable{Float64}}
 
 Examples:
 
@@ -91,11 +80,11 @@ Examples:
     qn = normalizeQuantiles(a)
 
 " ->
-function normalizeQuantiles(matrix::Array{Nullable{Float}})
+function normalizeQuantiles(matrix::Array{Nullable{Float64}})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=Array{Nullable{Float}}((nrows,ncols))
+    qnmatrix=Array{Nullable{Float64}}((nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
@@ -109,50 +98,50 @@ function normalizeQuantiles(matrix::Array{Nullable{Float}})
 end
 
 @doc "
-### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})
+### qnmatrix::SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})
 
-Method for input type SharedArray{Float}
+Method for input type SharedArray{Float64}
 " ->
-function normalizeQuantiles(matrix::SharedArray{Float})
-    nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
+function normalizeQuantiles(matrix::SharedArray{Float64})
+    nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
     r=normalizeQuantiles(nullable)
-	nullable=SharedArray(Nullable{Float},(0,0))
-	ra=SharedArray(Float,(size(r,1),size(r,2)))
-	ra[:]=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
-	r=SharedArray(Nullable{Float},(0,0))
+	nullable=SharedArray(Nullable{Float64},(0,0))
+	ra=SharedArray(Float64,(size(r,1),size(r,2)))
+	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
+	r=SharedArray(Nullable{Float64},(0,0))
 	ra
 end
 
 @doc "
-### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})
+### qnmatrix::SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})
 
 Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Int})
-    nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
-	nullable[:]=[ Float(x) for x in matrix ][:]
+    nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable[:]=[ Float64(x) for x in matrix ][:]
     r=normalizeQuantiles(nullable)
-	nullable=SharedArray(Nullable{Float},(0,0))
-	ra=SharedArray(Float,(size(r,1),size(r,2)))
-	ra[:]=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
-	r=SharedArray(Nullable{Float},(0,0))
+	nullable=SharedArray(Nullable{Float64},(0,0))
+	ra=SharedArray(Float64,(size(r,1),size(r,2)))
+	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
+	r=SharedArray(Nullable{Float64},(0,0))
 	ra
 end
 
 @doc "
-### qnmatrix::SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
+### qnmatrix::SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
 
 Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
-	nullable=SharedArray(Nullable{Float},(size(matrix,1),size(matrix,2)))
+	nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
 	normalizeQuantiles(nullable)
 end
 
 @doc "
-### qnmatrix::SharedArray{Nullable{Float}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})
+### qnmatrix::SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
 
 Quantile normalization using multiple cores (see ?normalizeQuantiles)
 
@@ -173,11 +162,11 @@ Example:
     qn = normalizeQuantiles(sa)
 
 " ->
-function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})
+function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=SharedArray(Nullable{Float},(nrows,ncols))
+    qnmatrix=SharedArray(Nullable{Float64},(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
@@ -190,11 +179,11 @@ function normalizeQuantiles(matrix::SharedArray{Nullable{Float}})
     qnmatrix
 end
 
-function Old_normalizeQuantiles(matrix::Array{Nullable{Float}})
+function Old_normalizeQuantiles(matrix::Array{Nullable{Float64}})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=Array{Nullable{Float}}((nrows,ncols))
+    qnmatrix=Array{Nullable{Float64}}((nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
@@ -208,72 +197,72 @@ function Old_normalizeQuantiles(matrix::Array{Nullable{Float}})
     qnmatrix
 end
 
-function sortColumns(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function sortColumns(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
-		sortcol=[Float(get(x)) for x in sortcol]
+		sortcol=[Float64(get(x)) for x in sortcol]
 		sort!(sortcol)
-		sortcol=Array{Nullable{Float}}(sortcol)
+		sortcol=Array{Nullable{Float64}}(sortcol)
 		naindices=(1:nrows)[!indices]
 		empty=sum(indices)==0
 		for napos in naindices
 			if empty
 				empty = false
-				sortcol=Array{Nullable{Float}}([Nullable{Float}()])
+				sortcol=Array{Nullable{Float64}}([Nullable{Float64}()])
 			else
-				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:end])
+				sortcol=vcat(sortcol[1:napos-1],Nullable{Float64}(),sortcol[napos:end])
 			end
 		end
 		qnmatrix[:,column]=sortcol
 	end
 end
 
-function multicoreSortColumns(matrix::SharedArray{Nullable{Float}},qnmatrix::SharedArray{Nullable{Float}},nrows,ncols)
+function multicoreSortColumns(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
-		sortcol=[Float(get(x)) for x in sortcol]
+		sortcol=[Float64(get(x)) for x in sortcol]
 		sort!(sortcol)
-		sortcol=Array{Nullable{Float}}(sortcol)
+		sortcol=Array{Nullable{Float64}}(sortcol)
 		naindices=(1:nrows)[!indices]
 		empty=sum(indices)==0
 		for napos in naindices
 			if empty
 				empty = false
-				sortcol=Array{Nullable{Float}}([Nullable{Float}()])
+				sortcol=Array{Nullable{Float64}}([Nullable{Float64}()])
 			else
-				sortcol=vcat(sortcol[1:napos-1],Nullable{Float}(),sortcol[napos:end])
+				sortcol=vcat(sortcol[1:napos-1],Nullable{Float64}(),sortcol[napos:end])
 			end
 		end
 		qnmatrix[:,column]=sortcol
 	end
 end
 
-function meanRows(qnmatrix::Array{Nullable{Float}},nrows)
+function meanRows(qnmatrix::Array{Nullable{Float64}},nrows)
 	for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
 		nacount=sum(!indices)
-		rowmean=mean([Float(get(x)) for x in qnmatrix[row,indices]])
-		qnmatrix[row,:]=Nullable{Float}(rowmean)
-		nacount>0?qnmatrix[row,!indices]=Nullable{Float}():false
+		rowmean=mean([Float64(get(x)) for x in qnmatrix[row,indices]])
+		qnmatrix[row,:]=Nullable{Float64}(rowmean)
+		nacount>0?qnmatrix[row,!indices]=Nullable{Float64}():false
 	end
 end
 
-function multicoreMeanRows(qnmatrix::SharedArray{Nullable{Float}},nrows,ncols)
+function multicoreMeanRows(qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
 		nacount=sum(!indices)
-		rowmean=mean([Float(get(x)) for x in qnmatrix[row,indices]])
-		qnmatrix[row,:]=Nullable{Float}(rowmean)
-		nacount>0?qnmatrix[row,!indices]=Nullable{Float}():false
+		rowmean=mean([Float64(get(x)) for x in qnmatrix[row,indices]])
+		qnmatrix[row,:]=Nullable{Float64}(rowmean)
+		nacount>0?qnmatrix[row,!indices]=Nullable{Float64}():false
 	end
 end
 
-function equalValuesInColumn(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function equalValuesInColumn(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in matrix[:,column] ]
-		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
+		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
 		nacount=sum(!indices)
 		sortcol=matrix[:,column][indices][sortp]
@@ -299,23 +288,23 @@ function equalValuesInColumn(matrix::Array{Nullable{Float}},qnmatrix::Array{Null
 	end
 end
 
-function orderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function orderToOriginal(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
-		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
+		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
-		qncol=Array{Nullable{Float}}(nrows,1)
-		fill!(qncol,Nullable{Float}())
+		qncol=Array{Nullable{Float64}}(nrows,1)
+		fill!(qncol,Nullable{Float64}())
 		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
 		qnmatrix[:,column]=qncol
 	end
 end
 
-function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Nullable{Float}},qnmatrix::SharedArray{Nullable{Float}},nrows,ncols)
+function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
-		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
+		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
@@ -327,17 +316,17 @@ function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Null
 				qnmatrix[rankIndices,column]=mean([ get(x) for x in qnmatrix[rankIndices,column] ])
 			end
 		end
-		qncol=Array{Nullable{Float}}(nrows,1)
-		fill!(qncol,Nullable{Float}())
+		qncol=Array{Nullable{Float64}}(nrows,1)
+		fill!(qncol,Nullable{Float64}())
 		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
 		qnmatrix[:,column]=qncol
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qnmatrix::Array{Nullable{Float}},nrows,ncols)
+function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
-		sortp=[ Float(get(x)) for x in vec(matrix[:,column])[indices] ]
+		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
 		indices2=[ !isnull(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][indices][sortp])>0
@@ -349,14 +338,14 @@ function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float}},qn
 				qnmatrix[rankIndices,column]=mean([ get(x) for x in qnmatrix[rankIndices,column] ])
 			end
 		end
-		qncol=Array{Nullable{Float}}(nrows,1)
-		fill!(qncol,Nullable{Float}())
+		qncol=Array{Nullable{Float64}}(nrows,1)
+		fill!(qncol,Nullable{Float64}())
 		qncol[(1:nrows)[indices][sortp]]=vec(qnmatrix[(1:nrows)[indices2],column])
 		qnmatrix[:,column]=qncol
 	end
 end
 
-function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float}},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
+function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float64}},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
 	rankColumns=0
 	nrows=length(sortedArrayNoNAs)
 	lastvalue=sortedArrayNoNAs[1]
@@ -390,18 +379,18 @@ end
 
 " ->
 function sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float}}(Array{Float}(array))
+	nullable=Array{Nullable{Float64}}(Array{Float64}(array))
 	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
 	(r,m)
 end
 
 @doc "
-### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
-function sampleRanks(array::Array{Float},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float}}(array)
+function sampleRanks(array::Array{Float64},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float64}}(array)
 	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
 	(r,m)
@@ -412,28 +401,28 @@ end
 
 " ->
 function sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float}}(Array{Float}(array))
+	nullable=Array{Nullable{Float64}}(Array{Float64}(array))
 	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
 	(r,m)
 end
 
 @doc "
-### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
-function sampleRanks(array::Array{Float};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float}}(array)
+function sampleRanks(array::Array{Float64};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nullable=Array{Nullable{Float64}}(array)
 	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
 	(r,m)
 end
 
 @doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->
-function sampleRanks(array::Array{Nullable{Float}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+function sampleRanks(array::Array{Nullable{Float64}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	sampleRanks(array,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 end
 
@@ -442,7 +431,7 @@ end
 
 " ->
 function sampleRanks(array::Array{Nullable{Int}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float}}(array)
+	nullable=Array{Nullable{Float64}}(array)
 	sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 end
 
@@ -451,12 +440,12 @@ end
 
 " ->
 function sampleRanks(array::Array{Nullable{Int}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float}}(array)
+	nullable=Array{Nullable{Float64}}(array)
 	sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
 end
 
 @doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 Calculate ranks of the values of a given vector.
 
@@ -486,10 +475,10 @@ r is the vector of ranks.
 m is a dictionary with rank as keys and as value the indices of all values of this rank.
 
 " ->
-function sampleRanks(array::Array{Nullable{Float}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+function sampleRanks(array::Array{Nullable{Float64}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
-	reducedArray=[ Float(get(x)) for x in array[indices] ]
+	reducedArray=[ Float64(get(x)) for x in array[indices] ]
 	sortp=sortperm(reducedArray)
 	result=Array{Nullable{Int}}(nrows)
 	result[:]=Nullable{Int}()
@@ -569,51 +558,48 @@ if VERSION < v"0.4.0-"
 using DataArrays
 
 """
-### qnmatrix::DataArray{Float} function normalizeQuantiles(matrix::Array{Float})
+### qnmatrix::DataArray{Float64} function normalizeQuantiles(matrix::Array{Float64})
 
-Method for input type Array{Float}
+Method for input type Array{Float64}
 """
-function normalizeQuantiles(matrix::Array{Float})
+function normalizeQuantiles(matrix::Array{Float64})
     damatrix=DataArray(matrix)
     r=normalizeQuantiles(damatrix)
-	convert(Array{Float},reshape([r[i] for i=1:length(r)],size(r)))
+	convert(Array{Float64},reshape([r[i] for i=1:length(r)],size(r)))
 end
 
 """
-### qnmatrix::DataArray{Float} function normalizeQuantiles(matrix::Array{Int})
+### qnmatrix::DataArray{Float64} function normalizeQuantiles(matrix::Array{Int})
 
 Method for input type Array{Int}
 """
 function normalizeQuantiles(matrix::Array{Int})
-    dafloat=DataArray(convert(Array{Float},matrix))
+    dafloat=DataArray(convert(Array{Float64},matrix))
     r=normalizeQuantiles(dafloat)
-	convert(Array{Float},reshape([r[i] for i=1:length(r)],size(r)))
+	convert(Array{Float64},reshape([r[i] for i=1:length(r)],size(r)))
 end
 
 """
-### qnmatrix::DataArray{Float} function normalizeQuantiles(matrix::DataArray{Int})
+### qnmatrix::DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Int})
 
 Method for input type DataArray{Int}
 """
 function normalizeQuantiles(matrix::DataArray{Int})
-    dafloat=convert(DataArray{Float},matrix)
+    dafloat=convert(DataArray{Float64},matrix)
     normalizeQuantiles(dafloat)
 end
 
 """
-### qnmatrix::DataArray{Float} function normalizeQuantiles(matrix::DataArray{Float})
+### qnmatrix::DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Float64})
 Calculate the quantile normalized data for the input matrix
 
 Parameter:
-    matrix::DataArray{Float}
+    matrix::DataArray{Float64}
 The input data as a DataArray of float values interpreted as DataArray(rows,columns)
 
 Return value: 
-    qnmatrix::DataArray{Float}
-The quantile normalized data as DataArray{Float} 
-
-Type Float:
-	Float is a type alias to Float64 or Float32
+    qnmatrix::DataArray{Float64}
+The quantile normalized data as DataArray{Float64} 
 
 Examples:
 
@@ -636,11 +622,11 @@ Examples:
     qn = normalizeQuantiles(da)
 
 """
-function normalizeQuantiles(matrix::DataArray{Float})
+function normalizeQuantiles(matrix::DataArray{Float64})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=DataArray(Float,(nrows,ncols))
+    qnmatrix=DataArray(Float64,(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
@@ -654,18 +640,18 @@ function normalizeQuantiles(matrix::DataArray{Float})
 end
 
 """
-### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Int})
+### qnmatrix::SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})
 
 Method for input type SharedArray{Int}
 """
 function normalizeQuantiles(matrix::SharedArray{Int})
-    sa=SharedArray(Float,(size(matrix,1),size(matrix,2)))
+    sa=SharedArray(Float64,(size(matrix,1),size(matrix,2)))
 	sa[:]=matrix[:]
     normalizeQuantiles(sa)
 end
 
 """
-### qnmatrix::SharedArray{Float} function normalizeQuantiles(matrix::SharedArray{Float})
+### qnmatrix::SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})
 
 Quantile normalization using of multiple cores (see ?normalizeQuantiles)
 
@@ -684,11 +670,11 @@ Example:
     qn = normalizeQuantilesMultiCore(sa)
 
 """
-function normalizeQuantiles(matrix::SharedArray{Float})
+function normalizeQuantiles(matrix::SharedArray{Float64})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=SharedArray(Float,(nrows,ncols))
+    qnmatrix=SharedArray(Float64,(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
@@ -701,11 +687,11 @@ function normalizeQuantiles(matrix::SharedArray{Float})
     qnmatrix
 end
 
-function OLD_normalizeQuantiles(matrix::DataArray{Float})
+function OLD_normalizeQuantiles(matrix::DataArray{Float64})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=DataArray(Float,(nrows,ncols))
+    qnmatrix=DataArray(Float64,(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		sortColumns(matrix,qnmatrix,nrows,ncols)
@@ -719,7 +705,7 @@ function OLD_normalizeQuantiles(matrix::DataArray{Float})
     qnmatrix
 end
 
-function sortColumns(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
+function sortColumns(matrix::DataArray{Float64},qnmatrix::DataArray{Float64},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isa(x,NAtype) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
@@ -738,7 +724,7 @@ function sortColumns(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,n
 	end
 end
 
-function multicoreSortColumns(matrix::SharedArray{Float},qnmatrix::SharedArray{Float},nrows,ncols)
+function multicoreSortColumns(matrix::SharedArray{Float64},qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		sortp=sortperm(vec(matrix[:,column]))
 		sortcol=matrix[:,column][sortp]
@@ -746,7 +732,7 @@ function multicoreSortColumns(matrix::SharedArray{Float},qnmatrix::SharedArray{F
 	end
 end
 
-function meanRows(qnmatrix::DataArray{Float},nrows,ncols)
+function meanRows(qnmatrix::DataArray{Float64},nrows,ncols)
 	for row = 1:nrows
 		naindices=[ isa(x,NAtype) for x in qnmatrix[row,:] ]
 		nacount=sum(naindices)
@@ -757,14 +743,14 @@ function meanRows(qnmatrix::DataArray{Float},nrows,ncols)
 	end
 end
 
-function multicoreMeanRows(qnmatrix::SharedArray{Float},nrows,ncols)
+function multicoreMeanRows(qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for row = 1:nrows
 		indices=(1:ncols)
 		qnmatrix[row,:]=mean(qnmatrix[row,:][indices])
 	end
 end
 
-function equalValuesInColumn(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
+function equalValuesInColumn(matrix::DataArray{Float64},qnmatrix::DataArray{Float64},nrows,ncols)
 	for column = 1:ncols
 		sortp=sortperm(vec(matrix[:,column]))
 		naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
@@ -793,7 +779,7 @@ function equalValuesInColumn(matrix::DataArray{Float},qnmatrix::DataArray{Float}
 	end
 end
 
-function orderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
+function orderToOriginal(matrix::DataArray{Float64},qnmatrix::DataArray{Float64},nrows,ncols)
 	for column = 1:ncols
 		sortp=sortperm(vec(matrix[:,column]))
 		naindices=[ isa(x,NAtype) for x in matrix[:,column][sortp] ]
@@ -810,7 +796,7 @@ function orderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nro
 	end
 end
 
-function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Float},qnmatrix::SharedArray{Float},nrows,ncols)
+function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Float64},qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		indices=[ true for x in matrix[:,column] ]
 		sortp=matrix[:,column][indices]
@@ -831,7 +817,7 @@ function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Floa
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix::DataArray{Float},nrows,ncols)
+function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float64},qnmatrix::DataArray{Float64},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isa(x,NAtype) for x in matrix[:,column] ]
 		sortp=matrix[:,column][indices]
@@ -853,7 +839,7 @@ function equalValuesInColumnAndOrderToOriginal(matrix::DataArray{Float},qnmatrix
 	end
 end
 
-function getRankMatrix(sortedArrayNoNAs::Array{Float},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
+function getRankMatrix(sortedArrayNoNAs::Array{Float64},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
 	rankColumns=0
 	nrows=length(sortedArrayNoNAs)
 	lastvalue=sortedArrayNoNAs[1]
@@ -882,7 +868,7 @@ function getRankMatrix(sortedArrayNoNAs::Array{Float},allranks::Dict{Int,Array{I
 	rankColumns
 end
 
-function getRankMatrix(sortedArrayNoNAs::DataArray{Float},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
+function getRankMatrix(sortedArrayNoNAs::DataArray{Float64},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
 	rankColumns=0
 	nrows=length(sortedArrayNoNAs)
 	lastvalue=sortedArrayNoNAs[1]

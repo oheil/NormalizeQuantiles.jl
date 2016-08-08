@@ -3,14 +3,6 @@ using NormalizeQuantiles
 
 using Base.Test
 
-if isa(1.0,Float32)
-	"Float is a type alias to Float32"
-	typealias Float Float32
-else
-	"Float is a type alias to Float64"
-	typealias Float Float64
-end
-
 # write your own tests here
 @test 1 == 1
 
@@ -23,10 +15,10 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
-sa=SharedArray(Nullable{Float},(size(testfloat,1),size(testfloat,2)));
+sa=SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 r=normalizeQuantiles(sa)
-r=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
+r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
@@ -39,10 +31,10 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
 
-sa=SharedArray(Nullable{Float},(size(testfloat,1),size(testfloat,2)));
+sa=SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 r=normalizeQuantiles(sa)
-r=convert(Array{Float},reshape([get(r[i]) for i=1:length(r)],size(r)))
+r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
@@ -52,10 +44,10 @@ testfloat=[ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check=[ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn=normalizeQuantiles(testfloat)
 @test qn == check
-sa=SharedArray(Nullable{Float},(size(testfloat,1),size(testfloat,2)));
+sa=SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 qn=normalizeQuantiles(sa)
-qn=convert(Array{Float},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
+qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 @test qn == check
 
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
@@ -64,52 +56,52 @@ qn=normalizeQuantiles(testint)
 sa=SharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
-qn=convert(Array{Float},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
+qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 @test qn == testint
 sa=SharedArray(Int,(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
 
 
-dafloat=Array{Nullable{Float}}(testfloat)
-dafloat[2,2]=Nullable{Float}()
+dafloat=Array{Nullable{Float64}}(testfloat)
+dafloat[2,2]=Nullable{Float64}()
 qn=normalizeQuantiles(dafloat)
 @test isnull(qn[2,2])
 @test get(qn[1,2])==3.5
 @test get(qn[2,1])==5.0
-sa=SharedArray(Nullable{Float},(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[2,2])
 @test get(qn[1,2])==3.5
 @test get(qn[2,1])==5.0
 
-dafloat[2,:]=Nullable{Float}()
+dafloat[2,:]=Nullable{Float64}()
 qn=normalizeQuantiles(dafloat)
 @test isnull(qn[2,1])
 @test isnull(qn[2,2])
 @test isnull(qn[2,3])
-sa=SharedArray(Nullable{Float},(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[2,1])
 @test isnull(qn[2,2])
 @test isnull(qn[2,3])
 
-dafloat[3,1:2]=Nullable{Float}()
+dafloat[3,1:2]=Nullable{Float64}()
 qn=normalizeQuantiles(dafloat)
 @test isnull(qn[3,1])
 @test isnull(qn[3,2])
-sa=SharedArray(Nullable{Float},(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[3,1])
 @test isnull(qn[3,2])
 
-dafloat[1,:]=Nullable{Float}()
-dafloat[2,:]=Nullable{Float}()
-dafloat[3,:]=Nullable{Float}()
-dafloat[4,:]=Nullable{Float}()
+dafloat[1,:]=Nullable{Float64}()
+dafloat[2,:]=Nullable{Float64}()
+dafloat[3,:]=Nullable{Float64}()
+dafloat[4,:]=Nullable{Float64}()
 qn = normalizeQuantiles(dafloat)
 @test isnull(qn[1,1])
 @test isnull(qn[1,2])
@@ -123,7 +115,7 @@ qn = normalizeQuantiles(dafloat)
 @test isnull(qn[4,1])
 @test isnull(qn[4,2])
 @test isnull(qn[4,3])
-sa=SharedArray(Nullable{Float},(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[1,1])
@@ -284,7 +276,7 @@ r=normalizeQuantiles(dafloat)
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
-sa=SharedArray(Float,(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 r=normalizeQuantiles(sa)
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
@@ -299,7 +291,7 @@ r=normalizeQuantiles(dafloat)
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
-sa=SharedArray(Float,(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 r=normalizeQuantiles(sa)
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
@@ -311,7 +303,7 @@ testfloat = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check = [ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn = normalizeQuantiles(testfloat)
 @test qn == check
-sa=SharedArray(Float,(size(testfloat,1),size(testfloat,2)));
+sa=SharedArray(Float64,(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 qn = normalizeQuantiles(sa)
 @test qn == check
@@ -324,7 +316,7 @@ dafloat = DataArray(testfloat)
 dacheck = DataArray(check)
 qn = normalizeQuantiles(dafloat)
 @test qn == check
-sa=SharedArray(Float,(size(dafloat,1),size(dafloat,2)));
+sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn = normalizeQuantiles(sa)
 @test qn == check
