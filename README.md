@@ -62,13 +62,13 @@ array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 qn = normalizeQuantiles(array)
 ```
 
-<pre title="output" style="padding-left:32px;margin-left:32px;">
+<pre title="output"><pre title="output">
 	4x3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
-</pre>
+</pre></pre>
 
 The columns in `qn` are now quantile normalized to each other.
 
