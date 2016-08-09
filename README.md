@@ -50,9 +50,21 @@ No dependencies
  
 #### Example for julia version >= 0.4
 
+<table>
+<tr>
+<td>
+```
+julia> 
+julia> 
+```
+</td>
+<td>
 ```julia
 Pkg.add("NormalizeQuantiles")
 using NormalizeQuantiles
+</td>
+<tr>
+</table>
 ```
 
 `array` is interpreted as a matrix with 4 rows and 3 columns:
