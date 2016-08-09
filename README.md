@@ -12,10 +12,10 @@ qn = normalizeQuantiles(array);
 and provides a function (julia>=0.4) to calculate sample ranks
 
 ```julia
-(r,m)=sampleRanks(a);
+(r,m)=sampleRanks(array);
 ```
 
-of a given vector.
+of a given vector or matrix.
 
 **Table of Contents**
 
