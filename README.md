@@ -69,8 +69,8 @@ qn
 
 ```
 
-```
 Output:
+```
 	4x3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
@@ -88,8 +88,8 @@ arrayWithNA[2,2] = Nullable{Float64}()
 arrayWithNA
 ```
 
-```
 Output:
+```
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
 	 Nullable(4.0)  Nullable{Float64}()  Nullable(6.0)
