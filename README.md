@@ -6,12 +6,14 @@
 Package NormalizeQuantiles implements quantile normalization
 
 ```julia
-qn = normalizeQuantiles(array);```
+qn = normalizeQuantiles(array);
+```
 
 and provides a function (julia>=0.4) to calculate sample ranks
 
 ```julia
-(r,m)=sampleRanks(a);```
+(r,m)=sampleRanks(a);
+```
 
 of a given vector.
 
