@@ -677,52 +677,86 @@ r
 
 One or more `NA` in the vector are never equal and remain on there position after sorting. The rank of each `NA` is always `NA`. The default is that a `NA` does not increase the rank for successive values. Giving true as an optional third parameter changes that behavior to increasing the rank by 1 for successive values:
 
-	julia> a = [ 7.0 2.0 4.0 2.0 1.0 ];
-	
-	julia> n = Array{Nullable{Float64}}(a);
-	
-	julia> n[1]=Nullable{Float64}();
-	
-	julia> (r,m)=sampleRanks(n,tmMin);r
+```julia
+a = [ 7.0 2.0 4.0 2.0 1.0 ];
+n = Array{Nullable{Float64}}(a);
+n[1]=Nullable{Float64}();
+(r,m)=sampleRanks(n,tmMin);
+r
+
+
+```
+```
+	julia> r
 	5-element Array{Nullable{Int64},1}:
 	 Nullable{Int64}()
 	 Nullable(2)
 	 Nullable(3)
 	 Nullable(2)
 	 Nullable(1)	
+```
+```julia
+(r,m)=sampleRanks(n,tmMin,true);
+r
 
-	julia> (r,m)=sampleRanks(n,tmMin,true);r
+
+```
+```
+	julia> r
 	5-element Array{Nullable{Int64},1}:
 	 Nullable{Int64}()
 	 Nullable(3)
 	 Nullable(4)
 	 Nullable(3)
 	 Nullable(2)	
+```
 
 The third optional parameter lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return `null`:
 
-	julia> a = [ 7.0 2.0 4.0 2.0 1.0 ];
+```julia
+a = [ 7.0 2.0 4.0 2.0 1.0 ];
+(r,m)=sampleRanks(a,tmMin,false,true);
+m
 
-	julia> (r,m)=sampleRanks(a,tmMin,false,true);m
+
+```
+```
+	julia> m
 	Dict{Int64,Array{Int64,N}} with 4 entries:
 	  4 => [1]
 	  2 => [2,4]
 	  3 => [3]
 	  1 => [5]
-	
-	julia> haskey(m,2)   #does rank 2 exist?
+```
+```julia
+haskey(m,2)   #does rank 2 exist?
+
+
+```
+```
+	julia> haskey(m,2)
 	true
-	
-	julia> a[m[2]]   #all values of rank 2
+```
+```julia
+a[m[2]]   #all values of rank 2
+
+
+```
+```
+	julia> a[m[2]]
 	2-element Array{Float64,1}:
 	 2.0
 	 2.0
+```
 
 The three optional parameters can also be used using keyword argument syntax:
 
-	julia> (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
-	
-	julia> (r,m)=sampleRanks(a,resultMatrix=true);
+```julia
+(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
+(r,m)=sampleRanks(a,resultMatrix=true);
+
+
+```
 	 
 ## List of all exported definitions for `sampleRanks`
 
