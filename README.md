@@ -98,10 +98,11 @@ arrayWithNA
 	
 ```julia
 qn = normalizeQuantiles(arrayWithNA)
+
+
 ```
 
 ```
-Output:
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
 	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
@@ -111,10 +112,11 @@ Output:
 	
 ```julia
 isnull(qn[2,2])
+
+
 ```
 
 ```
-Output:
 	true
 ```
 
