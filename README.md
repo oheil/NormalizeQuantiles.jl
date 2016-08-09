@@ -120,16 +120,16 @@ isnull(qn[2,2])
 The result must be of type `Array{Nullable{Float64}}`, because `NAs` stay `NAs` after quantile normalization. Setting the `NA` to `0.0` we can convert the result back to `Array{Float64}`:
 
 ```julia
-	qn[2,2] = 0.0;
-	isnull(qn[2,2])
+qn[2,2] = 0.0;
+isnull(qn[2,2])
 ```
 ```
 	julia> isnull(qn[2,2])
 	false
 ```
 ```julia
-	qn_array = convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)));
-	qn_array
+qn_array = convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)));
+qn_array
 ```
 ```
 	julia> qn_array
