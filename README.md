@@ -84,9 +84,10 @@ Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/r
 arrayWithNA = Array{Nullable{Float64}}(array)
 arrayWithNA[2,2] = Nullable{Float64}()
 arrayWithNA
+
+
 ```
 
-Output:
 ```
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
