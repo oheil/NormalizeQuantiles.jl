@@ -307,50 +307,75 @@ qn = normalizeQuantiles(sa)
 
 #### Example for julia version 0.3
 
-	julia> Pkg.add("NormalizeQuantiles")
-	julia> using NormalizeQuantiles
-	julia> using DataArrays
-	
-	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> qn = normalizeQuantiles(array)
+```julia
+Pkg.add("NormalizeQuantiles");
+using NormalizeQuantiles;
+using DataArrays;
+array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
+qn = normalizeQuantiles(array)
+
+
+```
+```
+	julia> qn
 	4x3 DataArrays.DataArray{Float64,2}:
      2.0  3.0  2.0
      4.0  6.0  4.0
      8.0  8.0  7.0
      6.0  3.0  7.0
+```
 	
-	julia> da = DataArray(array)
-	julia> da[2,2] = NA
-	julia> daqn = normalizeQuantiles(da)
+```julia
+da = DataArray(array);
+da[2,2] = NA;
+daqn = normalizeQuantiles(da)
+
+
+```
+```
+	julia> daqn
 	4x3 DataArray{Float64,2}:
 	 2.0  3.5  2.0
 	 5.0   NA  5.0
 	 8.0  8.0  6.5
 	 5.0  3.5  6.5
+```
 
 #### Multicore usage examples for julia version 0.3
 
 To use multiple cores on a single machine you can use `SharedArray{Float64}`. Using multiple cores for data with `NA` is not implemented for julia 0.3:
 
-	julia> addprocs(8)
-	julia> using NormalizeQuantiles
-	
-	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> sa=SharedArray(Float64,(size(array,1),size(array,2)));
-	julia> sa[:]=array[:]
+```julia
+addprocs(8);
+using NormalizeQuantiles;
+array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
+sa=SharedArray(Float64,(size(array,1),size(array,2)));
+sa[:]=array[:];
+sa
+
+
+```
+```
 	julia> sa
 	4x3 SharedArray{Float64,2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
 	 5.0  2.0  8.0
-	
-	julia> qn = normalizeQuantiles(sa)
+```
+```julia
+qn = normalizeQuantiles(sa)
+
+
+```
+```
+	julia> qn
 	4x3 SharedArray{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
+```
  
 ## Behaviour of function `normalizeQuantiles`
 
@@ -383,51 +408,91 @@ In julia version 0.3 `NA` values have been implemented using the Package DataArr
 
 #### julia version 0.3:
 
-	julia> using NormalizeQuantiles
-	
-	julia> r=randn((1000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+```julia
+using NormalizeQuantiles;
+r=randn((1000,10));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	elapsed time: 0.021892844 seconds (6432744 bytes allocated)
-	
-	julia> r=randn((10000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+```
+```julia
+r=randn((10000,10));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	elapsed time: 0.307518666 seconds (64381344 bytes allocated, 32.34% gc time)
-	
-	julia> r=randn((1000,100));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+```
+```julia
+r=randn((1000,100));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	elapsed time: 0.127257423 seconds (49638624 bytes allocated, 33.66% gc time)
-	
-	julia> r=randn((100000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+```
+```julia
+r=randn((100000,10));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	elapsed time: 2.527081368 seconds (637277984 bytes allocated, 23.32% gc time)
+```
 
 #### julia version 0.4:
 
-	julia> using NormalizeQuantiles
-	
-	julia> r=randn((1000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+```julia
+using NormalizeQuantiles;
+r=randn((1000,10));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	  0.004806 seconds (13.39 k allocations: 4.605 MB)
-	
-	julia> r=randn((10000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+```
+```julia
+r=randn((10000,10));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	  0.055855 seconds (148.48 k allocations: 46.976 MB, 10.61% gc time)
-	
-	julia> r=randn((1000,100));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+```
+```julia
+r=randn((1000,100));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	  0.032935 seconds (20.36 k allocations: 41.598 MB, 11.14% gc time)
-	  
-	julia> r=randn((100000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+```
+```julia
+r=randn((100000,10));
+qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+
+
+```
+```
+	julia> @time qn=normalizeQuantiles(r);
 	  0.556000 seconds (1.50 M allocations: 464.510 MB, 8.81% gc time)
+```
 
 ## Remarks on data with `NA`
 
