@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/24mlc8g1x65a57h7?svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl)
 
-Package NormalizeQuantiles implements quantile normalization (`normalizeQuantiles`) and provides a function (julia>=0.4) to calculate sample ranks (`sampleRanks`) of a given vector.
+Package NormalizeQuantiles implements quantile normalization `(normalizeQuantiles)` and provides a function (julia>=0.4) to calculate sample ranks `(sampleRanks)` of a given vector.
 
 **Table of Contents**
 
