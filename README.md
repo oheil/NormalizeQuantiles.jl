@@ -609,6 +609,46 @@ r
 	 3
 	 1
 ```
+
+If you provide a matrix like
+
+```julia
+array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
+
+
+```
+```
+	julia> array
+	4x3 Array{Float64,2}:
+	  1.0   2.0   3.0
+	  4.0   5.0   6.0
+	  7.0   8.0   9.0
+	 10.0  11.0  12.0
+```
+
+ranks are calculated column wise:
+```julia
+(r,m)=sampleRanks(array);
+r
+
+
+```
+```
+	julia> r
+	12-element Array{Int64,1}:
+	  1
+	  4
+	  7
+	 10
+	  2
+	  5
+	  8
+	 11
+	  3
+	  6
+	  9
+	 12
+```
 	
 Equal values in the vector are called ties. There are several methods available on how to treat ties:
 * tmMin : the smallest rank for all ties (default)
