@@ -75,24 +75,42 @@ The columns in `qn` are now quantile normalized to each other.
 
 Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
 
-	julia> arrayWithNA = Array{Nullable{Float64}}(array)
-	julia> arrayWithNA[2,2] = Nullable{Float64}()
-	julia> arrayWithNA
+```julia
+arrayWithNA = Array{Nullable{Float64}}(array)
+arrayWithNA[2,2] = Nullable{Float64}()
+arrayWithNA
+```
+
+```
+Output:
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
 	 Nullable(4.0)  Nullable{Float64}()  Nullable(6.0)
 	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
 	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
+```
 	
-	julia> qn = normalizeQuantiles(arrayWithNA)
+```julia
+qn = normalizeQuantiles(arrayWithNA)
+```
+
+```
+Output:
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
 	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
 	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
+```
+	
+```julia
+isnull(qn[2,2])
+```
 
-	julia> isnull(qn[2,2])
+```
+Output:
 	true
+```
 
 The result must be of type `Array{Nullable{Float64}}`, because `NAs` stay `NAs` after quantile normalization. Setting the `NA` to `0.0` we can convert the result back to `Array{Float64}`:
 
