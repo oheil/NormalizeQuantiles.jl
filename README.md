@@ -122,6 +122,8 @@ The result must be of type `Array{Nullable{Float64}}`, because `NAs` stay `NAs` 
 ```julia
 qn[2,2] = 0.0;
 isnull(qn[2,2])
+
+
 ```
 ```
 	julia> isnull(qn[2,2])
@@ -130,6 +132,8 @@ isnull(qn[2,2])
 ```julia
 qn_array = convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)));
 qn_array
+
+
 ```
 ```
 	julia> qn_array
@@ -142,61 +146,102 @@ qn_array
 
 How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.jl):
 
-	julia> using NullableArrays
-	
-	julia> na = NullableArray(array)
-	julia> na[2,2] = Nullable()
+```julia
+using NullableArrays;
+na = NullableArray(array);
+na[2,2] = Nullable();
+na
+
+
+```
+```
 	julia> na
 	4x3 NullableArrays.NullableArray{Float64,2}:
 	 3.0      2.0  1.0
 	 4.0  #NULL    6.0
 	 9.0      7.0  8.0
 	 5.0      2.0  8.0	
+```
 
 Convert the `NullableArray` `na` to `Array{Nullable{Float64}}`:
 
-	julia> arrayOfNullables = convert(Array{Nullable{Float64}},reshape([na[i] for i=1:length(na)],size(na)))
-	julia> qn = normalizeQuantiles(arrayOfNullables)
+```julia
+arrayOfNullables = convert(Array{Nullable{Float64}},reshape([na[i] for i=1:length(na)],size(na)));
+qn = normalizeQuantiles(arrayOfNullables)
+
+
+```
+```
+	julia> qn
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(4.5)        Nullable(2.0)
 	 Nullable(4.0)  Nullable{Float64}()  Nullable(4.0)
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
 	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)	
+```
 
 Convert the result `Array{Nullable{Float64}}` back to `NullableArray`:
 
-	julia> isn = convert(Array{Bool},reshape([isnull(qn[i]) for i=1:length(qn)],size(qn)))
-	julia> qn[isn] = 0.0
-	julia> qna = NullableArray(convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn))),isn)
+```julia
+isn = convert(Array{Bool},reshape([isnull(qn[i]) for i=1:length(qn)],size(qn)));
+qn[isn] = 0.0;
+qna = NullableArray(convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn))),isn)
+
+
+```
+```
+	julia> qna
 	4x3 NullableArrays.NullableArray{Float64,2}:
 	 2.0      3.5  2.0
 	 5.0  #NULL    5.0
 	 8.0      8.0  6.5
 	 5.0      3.5  6.5
+```
 
 Dealing with `DataArrays` in julia version >= 0.4 (if you use julia 0.3 and DataArrays see below the examples for julia version 0.3):
 
-	julia> using DataArrays
-	
-	julia> da = DataArray(array)
+```julia
+using DataArrays;
+da = DataArray(array)
+
+
+```
+```
+	julia> da
 	4x3 DataArrays.DataArray{Float64,2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
 	 5.0  2.0  8.0
+```
+```julia
+da[2,2] = NA
+
 	
-	julia> da[2,2] = NA
+```
 
 Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 
-	julia> arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(da[i])?Nullable{Float64}():Nullable{Float64}(da[i]) for i=1:length(da)],size(da)))
+```julia
+arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(da[i])?Nullable{Float64}():Nullable{Float64}(da[i]) for i=1:length(da)],size(da)))
+
+
+```
+```
+	julia> arrayWithNA
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
 	 Nullable(4.0)  Nullable{Float64}()  Nullable(6.0)
 	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
 	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
-	
-	julia> qn = normalizeQuantiles(arrayWithNA)
+```
+```julia
+qn = normalizeQuantiles(arrayWithNA)
+
+
+```
+```
+	julia> qn
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
 	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
@@ -205,14 +250,21 @@ Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 
 Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `NAs`:
 
-	julia> daqn = DataArray(Float64,size(qn))
-	julia> daqn[1:length(qn)] = DataArray(reshape([isnull(qn[i])?NA:get(qn[i]) for i=1:length(qn)],size(qn)))[1:length(qn)]
+```julia
+daqn = DataArray(Float64,size(qn));
+daqn[1:length(qn)] = DataArray(reshape([isnull(qn[i])?NA:get(qn[i]) for i=1:length(qn)],size(qn)))[1:length(qn)];
+daqn
+
+
+```
+```
 	julia> daqn
 	4x3 DataArrays.DataArray{Float64,2}:
 	 2.0  3.5  2.0
 	 5.0   NA  5.0
 	 8.0  8.0  6.5
 	 5.0  3.5  6.5
+```
 
 #### Multicore usage examples for julia version >= 0.4
 
