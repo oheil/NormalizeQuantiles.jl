@@ -31,10 +31,11 @@ of a given vector or matrix.
   - [For julia version >= 0.4](#for-julia-version--04)
   - [For julia version 0.3](#for-julia-version-03)
 - [Data prerequisites](#data-prerequisites)
-- [Usage examples `sampleRanks`](#usage-examples-sampleranks)
 - [Remarks on performance](#remarks-on-performance)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
-- [List of all exported definitions](#list-of-all-exported-definitions)
+- [List of all exported definitions](#list-of-all-exported-definitions-for-normalizeQuantiles)
+- [Usage examples `sampleRanks`](#usage-examples-sampleranks)
+- [List of all exported definitions](#list-of-all-exported-definitions-for-sampleranks)
 
 ## Dependencies
 
@@ -302,6 +303,148 @@ To use quantile normalization your data should have the following properties:
 * number of values for each column should be large
 * number of `NA` in the data should be small and of random nature
 
+## Remarks on performance
+
+In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
+
+#### julia version 0.3:
+
+	julia> using NormalizeQuantiles
+	
+	julia> r=randn((1000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	elapsed time: 0.021892844 seconds (6432744 bytes allocated)
+	
+	julia> r=randn((10000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+	elapsed time: 0.307518666 seconds (64381344 bytes allocated, 32.34% gc time)
+	
+	julia> r=randn((1000,100));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	elapsed time: 0.127257423 seconds (49638624 bytes allocated, 33.66% gc time)
+	
+	julia> r=randn((100000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	elapsed time: 2.527081368 seconds (637277984 bytes allocated, 23.32% gc time)
+
+#### julia version 0.4:
+
+	julia> using NormalizeQuantiles
+	
+	julia> r=randn((1000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	  0.004806 seconds (13.39 k allocations: 4.605 MB)
+	
+	julia> r=randn((10000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
+	  0.055855 seconds (148.48 k allocations: 46.976 MB, 10.61% gc time)
+	
+	julia> r=randn((1000,100));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	  0.032935 seconds (20.36 k allocations: 41.598 MB, 11.14% gc time)
+	  
+	julia> r=randn((100000,10));
+	
+	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
+	  0.556000 seconds (1.50 M allocations: 464.510 MB, 8.81% gc time)
+
+## Remarks on data with `NA`
+
+Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we put any given `NA` back into the sorted column at the original position before calculating the mean of the rows.
+
+## List of all exported definitions for `normalizeQuantiles`
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
+| Input type: | `Array{Float64}` |
+| Return type: | `Array{Float64}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Int})` |
+| Input type: | `Array{Int}` |
+| Return type: | `Array{Float64}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Float64}})` |
+| Input type: | `Array{Nullable{Float64}}` |
+| Return type: | `Array{Nullable{Float64}}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
+| Input type: | `Array{Nullable{Int}}` |
+| Return type: | `Array{Nullable{Float64}}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
+| Input type: | `SharedArray{Float64}` |
+| Return type: | `SharedArray{Float64}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
+| Input type: | `SharedArray{Int}` |
+| Return type: | `SharedArray{Float64}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})` |
+| Input type: | `SharedArray{Nullable{Float64}}` |
+| Return type: | `SharedArray{Nullable{Float64}}` |
+
+| | normalizeQuantiles, julia version >= 0.4 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})` |
+| Input type: | `SharedArray{Nullable{Int}}` |
+| Return type: | `SharedArray{Nullable{Float64}}` |
+
+| | normalizeQuantiles, julia version = 0.3 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
+| Input type: | `Array{Float64}` |
+| Return type: | `DataArray{Float64}` |
+
+| | normalizeQuantiles, julia version = 0.3 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::Array{Int})` |
+| Input type: | `Array{Int}` |
+| Return type: | `DataArray{Float64}` |
+
+| | normalizeQuantiles, julia version = 0.3 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Float64})` |
+| Input type: | `DataArray{Float64}` |
+| Return type: | `DataArray{Float64}` |
+
+| | normalizeQuantiles, julia version = 0.3 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Int})` |
+| Input type: | `DataArray{Int}` |
+| Return type: | `DataArray{Float64}` |
+
+| | normalizeQuantiles, julia version = 0.3 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
+| Input type: | `SharedArray{Float64}` |
+| Return type: | `SharedArray{Float64}` |
+
+| | normalizeQuantiles, julia version = 0.3 |
+| -----------------------: | ----------------------- | 
+| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
+| Input type: | `SharedArray{Int}` |
+| Return type: | `SharedArray{Float64}` |
+
 ## Usage examples `sampleRanks`
 
 ##### Only available for julia>=0.4
@@ -415,111 +558,7 @@ The three optional parameters can also be used using keyword argument syntax:
 	
 	julia> (r,m)=sampleRanks(a,resultMatrix=true);
 	 
-## Remarks on performance
-
-In julia version 0.3 `NA` values have been implemented using the Package DataArray. With julia 0.4 the concept of Nullables has been introduced. Tests using DataArrays and Arrays of Nullables have shown, that performance of Arrays of Nullables is superior to DataArrays. Therefore with julia version 0.4 the dependency on DataArrays is dropped in favor of Arrays of Nullables:
-
-#### julia version 0.3:
-
-	julia> using NormalizeQuantiles
-	
-	julia> r=randn((1000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 0.021892844 seconds (6432744 bytes allocated)
-	
-	julia> r=randn((10000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	elapsed time: 0.307518666 seconds (64381344 bytes allocated, 32.34% gc time)
-	
-	julia> r=randn((1000,100));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 0.127257423 seconds (49638624 bytes allocated, 33.66% gc time)
-	
-	julia> r=randn((100000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	elapsed time: 2.527081368 seconds (637277984 bytes allocated, 23.32% gc time)
-
-#### julia version 0.4:
-
-	julia> using NormalizeQuantiles
-	
-	julia> r=randn((1000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	  0.004806 seconds (13.39 k allocations: 4.605 MB)
-	
-	julia> r=randn((10000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);	
-	  0.055855 seconds (148.48 k allocations: 46.976 MB, 10.61% gc time)
-	
-	julia> r=randn((1000,100));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	  0.032935 seconds (20.36 k allocations: 41.598 MB, 11.14% gc time)
-	  
-	julia> r=randn((100000,10));
-	
-	julia> qn=normalizeQuantiles(r);@time qn=normalizeQuantiles(r);
-	  0.556000 seconds (1.50 M allocations: 464.510 MB, 8.81% gc time)
-
-## Remarks on data with `NA`
-
-Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we put any given `NA` back into the sorted column at the original position before calculating the mean of the rows.
-
-## List of all exported definitions
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
-| Input type: | `Array{Float64}` |
-| Return type: | `Array{Float64}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Int})` |
-| Input type: | `Array{Int}` |
-| Return type: | `Array{Float64}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Float64}})` |
-| Input type: | `Array{Nullable{Float64}}` |
-| Return type: | `Array{Nullable{Float64}}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
-| Input type: | `Array{Nullable{Int}}` |
-| Return type: | `Array{Nullable{Float64}}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
-| Input type: | `SharedArray{Float64}` |
-| Return type: | `SharedArray{Float64}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
-| Input type: | `SharedArray{Int}` |
-| Return type: | `SharedArray{Float64}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})` |
-| Input type: | `SharedArray{Nullable{Float64}}` |
-| Return type: | `SharedArray{Nullable{Float64}}` |
-
-| | normalizeQuantiles, julia version >= 0.4 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})` |
-| Input type: | `SharedArray{Nullable{Int}}` |
-| Return type: | `SharedArray{Nullable{Float64}}` |
+## List of all exported definitions for `sampleRanks`
 
 | | sampleRanks, julia version >= 0.4 |
 | -----------------------: | ----------------------- | 
@@ -594,48 +633,3 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
-
-| | normalizeQuantiles, julia version = 0.3 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
-| Input type: | `Array{Float64}` |
-| Return type: | `DataArray{Float64}` |
-
-| | normalizeQuantiles, julia version = 0.3 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::Array{Int})` |
-| Input type: | `Array{Int}` |
-| Return type: | `DataArray{Float64}` |
-
-| | normalizeQuantiles, julia version = 0.3 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Float64})` |
-| Input type: | `DataArray{Float64}` |
-| Return type: | `DataArray{Float64}` |
-
-| | normalizeQuantiles, julia version = 0.3 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `DataArray{Float64} function normalizeQuantiles(matrix::DataArray{Int})` |
-| Input type: | `DataArray{Int}` |
-| Return type: | `DataArray{Float64}` |
-
-| | normalizeQuantiles, julia version = 0.3 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
-| Input type: | `SharedArray{Float64}` |
-| Return type: | `SharedArray{Float64}` |
-
-| | normalizeQuantiles, julia version = 0.3 |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
-| Input type: | `SharedArray{Int}` |
-| Return type: | `SharedArray{Float64}` |
-
-
-
-
-
-
-
-
-
