@@ -33,9 +33,9 @@ of a given vector or matrix.
 - [Data prerequisites](#data-prerequisites)
 - [Remarks on performance](#remarks-on-performance)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
-- [List of all exported definitions](#list-of-all-exported-definitions-for-normalizeQuantiles)
+- [List of all exported definitions for `normalizeQuantiles`](#list-of-all-exported-definitions-for-normalizequantiles)
 - [Usage examples `sampleRanks`](#usage-examples-sampleranks)
-- [List of all exported definitions](#list-of-all-exported-definitions-for-sampleranks)
+- [List of all exported definitions for `sampleRanks`](#list-of-all-exported-definitions-for-sampleranks)
 
 ## Dependencies
 
