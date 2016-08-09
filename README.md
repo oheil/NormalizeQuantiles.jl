@@ -57,7 +57,9 @@ using NormalizeQuantiles;
 
 
 ```
+
 The following `array` is interpreted as a matrix with 4 rows and 3 columns:
+
 ```julia
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 qn = normalizeQuantiles(array)
@@ -92,28 +94,26 @@ arrayWithNA
 	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
 	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
 ```
-	
 ```julia
 qn = normalizeQuantiles(arrayWithNA)
 
 
 ```
-
 ```
+	julia> qn
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
 	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
 	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
 ```
-	
 ```julia
 isnull(qn[2,2])
 
 
 ```
-
 ```
+	julia> isnull(qn[2,2])
 	true
 ```
 
