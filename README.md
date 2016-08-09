@@ -343,6 +343,8 @@ daqn = normalizeQuantiles(da)
 
 #### Multicore usage examples for julia version 0.3
 
+> Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`. Doing it the other way round will result in an error.
+
 To use multiple cores on a single machine you can use `SharedArray{Float64}`. Using multiple cores for data with `NA` is not implemented for julia 0.3:
 
 ```julia
