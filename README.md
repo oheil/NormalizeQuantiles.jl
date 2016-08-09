@@ -751,7 +751,7 @@ r
 	 Nullable(2)	
 ```
 
-The third optional parameter lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return `null`:
+The third optional parameter lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return an empty dictionary of type `Dict{Int64,Array{Int64,N}}`:
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
