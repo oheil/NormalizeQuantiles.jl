@@ -247,6 +247,7 @@ qn = normalizeQuantiles(arrayWithNA)
 	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
 	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
 	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
+```
 
 Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `NAs`:
 
