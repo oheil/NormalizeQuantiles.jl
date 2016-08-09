@@ -269,27 +269,41 @@ daqn
 
 #### Multicore usage examples for julia version >= 0.4
 
+> Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`. Doing it the other way round will result in an error.
+
 To use multiple cores on a single machine you can use `SharedArray{Nullable{Float64}}`:
 
-	julia> addprocs()
-	julia> using NormalizeQuantiles
-	
-	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));
-	julia> sa[:]=array[:]
+```julia
+addprocs();
+using NormalizeQuantiles;
+array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
+sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));
+sa[:]=array[:];
+sa
+
+
+```
+```
 	julia> sa
 	4x3 SharedArray{Nullable{Float64},2}:
 	 Nullable(3.0)  Nullable(2.0)  Nullable(1.0)
 	 Nullable(4.0)  Nullable(5.0)  Nullable(6.0)
 	 Nullable(9.0)  Nullable(7.0)  Nullable(8.0)
 	 Nullable(5.0)  Nullable(2.0)  Nullable(8.0)
-	
-	julia> qn = normalizeQuantiles(sa)
+```
+```julia
+qn = normalizeQuantiles(sa)
+
+
+```
+```
+	julia> qn
 	4x3 SharedArray{Nullable{Float64},2}:
 	 Nullable(2.0)  Nullable(3.0)  Nullable(2.0)
 	 Nullable(4.0)  Nullable(6.0)  Nullable(4.0)
 	 Nullable(8.0)  Nullable(8.0)  Nullable(7.0)
 	 Nullable(6.0)  Nullable(3.0)  Nullable(7.0)	
+```
 
 #### Example for julia version 0.3
 
