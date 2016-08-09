@@ -63,8 +63,9 @@ using NormalizeQuantiles;
 ```julia
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 qn = normalizeQuantiles(array)
-```
 
+
+```
 ```
 	julia> qn
 	4x3 Array{Float64,2}:
@@ -79,14 +80,14 @@ The columns in `qn` are now quantile normalized to each other.
 Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
 
 ```julia
-arrayWithNA = Array{Nullable{Float64}}(array)
-arrayWithNA[2,2] = Nullable{Float64}()
+arrayWithNA = Array{Nullable{Float64}}(array);
+arrayWithNA[2,2] = Nullable{Float64}();
 arrayWithNA
 
 
 ```
-
 ```
+	julia> arrayWithNA
 	4x3 Array{Nullable{Float64},2}:
 	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
 	 Nullable(4.0)  Nullable{Float64}()  Nullable(6.0)
