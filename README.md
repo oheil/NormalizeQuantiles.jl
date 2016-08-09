@@ -50,20 +50,24 @@ No dependencies
  
 #### Example for julia version >= 0.4
 
-	julia> Pkg.add("NormalizeQuantiles")
-	julia> using NormalizeQuantiles
+```julia
+Pkg.add("NormalizeQuantiles")
+using NormalizeQuantiles
+```
 
 `array` is interpreted as a matrix with 4 rows and 3 columns:
 
-	julia> array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
-	julia> qn = normalizeQuantiles(array)
+```julia
+array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+qn = normalizeQuantiles(array)
 	4x3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
+```
 
-The columns are now quantile normalized to each other.
+The columns in `qn` are now quantile normalized to each other.
 
 Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
 
