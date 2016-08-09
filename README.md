@@ -592,12 +592,15 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 
 `sampleRanks` of a given vector calculates for each element the rank, which is the position of the element in the sorted vector.
 
-	julia> using NormalizeQuantiles
-	
-	julia> a = [ 5.0 2.0 4.0 3.0 1.0 ];
-	
-	julia> (r,m)=sampleRanks(a);   # here only return value r is relevant, for m see below
-	
+```julia
+using NormalizeQuantiles
+a = [ 5.0 2.0 4.0 3.0 1.0 ];
+(r,m)=sampleRanks(a);   # here only return value r is relevant, for m see below
+r
+
+
+```
+```
 	julia> r
 	5-element Array{Int64,1}:
 	 5
@@ -605,6 +608,7 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 	 4
 	 3
 	 1
+```
 	
 Equal values in the vector are called ties. There are several methods available on how to treat ties:
 * tmMin : the smallest rank for all ties (default)
@@ -616,16 +620,22 @@ Equal values in the vector are called ties. There are several methods available 
 
 These methods are defined and exported as
 	
+```julia
 	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
+```
 
 Internally ties have increasing ranks. On these the chosen method is applied.
 	
 Example:
 
-	julia> a = [ 7.0 2.0 4.0 2.0 1.0 ];
-	
-	julia> (r,m)=sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tmMin)
-	
+```julia
+a = [ 7.0 2.0 4.0 2.0 1.0 ];
+(r,m)=sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tmMin)
+r
+
+
+```
+```
 	julia> r
 	5-element Array{Int64,1}:
 	 4
@@ -633,22 +643,37 @@ Example:
 	 3
 	 2
 	 1
-	
-	julia> (r,m)=sampleRanks(a,tmMax);r
+```
+```julia
+(r,m)=sampleRanks(a,tmMax);
+r
+
+
+```
+```
+	julia> r
 	5-element Array{Int64,1}:
 	 5
 	 3
 	 4
 	 3
 	 1
+```
+```julia
+(r,m)=sampleRanks(a,tmReverse);
+r
 
-	julia> (r,m)=sampleRanks(a,tmReverse);r
+
+```
+```
+	julia> r
 	5-element Array{Int64,1}:
 	 5
 	 3
 	 4
 	 2
 	 1
+```
 
 One or more `NA` in the vector are never equal and remain on there position after sorting. The rank of each `NA` is always `NA`. The default is that a `NA` does not increase the rank for successive values. Giving true as an optional third parameter changes that behavior to increasing the rank by 1 for successive values:
 
