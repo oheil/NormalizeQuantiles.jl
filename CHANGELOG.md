@@ -11,7 +11,8 @@
 
 ####Remarks:
 
-Using optional parameter in functions like
+In julia 0.5 and 0.6 using optional parameters in functions like
+
 ```julia
 function test(a,b=1,c=1)
 	a+b+c
