@@ -724,13 +724,13 @@ r
 	 1
 ```
 
-One or more `NA` in the vector are never equal and remain on there position after sorting. The rank of each `NA` is always `NA`. The default is that a `NA` does not increase the rank for successive values. Giving true as an optional third parameter changes that behavior to increasing the rank by 1 for successive values:
+One or more `NA` in the vector are never equal and remain on there position after sorting. The rank of each `NA` is always `NA`. The default is that a `NA` does not increase the rank for successive values. Giving true keyword parameter `naIncreasesRank` changes that behavior to increasing the rank by 1 for successive values:
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
 n = Array{Nullable{Float64}}(a);
 n[1]=Nullable{Float64}();
-(r,m)=sampleRanks(n,tiesMethod=tmMin);
+(r,m)=sampleRanks(n);
 r
 
 
@@ -745,7 +745,7 @@ r
 	 Nullable(1)	
 ```
 ```julia
-(r,m)=sampleRanks(n,tiesMethod=tmMin,naIncreasesRank=true);
+(r,m)=sampleRanks(n,naIncreasesRank=true);
 r
 
 
@@ -760,11 +760,11 @@ r
 	 Nullable(2)	
 ```
 
-The third optional parameter lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return an empty dictionary of type `Dict{Int64,Array{Int64,N}}`:
+The keyword parameter `resultMatrix` lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return an empty dictionary of type `Dict{Int64,Array{Int64,N}}`:
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
+(r,m)=sampleRanks(a,resultMatrix=true);
 m
 
 
@@ -813,51 +813,6 @@ a[m[2]]   #all values of rank 2
 
 | | sampleRanks, julia version >= 0.4 | |
 | -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
-| Input type: | `Array{Int}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks, julia version >= 0.4 | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` ||
-| Input type: | `Array{Float64}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks, julia version >= 0.4 | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `Array{Int}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks, julia version >= 0.4 | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | |
-| Input type: | `Array{Nullable{Float64}}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks, julia version >= 0.4 | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}}, tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | |
-| Input type: | `Array{Nullable{Int}}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks, julia version >= 0.4 | |
-| -----------------------: | ----------------------- | ----------------------- | 
 | **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
 | Input type: | `Array{Nullable{Float64}}` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
@@ -873,3 +828,22 @@ a[m[2]]   #all values of rank 2
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
+
+| | sampleRanks, julia version >= 0.4 | |
+| -----------------------: | ----------------------- | ----------------------- | 
+| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| Input type: | `Array{Float64}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
+
+| | sampleRanks, julia version >= 0.4 | |
+| -----------------------: | ----------------------- | ----------------------- | 
+| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| Input type: | `Array{Int}` | data |
+| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
+
