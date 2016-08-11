@@ -1,15 +1,15 @@
 ## 0.2.0 (2016-08-11)
 
-Features:
+####Features:
 
   - started changelog: 
   - for function `sampleRanks` removed methods with optional parameters in favor of methods with keyword parameters
 	
-Bug fixes:
+####Bug fixes:
 
-  none
+  - none
 
-Remarks:
+####Remarks:
 
 Using optional functions like
 ```julia
