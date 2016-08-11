@@ -375,45 +375,6 @@ function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float64}},allranks::Dict
 end
 
 @doc "
-### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-
-" ->
-function sampleRanks(array::Array{Int},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float64}}(Array{Float64}(array))
-	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
-	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
-	(r,m)
-end
-
-@doc "
-### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-
-" ->
-function sampleRanks(array::Array{Float64},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float64}}(array)
-	(rn,m)=sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
-	r=convert(Array{Int},reshape([get(rn[i]) for i=1:length(rn)],size(rn)))
-	(r,m)
-end
-
-@doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-
-" ->
-function sampleRanks(array::Array{Nullable{Float64}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	sampleRanks(array,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
-end
-
-@doc "
-### (Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-
-" ->
-function sampleRanks(array::Array{Nullable{Int}},tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	nullable=Array{Nullable{Float64}}(array)
-	sampleRanks(nullable,tiesMethod=tiesMethod,naIncreasesRank=naIncreasesRank,resultMatrix=resultMatrix)
-end
-
-@doc "
 ### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 
 " ->

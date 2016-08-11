@@ -649,7 +649,16 @@ r
 	  9
 	 12
 ```
-	
+
+There are three optional keyword parameters `tiesMethod`, `naIncreasesRank` and `resultMatrix`:
+
+```julia
+(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
+(r,m)=sampleRanks(a,resultMatrix=true);
+
+
+```
+
 Equal values in the vector are called ties. There are several methods available on how to treat ties:
 * tmMin : the smallest rank for all ties (default)
 * tmMax : the largest rank
@@ -666,11 +675,11 @@ These methods are defined and exported as
 
 Internally ties have increasing ranks. On these the chosen method is applied.
 	
-Example:
+Examples:
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-(r,m)=sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tmMin)
+(r,m)=sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tiesMethod=tmMin)
 r
 
 
@@ -685,7 +694,7 @@ r
 	 1
 ```
 ```julia
-(r,m)=sampleRanks(a,tmMax);
+(r,m)=sampleRanks(a,tiesMethod=tmMax);
 r
 
 
@@ -700,7 +709,7 @@ r
 	 1
 ```
 ```julia
-(r,m)=sampleRanks(a,tmReverse);
+(r,m)=sampleRanks(a,tiesMethod=tmReverse);
 r
 
 
@@ -721,7 +730,7 @@ One or more `NA` in the vector are never equal and remain on there position afte
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
 n = Array{Nullable{Float64}}(a);
 n[1]=Nullable{Float64}();
-(r,m)=sampleRanks(n,tmMin);
+(r,m)=sampleRanks(n,tiesMethod=tmMin);
 r
 
 
@@ -736,7 +745,7 @@ r
 	 Nullable(1)	
 ```
 ```julia
-(r,m)=sampleRanks(n,tmMin,true);
+(r,m)=sampleRanks(n,tiesMethod=tmMin,naIncreasesRank=true);
 r
 
 
@@ -755,7 +764,7 @@ The third optional parameter lets you generate a dictionary of rank indices to a
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-(r,m)=sampleRanks(a,tmMin,false,true);
+(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
 m
 
 
@@ -789,15 +798,6 @@ a[m[2]]   #all values of rank 2
 	 2.0
 ```
 
-The three optional parameters can also be used using keyword argument syntax:
-
-```julia
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
-(r,m)=sampleRanks(a,resultMatrix=true);
-
-
-```
-	 
 ## List of all exported definitions for `sampleRanks`
 
 | | sampleRanks, julia version >= 0.4 |
