@@ -2,9 +2,16 @@
 
 Features:
 
-	- started changelog: 
-	- for function `sampleRanks` removed methods with optional parameters in favor of methods with keyword parameters
-	using optional functions like
+  - started changelog: 
+  - for function `sampleRanks` removed methods with optional parameters in favor of methods with keyword parameters
+	
+Bug fixes:
+
+  none
+
+Remarks:
+
+Using optional functions like
 ```julia
 function test(a,b=1,c=1)
 	a+b+c
@@ -25,11 +32,6 @@ end
 WARNING: Method definition test(Any) in ... overwritten at ...
 ```
 	
-Bug fixes:
-
-	none
-
-
 
 
 
