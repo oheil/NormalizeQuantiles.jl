@@ -11,7 +11,7 @@
 
 ####Remarks:
 
-Using optional functions like
+Using optional parameter in functions like
 ```julia
 function test(a,b=1,c=1)
 	a+b+c
@@ -19,7 +19,9 @@ end
 
 
 ```
-	together with keyword parameters:
+
+together with keyword parameters:
+
 ```julia
 function test(a;b=1,c=1)
 	a+b+c
@@ -27,7 +29,9 @@ end
 
 
 ```
-	results in warning messages when importing the package with `using`:
+
+results in warning messages when importing the package with `using`:
+
 ```
 WARNING: Method definition test(Any) in ... overwritten at ...
 ```
