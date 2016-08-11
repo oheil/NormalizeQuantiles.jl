@@ -2,7 +2,7 @@
 
 ####Features:
 
-  - started changelog: 
+  - started changelog: https://github.com/oheil/NormalizeQuantiles.jl/blob/master/CHANGELOG.md
   - for function `sampleRanks` removed methods with optional parameters in favor of methods with keyword parameters
 	
 ####Bug fixes:
