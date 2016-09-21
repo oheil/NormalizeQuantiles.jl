@@ -285,8 +285,10 @@ qn = normalizeQuantiles(testfloat)
 @test qn == check
 sa=SharedArray(Float64,(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
+sacheck=SharedArray(Float64,(size(check,1),size(check,2)));
+sacheck[:]=check[:]
 qn = normalizeQuantiles(sa)
-@test qn == check
+@test qn == sacheck
 
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
 qn = normalizeQuantiles(testint)
@@ -298,8 +300,10 @@ qn = normalizeQuantiles(dafloat)
 @test qn == check
 sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
+sacheck=SharedArray(Float64,(size(dacheck,1),size(dacheck,2)));
+sacheck[:]=dacheck[:]
 qn = normalizeQuantiles(sa)
-@test qn == check
+@test qn == sacheck
 
 daint = DataArray(testint)
 qn = normalizeQuantiles(daint)
