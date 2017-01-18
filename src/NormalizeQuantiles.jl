@@ -627,8 +627,7 @@ end
 Method for input type SharedArray{Int}
 """
 function normalizeQuantiles(matrix::SharedArray{Int})
-    #sa=SharedArray(Float64,(size(matrix,1),size(matrix,2)))
-	sa=@SharedArray(Float64,(size(matrix,1),size(matrix,2)))
+    sa=SharedArray(Float64,(size(matrix,1),size(matrix,2)))
 	sa[:]=matrix[:]
     normalizeQuantiles(sa)
 end
@@ -657,8 +656,7 @@ function normalizeQuantiles(matrix::SharedArray{Float64})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    #qnmatrix=SharedArray(Float64,(nrows,ncols))
-	qnmatrix=@SharedArray(Float64,(nrows,ncols))
+    qnmatrix=SharedArray(Float64,(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
