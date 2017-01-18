@@ -147,6 +147,7 @@ qn_array
 How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.jl):
 
 ```julia
+Pkg.add("NullableArrays")
 using NullableArrays;
 na = NullableArray(array);
 na[2,2] = Nullable();
