@@ -12,6 +12,15 @@ if VERSION < v"0.4.0-"
 	end
 end # if VERSION < v"0.4.0-"
 
+macro SharedArray(mytype,mysize)
+	if VERSION >= v"0.6.0-"
+		return :( SharedArray{$(esc(mytype))}($(esc(mysize))) )
+	end # if VERSION >= v"0.6.0-"
+	if VERSION >= v"0.4.0-"
+		return :( SharedArray($(esc(mytype)),$(esc(mysize))) )
+	end # if VERSION >= v"0.4.0-"
+end
+
 @enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
 if VERSION >= v"0.4.0-"
@@ -103,13 +112,17 @@ end
 Method for input type SharedArray{Float64}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Float64})
-    nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+    #nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable=@SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
     r=normalizeQuantiles(nullable)
-	nullable=SharedArray(Nullable{Float64},(0,0))
-	ra=SharedArray(Float64,(size(r,1),size(r,2)))
+	#nullable=SharedArray(Nullable{Float64},(0,0))
+	nullable=@SharedArray(Nullable{Float64},(0,0))
+	#ra=SharedArray(Float64,(size(r,1),size(r,2)))
+	ra=@SharedArray(Float64,(size(r,1),size(r,2)))
 	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
-	r=SharedArray(Nullable{Float64},(0,0))
+	#r=SharedArray(Nullable{Float64},(0,0))
+	r=@SharedArray(Nullable{Float64},(0,0))
 	ra
 end
 
@@ -119,13 +132,17 @@ end
 Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Int})
-    nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+    #nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable=@SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=[ Float64(x) for x in matrix ][:]
     r=normalizeQuantiles(nullable)
-	nullable=SharedArray(Nullable{Float64},(0,0))
-	ra=SharedArray(Float64,(size(r,1),size(r,2)))
+	#nullable=SharedArray(Nullable{Float64},(0,0))
+	nullable=@SharedArray(Nullable{Float64},(0,0))
+	#ra=SharedArray(Float64,(size(r,1),size(r,2)))
+	ra=@SharedArray(Float64,(size(r,1),size(r,2)))
 	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
-	r=SharedArray(Nullable{Float64},(0,0))
+	#r=SharedArray(Nullable{Float64},(0,0))
+	r=@SharedArray(Nullable{Float64},(0,0))
 	ra
 end
 
@@ -135,7 +152,8 @@ end
 Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
-	nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	#nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable=@SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
 	normalizeQuantiles(nullable)
 end
@@ -155,18 +173,20 @@ Example:
 
     a = Array{Nullable{Float64}}(array)
 	
-	sa = SharedArray(Nullable{Float64},(size(a,1),size(a,2)))
-	
+	sa = SharedArray{Nullable{Float64}}((size(a,1),size(a,2)))
+		
 	sa[:]=a[:]
 
     qn = normalizeQuantiles(sa)
 
 " ->
 function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
+	local nrows
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=SharedArray(Nullable{Float64},(nrows,ncols))
+    #qnmatrix=SharedArray(Nullable{Float64},(nrows,ncols))
+	qnmatrix=@SharedArray(Nullable{Float64},(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
@@ -448,7 +468,8 @@ function sampleRanks(array::Array{Nullable{Float64}};tiesMethod::qnTiesMethods=t
 	if resultMatrix
 		sizehint!(rankMatrix,nrows)
 	end	
-	indices2=(1:nrows)[indices][sortp]
+	#indices2=(1:nrows)[indices][sortp]
+	indices2=reshape((1:nrows),(1,nrows))[indices][sortp]
 	rank=1
 	narank=0
 	lastvalue=reducedArray[sortp[1]]
@@ -606,7 +627,8 @@ end
 Method for input type SharedArray{Int}
 """
 function normalizeQuantiles(matrix::SharedArray{Int})
-    sa=SharedArray(Float64,(size(matrix,1),size(matrix,2)))
+    #sa=SharedArray(Float64,(size(matrix,1),size(matrix,2)))
+	sa=@SharedArray(Float64,(size(matrix,1),size(matrix,2)))
 	sa[:]=matrix[:]
     normalizeQuantiles(sa)
 end
@@ -624,7 +646,7 @@ Example:
 	
     a = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 
-	sa = SharedArray(Float64,(size(a,1),size(a,2)))
+	sa = SharedArray{Float64}((size(a,1),size(a,2)))
 	
 	sa[:]=a[:]
 
@@ -635,7 +657,8 @@ function normalizeQuantiles(matrix::SharedArray{Float64})
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
-    qnmatrix=SharedArray(Float64,(nrows,ncols))
+    #qnmatrix=SharedArray(Float64,(nrows,ncols))
+	qnmatrix=@SharedArray(Float64,(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)

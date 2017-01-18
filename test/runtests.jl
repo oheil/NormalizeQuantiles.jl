@@ -6,6 +6,15 @@ using Base.Test
 # write your own tests here
 @test 1 == 1
 
+macro SharedArray(mytype,mysize)
+	if VERSION >= v"0.6.0-"
+		return :( SharedArray{$(esc(mytype))}($(esc(mysize))) )
+	end # if VERSION >= v"0.6.0-"
+	if VERSION >= v"0.4.0-"
+		return :( SharedArray($(esc(mytype)),$(esc(mysize))) )
+	end # if VERSION >= v"0.4.0-"
+end
+
 if VERSION >= v"0.4.0-"
 
 testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
@@ -15,7 +24,7 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
-sa=SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 r=normalizeQuantiles(sa)
 r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
@@ -31,7 +40,7 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
 
-sa=SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 r=normalizeQuantiles(sa)
 r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
@@ -44,7 +53,7 @@ testfloat=[ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check=[ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn=normalizeQuantiles(testfloat)
 @test qn == check
-sa=SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 qn=normalizeQuantiles(sa)
 qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
@@ -53,12 +62,12 @@ qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
 qn=normalizeQuantiles(testint)
 @test qn == testint
-sa=SharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
+sa=@SharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
 qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 @test qn == testint
-sa=SharedArray(Int,(size(testint,1),size(testint,2)));
+sa=@SharedArray(Int,(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
 
@@ -69,7 +78,7 @@ qn=normalizeQuantiles(dafloat)
 @test isnull(qn[2,2])
 @test get(qn[1,2])==3.5
 @test get(qn[2,1])==5.0
-sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[2,2])
@@ -81,7 +90,7 @@ qn=normalizeQuantiles(dafloat)
 @test isnull(qn[2,1])
 @test isnull(qn[2,2])
 @test isnull(qn[2,3])
-sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[2,1])
@@ -92,7 +101,7 @@ dafloat[3,1:2]=Nullable{Float64}()
 qn=normalizeQuantiles(dafloat)
 @test isnull(qn[3,1])
 @test isnull(qn[3,2])
-sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[3,1])
@@ -115,7 +124,7 @@ qn = normalizeQuantiles(dafloat)
 @test isnull(qn[4,1])
 @test isnull(qn[4,2])
 @test isnull(qn[4,3])
-sa=SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[1,1])
@@ -133,7 +142,7 @@ qn=normalizeQuantiles(sa)
 
 
 testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
@@ -142,7 +151,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,4,0,2])
 
 testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmOrder,naIncreasesRank=true,resultMatrix=true)
@@ -151,7 +160,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,2,5,0,3])
 
 testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
@@ -160,14 +169,14 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,3,0,2])
 
 testfloat = [ 5.0 2.0 4.0 3.0 1.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([5,2,4,3,1])
 
 testfloat = [ 2.0 2.0 0.0 2.0 2.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
@@ -176,7 +185,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,1,1])
 
 testfloat = [ 2.0 2.0 0.0 2.0 4.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
@@ -185,7 +194,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,1,3])
 
 testfloat = [ 2.0 2.0 0.0 2.0 4.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
@@ -194,7 +203,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,1,2])
 
 testfloat = [ 2.0 2.0 0.0 3.0 4.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
@@ -203,7 +212,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,3,4])
 
 testfloat = [ 2.0 2.0 0.0 3.0 4.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
@@ -212,7 +221,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,0,2,3])
 
 testfloat = [ 0.0 2.0 5.0 3.0 4.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[1]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
@@ -221,7 +230,7 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([0,2,5,3,4])
 
 testfloat = [ 0.0 2.0 5.0 3.0 4.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[1]=Nullable{Float64}()
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
@@ -230,14 +239,14 @@ r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([0,1,4,2,3])
 
 testfloat = [ 2.0 2.0 2.0 2.0 2.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([1,1,1,1,1])
 
 testfloat = [ 2.0 2.0 2.0 2.0 2.0 ]
-a=Array(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 (r,m)=sampleRanks(a,tiesMethod=tmReverse,naIncreasesRank=true,resultMatrix=true)
 r=[ Int(get(x)) for x in r ]
@@ -256,7 +265,7 @@ r=normalizeQuantiles(dafloat)
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
-sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 r=normalizeQuantiles(sa)
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
@@ -271,7 +280,7 @@ r=normalizeQuantiles(dafloat)
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
-sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 r=normalizeQuantiles(sa)
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
@@ -283,9 +292,9 @@ testfloat = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check = [ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn = normalizeQuantiles(testfloat)
 @test qn == check
-sa=SharedArray(Float64,(size(testfloat,1),size(testfloat,2)));
+sa=@SharedArray(Float64,(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
-sacheck=SharedArray(Float64,(size(check,1),size(check,2)));
+sacheck=@SharedArray(Float64,(size(check,1),size(check,2)));
 sacheck[:]=check[:]
 qn = normalizeQuantiles(sa)
 @test qn == sacheck
@@ -298,9 +307,9 @@ dafloat = DataArray(testfloat)
 dacheck = DataArray(check)
 qn = normalizeQuantiles(dafloat)
 @test qn == check
-sa=SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
+sa=@SharedArray(Float64,(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
-sacheck=SharedArray(Float64,(size(dacheck,1),size(dacheck,2)));
+sacheck=@SharedArray(Float64,(size(dacheck,1),size(dacheck,2)));
 sacheck[:]=dacheck[:]
 qn = normalizeQuantiles(sa)
 @test qn == sacheck
