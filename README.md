@@ -254,7 +254,7 @@ Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `N
 
 ```julia
 daqn = DataArray(Float64,size(qn));
-daqn[1:length(qn)] = DataArray(reshape([isnull(qn[i])?NA:get(qn[i]) for i=1:length(qn)],size(qn)))[1:length(qn)];
+for index in eachindex(daqn) daqn[index]=isnull(qn[index])?NA:get(qn[index]) end
 daqn
 
 
