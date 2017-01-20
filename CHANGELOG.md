@@ -1,3 +1,17 @@
+## 0.2.1 (2017-01-20)
+
+####Features:
+
+  - none
+	
+####Bug fixes:
+
+  - none
+
+####Remarks:
+
+Only changes to reflect changes in syntax coming with julia 0.6
+
 ## 0.2.0 (2016-08-11)
 
 ####Features:
