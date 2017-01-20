@@ -1,3 +1,17 @@
+## 0.3.0 (2017-01-20)
+
+####Features:
+
+  - none
+	
+####Bug fixes:
+
+  - none
+
+####Remarks:
+
+- dropped julia 0.3 support
+
 ## 0.2.1 (2017-01-20)
 
 ####Features:
@@ -10,7 +24,8 @@
 
 ####Remarks:
 
-Only changes to reflect changes in syntax coming with julia 0.6
+- Only changes to reflect changes in syntax coming with julia 0.6
+- This version still supports julia 0.3
 
 ## 0.2.0 (2016-08-11)
 
