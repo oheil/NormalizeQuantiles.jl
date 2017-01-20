@@ -469,7 +469,7 @@ function sampleRanks(array::Array{Nullable{Float64}};tiesMethod::qnTiesMethods=t
 		sizehint!(rankMatrix,nrows)
 	end	
 	#indices2=(1:nrows)[indices][sortp]
-	indices2=reshape((1:nrows),(1,nrows))[indices][sortp]
+	indices2=reshape((1:nrows),(1,nrows))[indices[:]][sortp]
 	rank=1
 	narank=0
 	lastvalue=reducedArray[sortp[1]]

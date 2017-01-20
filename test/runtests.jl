@@ -252,6 +252,26 @@ a[:]=testfloat[:]
 r=[ Int(get(x)) for x in r ]
 @test r==Array{Int}([5,4,3,2,1])
 
+testfloat = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
+a=Array{Nullable{Float64}}((size(testfloat,1),size(testfloat,2)));
+a[:]=testfloat[:]
+a[5]=Nullable{Float64}()
+a[8]=Nullable{Float64}()
+a[3]=Nullable{Float64}()
+(r,m)=sampleRanks(a,tiesMethod=tmReverse,naIncreasesRank=true,resultMatrix=true)
+@test get(r[1])==1
+@test get(r[2])==4
+@test isnull(r[3])==true
+@test get(r[4])==11
+@test isnull(r[5])==true
+@test get(r[6])==6
+@test get(r[7])==9
+@test isnull(r[8])==true
+@test get(r[9])==2
+@test get(r[10])==7
+@test get(r[11])==10
+@test get(r[12])==12
+
 end # if VERSION >= v"0.4.0-"
 
 if VERSION < v"0.4.0-"
