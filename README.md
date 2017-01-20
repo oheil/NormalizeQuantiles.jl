@@ -32,6 +32,7 @@ of a given vector or matrix.
 ## Dependencies
 
 Julia 0.4 or higher
+
 No other dependencies
 
 ## Usage examples `normalizeQuantiles`
