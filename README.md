@@ -254,7 +254,7 @@ Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `N
 
 ```julia
 daqn = DataArray(Float64,size(qn));
-daqn[1:length(qn)] = DataArray(reshape([isnull(qn[i])?NA:get(qn[i]) for i=1:length(qn)],size(qn)))[1:length(qn)];
+for index in eachindex(daqn) daqn[index]=isnull(qn[index])?NA:get(qn[index]) end
 daqn
 
 
@@ -279,6 +279,7 @@ addprocs();
 using NormalizeQuantiles;
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));
+# sa=SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));  # julia 0.6
 sa[:]=array[:];
 sa
 
