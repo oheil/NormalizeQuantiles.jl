@@ -21,6 +21,7 @@ of a given vector or matrix.
 
 - [Dependencies](#dependencies)
 - [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
+  - [Multicore usage examples](#multicore-usage-examples)
 - [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
 - [Data prerequisites](#data-prerequisites)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
