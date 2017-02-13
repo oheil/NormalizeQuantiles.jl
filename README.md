@@ -63,7 +63,7 @@ qn = normalizeQuantiles(array)
 
 The columns in `qn` are now quantile normalized to each other.
 
-Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/release-0.4/manual/types/#nullable-types-representing-missing-values):
+Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/stable/manual/types/#nullable-types-representing-missing-values):
 
 ```julia
 arrayWithNA = Array{Nullable{Float64}}(array);
