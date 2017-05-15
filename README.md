@@ -257,9 +257,9 @@ To use multiple cores on a single machine you can use `SharedArray{Nullable{Floa
 addprocs();
 using NormalizeQuantiles;
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
-#sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));  # julia 0.4
-sa=SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));
-sa[:]=array[:];
+# sa = SharedArray(Nullable{Float64},(size(array,1),size(array,2)));  # julia 0.4
+sa = SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));
+sa[:] = array[:];
 sa
 ```
 ```
@@ -360,7 +360,7 @@ Currently there seems to be no general agreement on how to deal with `NA` during
 ```julia
 using NormalizeQuantiles
 a = [ 5.0 2.0 4.0 3.0 1.0 ];
-(r,m)=sampleRanks(a);   # here only return value r is relevant, for m see below
+(r,m) = sampleRanks(a);   # here only return value r is relevant, for m see below
 r
 ```
 ```
@@ -389,7 +389,7 @@ array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
 
 ranks are calculated column wise:
 ```julia
-(r,m)=sampleRanks(array);
+(r,m) = sampleRanks(array);
 r
 ```
 ```
@@ -412,8 +412,8 @@ r
 There are three optional keyword parameters `tiesMethod`, `naIncreasesRank` and `resultMatrix`:
 
 ```julia
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
-(r,m)=sampleRanks(a,resultMatrix=true);
+(r,m) = sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
+(r,m) = sampleRanks(a,resultMatrix=true);
 ```
 
 Equal values in the vector are called ties. There are several methods available on how to treat ties:
@@ -436,7 +436,7 @@ Examples:
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-(r,m)=sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tiesMethod=tmMin)
+(r,m) = sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tiesMethod=tmMin)
 r
 ```
 ```
@@ -449,7 +449,7 @@ r
 	 1
 ```
 ```julia
-(r,m)=sampleRanks(a,tiesMethod=tmMax);
+(r,m) = sampleRanks(a,tiesMethod=tmMax);
 r
 ```
 ```
@@ -462,7 +462,7 @@ r
 	 1
 ```
 ```julia
-(r,m)=sampleRanks(a,tiesMethod=tmReverse);
+(r,m) = sampleRanks(a,tiesMethod=tmReverse);
 r
 ```
 ```
@@ -480,8 +480,8 @@ One or more `NA` in the vector are never equal and remain on there position afte
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
 n = Array{Nullable{Float64}}(a);
-n[1]=Nullable{Float64}();
-(r,m)=sampleRanks(n);
+n[1] = Nullable{Float64}();
+(r,m) = sampleRanks(n);
 r
 ```
 ```
@@ -494,7 +494,7 @@ r
 	 1
 ```
 ```julia
-(r,m)=sampleRanks(n,naIncreasesRank=true);
+(r,m) = sampleRanks(n,naIncreasesRank=true);
 r
 ```
 ```
@@ -511,7 +511,7 @@ The keyword parameter `resultMatrix` lets you generate a dictionary of rank indi
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-(r,m)=sampleRanks(a,resultMatrix=true);
+(r,m) = sampleRanks(a,resultMatrix=true);
 m
 ```
 ```
