@@ -59,12 +59,14 @@ The following `array` is interpreted as a matrix with 4 rows and 3 columns:
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 qn = normalizeQuantiles(array)
 ```
+```
 	julia> qn
 	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
 	 6.0  3.0  7.0
+```
 
 The columns in `qn` are now quantile normalized to each other.
 
@@ -76,8 +78,6 @@ Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/s
 arrayWithNA = Array{Nullable{Float64}}(array);
 arrayWithNA[2,2] = Nullable{Float64}();
 arrayWithNA
-
-
 ```
 ```
 	julia> arrayWithNA
@@ -89,8 +89,6 @@ arrayWithNA
 ```
 ```julia
 qn = normalizeQuantiles(arrayWithNA)
-
-
 ```
 ```
 	julia> qn
@@ -102,8 +100,6 @@ qn = normalizeQuantiles(arrayWithNA)
 ```
 ```julia
 isnull(qn[2,2])
-
-
 ```
 ```
 	julia> isnull(qn[2,2])
@@ -115,8 +111,6 @@ The result must be of type `Array{Nullable{Float64}}`, because `NAs` stay `NAs` 
 ```julia
 qn[2,2] = 0.0;
 isnull(qn[2,2])
-
-
 ```
 ```
 	julia> isnull(qn[2,2])
@@ -126,8 +120,6 @@ isnull(qn[2,2])
 tmp_qn = qn;
 qn_array = convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn)));
 qn_array
-
-
 ```
 ```
 	julia> qn_array
