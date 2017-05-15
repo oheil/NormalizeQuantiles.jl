@@ -52,7 +52,9 @@ No other dependencies
 Pkg.add("NormalizeQuantiles");
 using NormalizeQuantiles;
 ```
+
 The following `array` is interpreted as a matrix with 4 rows and 3 columns:
+
 ```julia
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 qn = normalizeQuantiles(array)
@@ -138,8 +140,6 @@ using NullableArrays;
 na = NullableArray(array);
 na[2,2] = Nullable();
 na
-
-
 ```
 ```
 	julia> na
@@ -156,8 +156,6 @@ Convert the `NullableArray` `na` to `Array{Nullable{Float64}}`:
 tmp_na = na;
 arrayOfNullables = convert(Array{Nullable{Float64}},reshape([tmp_na[i] for i=1:length(tmp_na)],size(tmp_na)));
 qn = normalizeQuantiles(arrayOfNullables)
-
-
 ```
 ```
 	julia> qn
@@ -175,8 +173,6 @@ tmp_qn = qn;
 isn = convert(Array{Bool},reshape([isnull(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn)));
 tmp_qn[isn] = 0.0;
 qna = NullableArray(convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn))),isn)
-
-
 ```
 ```
 	julia> qna
@@ -195,8 +191,6 @@ Dealing with `DataArrays`:
 Pkg.add("DataArrays")
 using DataArrays;
 da = DataArray(array)
-
-
 ```
 ```
 	julia> da
@@ -208,8 +202,6 @@ da = DataArray(array)
 ```
 ```julia
 da[2,2] = NA
-
-	
 ```
 
 Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
@@ -217,8 +209,6 @@ Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 ```julia
 tmp_da = da;
 arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i])?Nullable{Float64}():Nullable{Float64}(tmp_da[i]) for i=1:length(tmp_da)],size(tmp_da)))
-
-
 ```
 ```
 	julia> arrayWithNA
@@ -230,8 +220,6 @@ arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i])?Nullable
 ```
 ```julia
 qn = normalizeQuantiles(arrayWithNA)
-
-
 ```
 ```
 	julia> qn
@@ -249,8 +237,6 @@ tmp_qn = qn;
 daqn = DataArray(Float64,size(tmp_qn));
 for index in eachindex(daqn) daqn[index]=isnull(tmp_qn[index])?NA:get(tmp_qn[index]) end
 daqn
-
-
 ```
 ```
 	julia> daqn
@@ -275,8 +261,6 @@ array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 sa=SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));
 sa[:]=array[:];
 sa
-
-
 ```
 ```
 	julia> sa
@@ -288,8 +272,6 @@ sa
 ```
 ```julia
 qn = normalizeQuantiles(sa)
-
-
 ```
 ```
 	julia> qn
@@ -380,8 +362,6 @@ using NormalizeQuantiles
 a = [ 5.0 2.0 4.0 3.0 1.0 ];
 (r,m)=sampleRanks(a);   # here only return value r is relevant, for m see below
 r
-
-
 ```
 ```
 	julia> r
@@ -397,8 +377,6 @@ If you provide a matrix like
 
 ```julia
 array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
-
-
 ```
 ```
 	julia> array
@@ -413,8 +391,6 @@ ranks are calculated column wise:
 ```julia
 (r,m)=sampleRanks(array);
 r
-
-
 ```
 ```
 	julia> r
@@ -438,8 +414,6 @@ There are three optional keyword parameters `tiesMethod`, `naIncreasesRank` and 
 ```julia
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
 (r,m)=sampleRanks(a,resultMatrix=true);
-
-
 ```
 
 Equal values in the vector are called ties. There are several methods available on how to treat ties:
@@ -464,8 +438,6 @@ Examples:
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
 (r,m)=sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tiesMethod=tmMin)
 r
-
-
 ```
 ```
 	julia> r
@@ -479,8 +451,6 @@ r
 ```julia
 (r,m)=sampleRanks(a,tiesMethod=tmMax);
 r
-
-
 ```
 ```
 	julia> r
@@ -494,8 +464,6 @@ r
 ```julia
 (r,m)=sampleRanks(a,tiesMethod=tmReverse);
 r
-
-
 ```
 ```
 	julia> r
@@ -515,8 +483,6 @@ n = Array{Nullable{Float64}}(a);
 n[1]=Nullable{Float64}();
 (r,m)=sampleRanks(n);
 r
-
-
 ```
 ```
 	julia> r
@@ -530,8 +496,6 @@ r
 ```julia
 (r,m)=sampleRanks(n,naIncreasesRank=true);
 r
-
-
 ```
 ```
 	julia> r
@@ -549,8 +513,6 @@ The keyword parameter `resultMatrix` lets you generate a dictionary of rank indi
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
 (r,m)=sampleRanks(a,resultMatrix=true);
 m
-
-
 ```
 ```
 	julia> m
@@ -562,8 +524,6 @@ m
 ```
 ```julia
 haskey(m,2)   #does rank 2 exist?
-
-
 ```
 ```
 	julia> haskey(m,2)
@@ -571,8 +531,6 @@ haskey(m,2)   #does rank 2 exist?
 ```
 ```julia
 a[m[2]]   #all values of rank 2
-
-
 ```
 ```
 	julia> a[m[2]]
