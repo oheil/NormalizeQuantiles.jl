@@ -5,11 +5,9 @@
 
 Package NormalizeQuantiles implements quantile normalization
 
------------- 
-```julia |
-qn = normalizeQuantiles(array); |
-``` |
-|
+```julia
+qn = normalizeQuantiles(array);
+```
 
 and provides a function to calculate sample ranks
 
