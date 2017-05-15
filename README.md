@@ -51,7 +51,6 @@ No other dependencies
 ```julia
 Pkg.add("NormalizeQuantiles");
 using NormalizeQuantiles;
-
 ```
 
 The following `array` is interpreted as a matrix with 4 rows and 3 columns:
