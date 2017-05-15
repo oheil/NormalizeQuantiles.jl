@@ -249,7 +249,7 @@ daqn
 
 #### SharedArray and multicore usage examples
 
-> Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`. Doing it the other way round will result in an error.
+> Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`. Doing it the other way round will result in an error as observed with julia 0.4.
 
 To use multiple cores on a single machine you can use `SharedArray{Nullable{Float64}}`:
 
