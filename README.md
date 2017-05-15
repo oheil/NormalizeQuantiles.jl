@@ -22,7 +22,11 @@ of a given vector or matrix.
 - [Dependencies](#dependencies)
 - [Remarks](#remarks)
 - [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
-  - [Multicore usage examples](#multicore-usage-examples)
+  - [General](#general)
+  - [Missing values](#missing-values)
+  - [NullableArrays](#nullablearrays)
+  - [DataArrays](#dataarrays)
+  - [SharedArray and multicore usage examples](#sharedarray-and-multicore-usage-examples)
 - [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
 - [Data prerequisites](#data-prerequisites)
 - [Remarks on data with `NA`](#remarks-on-data-with-na)
@@ -41,6 +45,8 @@ No other dependencies
 - Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 
 ## Usage examples `normalizeQuantiles`
+
+#### General
  
 ```julia
 Pkg.add("NormalizeQuantiles");
@@ -67,6 +73,8 @@ qn = normalizeQuantiles(array)
 ```
 
 The columns in `qn` are now quantile normalized to each other.
+
+#### Missing values
 
 Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/stable/manual/types/#nullable-types-representing-missing-values):
 
@@ -136,6 +144,8 @@ qn_array
 	 5.0  3.5  6.5
 ```
 
+#### NullableArrays
+
 How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.jl):
 
 ```julia
@@ -192,6 +202,8 @@ qna = NullableArray(convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:lengt
 	 8.0  8.0    6.5
 	 5.0  3.5    6.5
 ```
+
+#### DataArrays
 
 Dealing with `DataArrays`:
 
@@ -265,7 +277,7 @@ daqn
 	 5.0  3.5  6.5
 ```
 
-#### Multicore usage examples
+#### SharedArray and multicore usage examples
 
 > Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`. Doing it the other way round will result in an error.
 
