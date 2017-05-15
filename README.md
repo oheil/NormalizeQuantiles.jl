@@ -20,6 +20,7 @@ of a given vector or matrix.
 **Table of Contents**
 
 - [Dependencies](#dependencies)
+- [Remarks](#remarks)
 - [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
   - [Multicore usage examples](#multicore-usage-examples)
 - [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
@@ -34,6 +35,10 @@ of a given vector or matrix.
 Julia 0.4 or higher
 
 No other dependencies
+
+## Remarks
+
+- Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 
 ## Usage examples `normalizeQuantiles`
  
@@ -74,11 +79,11 @@ arrayWithNA
 ```
 ```
 	julia> arrayWithNA
-	4x3 Array{Nullable{Float64},2}:
-	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
-	 Nullable(4.0)  Nullable{Float64}()  Nullable(6.0)
-	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
-	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
+	4×3 Array{Nullable{Float64},2}:
+	 3.0  2.0    1.0
+	 4.0  #NULL  6.0
+	 9.0  7.0    8.0
+	 5.0  2.0    8.0
 ```
 ```julia
 qn = normalizeQuantiles(arrayWithNA)
