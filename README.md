@@ -275,8 +275,8 @@ To use multiple cores on a single machine you can use `SharedArray{Nullable{Floa
 addprocs();
 using NormalizeQuantiles;
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
-sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));
-# sa=SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));  # julia 0.6
+#sa=SharedArray(Nullable{Float64},(size(array,1),size(array,2)));  # julia 0.4
+sa=SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));
 sa[:]=array[:];
 sa
 
@@ -284,11 +284,11 @@ sa
 ```
 ```
 	julia> sa
-	4x3 SharedArray{Nullable{Float64},2}:
-	 Nullable(3.0)  Nullable(2.0)  Nullable(1.0)
-	 Nullable(4.0)  Nullable(5.0)  Nullable(6.0)
-	 Nullable(9.0)  Nullable(7.0)  Nullable(8.0)
-	 Nullable(5.0)  Nullable(2.0)  Nullable(8.0)
+	4×3 SharedArray{Nullable{Float64},2}:
+	 3.0  2.0  1.0
+	 4.0  5.0  6.0
+	 9.0  7.0  8.0
+	 5.0  2.0  8.0
 ```
 ```julia
 qn = normalizeQuantiles(sa)
@@ -297,11 +297,11 @@ qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-	4x3 SharedArray{Nullable{Float64},2}:
-	 Nullable(2.0)  Nullable(3.0)  Nullable(2.0)
-	 Nullable(4.0)  Nullable(6.0)  Nullable(4.0)
-	 Nullable(8.0)  Nullable(8.0)  Nullable(7.0)
-	 Nullable(6.0)  Nullable(3.0)  Nullable(7.0)	
+	4×3 SharedArray{Nullable{Float64},2}:
+	 2.0  3.0  2.0
+	 4.0  6.0  4.0
+	 8.0  8.0  7.0
+	 6.0  3.0  7.0
 ```
 
 ## Behaviour of function `normalizeQuantiles`
@@ -406,7 +406,7 @@ array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
 ```
 ```
 	julia> array
-	4x3 Array{Float64,2}:
+	4×3 Array{Float64,2}:
 	  1.0   2.0   3.0
 	  4.0   5.0   6.0
 	  7.0   8.0   9.0
@@ -525,11 +525,11 @@ r
 ```
 	julia> r
 	5-element Array{Nullable{Int64},1}:
-	 Nullable{Int64}()
-	 Nullable(2)
-	 Nullable(3)
-	 Nullable(2)
-	 Nullable(1)	
+	 #NULL
+	 2
+	 3
+	 2
+	 1
 ```
 ```julia
 (r,m)=sampleRanks(n,naIncreasesRank=true);
@@ -540,11 +540,11 @@ r
 ```
 	julia> r
 	5-element Array{Nullable{Int64},1}:
-	 Nullable{Int64}()
-	 Nullable(3)
-	 Nullable(4)
-	 Nullable(3)
-	 Nullable(2)	
+	 #NULL
+	 3
+	 4
+	 3
+	 2
 ```
 
 The keyword parameter `resultMatrix` lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return an empty dictionary of type `Dict{Int64,Array{Int64,N}}`:
