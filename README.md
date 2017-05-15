@@ -58,8 +58,7 @@ The following `array` is interpreted as a matrix with 4 rows and 3 columns:
 ```julia
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 qn = normalizeQuantiles(array)
-```
-```
+
 	julia> qn
 	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
