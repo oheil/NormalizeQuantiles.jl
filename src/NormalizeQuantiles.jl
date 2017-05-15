@@ -215,7 +215,8 @@ function sortColumns(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{F
 		sortcol=[Float64(get(x)) for x in sortcol]
 		sort!(sortcol)
 		sortcol=Array{Nullable{Float64}}(sortcol)
-		naindices=(1:nrows)[!indices]
+		#naindices=(1:nrows)[!indices]
+		naindices=(1:nrows)[ convert(Array{Bool},reshape([!i for i in indices],size(indices))) ]
 		empty=sum(indices)==0
 		for napos in naindices
 			if empty
@@ -236,7 +237,8 @@ function multicoreSortColumns(matrix::SharedArray{Nullable{Float64}},qnmatrix::S
 		sortcol=[Float64(get(x)) for x in sortcol]
 		sort!(sortcol)
 		sortcol=Array{Nullable{Float64}}(sortcol)
-		naindices=(1:nrows)[!indices]
+		#naindices=(1:nrows)[!indices]
+		naindices=(1:nrows)[ convert(Array{Bool},reshape([!i for i in indices],size(indices))) ]
 		empty=sum(indices)==0
 		for napos in naindices
 			if empty
@@ -253,20 +255,25 @@ end
 function meanRows(qnmatrix::Array{Nullable{Float64}},nrows)
 	for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
-		nacount=sum(!indices)
+		#nacount=sum(!indices)
+		naindices=convert(Array{Bool},reshape([!i for i in indices],size(indices)))
+		nacount=sum(naindices)
 		rowmean=mean([Float64(get(x)) for x in qnmatrix[row,indices]])
 		qnmatrix[row,:]=Nullable{Float64}(rowmean)
-		nacount>0?qnmatrix[row,!indices]=Nullable{Float64}():false
+		#nacount>0?qnmatrix[row,!indices]=Nullable{Float64}():false
+		nacount>0?qnmatrix[row,naindices]=Nullable{Float64}():false
 	end
 end
 
 function multicoreMeanRows(qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
-		nacount=sum(!indices)
+		#nacount=sum(!indices)
+		naindices=convert(Array{Bool},reshape([!i for i in indices],size(indices)))
+		nacount=sum(naindices)
 		rowmean=mean([Float64(get(x)) for x in qnmatrix[row,indices]])
 		qnmatrix[row,:]=Nullable{Float64}(rowmean)
-		nacount>0?qnmatrix[row,!indices]=Nullable{Float64}():false
+		nacount>0?qnmatrix[row,naindices]=Nullable{Float64}():false
 	end
 end
 
@@ -275,7 +282,9 @@ function equalValuesInColumn(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nu
 		indices=[ !isnull(x) for x in matrix[:,column] ]
 		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
 		sortp=sortperm(sortp)
-		nacount=sum(!indices)
+		#nacount=sum(!indices)
+		naindices=convert(Array{Bool},reshape([!i for i in indices],size(indices)))
+		nacount=sum(naindices)
 		sortcol=matrix[:,column][indices][sortp]
 		ranks=Array(Int,(length(sortcol),1))
 		if nacount < nrows
@@ -290,7 +299,8 @@ function equalValuesInColumn(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nu
 			end
 			indices=1:nrows
 			naindices=[ isnull(x) for x in qnmatrix[:,column] ]
-			indices=indices[!naindices]
+			#indices=indices[!naindices]
+			indices=indices[ convert(Array{Bool},reshape([!i for i in naindices],size(naindices))) ]
 			for i in 1:lastrank
 				values=i.==vec(ranks)
 				qnmatrix[indices[values],column]=mean([ get(x) for x in qnmatrix[indices[values],column] ])
