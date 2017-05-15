@@ -59,7 +59,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4x3 Array{Float64,2}:
+	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -92,11 +92,11 @@ qn = normalizeQuantiles(arrayWithNA)
 ```
 ```
 	julia> qn
-	4x3 Array{Nullable{Float64},2}:
-	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
-	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
-	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
-	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
+	4×3 Array{Nullable{Float64},2}:
+	 2.0  3.5    2.0
+	 5.0  #NULL  5.0
+	 8.0  8.0    6.5
+	 5.0  3.5    6.5
 ```
 ```julia
 isnull(qn[2,2])
@@ -121,18 +121,19 @@ isnull(qn[2,2])
 	false
 ```
 ```julia
-qn_array = convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)));
+tmp_qn = qn;
+qn_array = convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn)));
 qn_array
 
 
 ```
 ```
 	julia> qn_array
-	4x3 Array{Float64,2}:
-	 2.0  4.5  2.0
-	 4.0  0.0  4.0
+	4×3 Array{Float64,2}:
+	 2.0  3.5  2.0
+	 5.0  0.0  5.0
 	 8.0  8.0  6.5
-	 5.0  4.5  6.5
+	 5.0  3.5  6.5
 ```
 
 How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.jl):
@@ -148,51 +149,54 @@ na
 ```
 ```
 	julia> na
-	4x3 NullableArrays.NullableArray{Float64,2}:
-	 3.0      2.0  1.0
-	 4.0  #NULL    6.0
-	 9.0      7.0  8.0
-	 5.0      2.0  8.0	
+	4×3 NullableArrays.NullableArray{Float64,2}:
+	 3.0  2.0    1.0
+	 4.0  #NULL  6.0
+	 9.0  7.0    8.0
+	 5.0  2.0    8.0
 ```
 
 Convert the `NullableArray` `na` to `Array{Nullable{Float64}}`:
 
 ```julia
-arrayOfNullables = convert(Array{Nullable{Float64}},reshape([na[i] for i=1:length(na)],size(na)));
+tmp_na = na;
+arrayOfNullables = convert(Array{Nullable{Float64}},reshape([tmp_na[i] for i=1:length(tmp_na)],size(tmp_na)));
 qn = normalizeQuantiles(arrayOfNullables)
 
 
 ```
 ```
 	julia> qn
-	4x3 Array{Nullable{Float64},2}:
-	 Nullable(2.0)  Nullable(4.5)        Nullable(2.0)
-	 Nullable(4.0)  Nullable{Float64}()  Nullable(4.0)
-	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
-	 Nullable(5.0)  Nullable(4.5)        Nullable(6.5)	
+	4×3 Array{Nullable{Float64},2}:
+	 2.0  3.5    2.0
+	 5.0  #NULL  5.0
+	 8.0  8.0    6.5
+	 5.0  3.5    6.5
 ```
 
 Convert the result `Array{Nullable{Float64}}` back to `NullableArray`:
 
 ```julia
-isn = convert(Array{Bool},reshape([isnull(qn[i]) for i=1:length(qn)],size(qn)));
-qn[isn] = 0.0;
-qna = NullableArray(convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn))),isn)
+tmp_qn = qn;
+isn = convert(Array{Bool},reshape([isnull(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn)));
+tmp_qn[isn] = 0.0;
+qna = NullableArray(convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn))),isn)
 
 
 ```
 ```
 	julia> qna
-	4x3 NullableArrays.NullableArray{Float64,2}:
-	 2.0      3.5  2.0
-	 5.0  #NULL    5.0
-	 8.0      8.0  6.5
-	 5.0      3.5  6.5
+	4×3 NullableArrays.NullableArray{Float64,2}:
+	 2.0  3.5    2.0
+	 5.0  #NULL  5.0
+	 8.0  8.0    6.5
+	 5.0  3.5    6.5
 ```
 
 Dealing with `DataArrays`:
 
 ```julia
+Pkg.add("DataArrays")
 using DataArrays;
 da = DataArray(array)
 
@@ -200,7 +204,7 @@ da = DataArray(array)
 ```
 ```
 	julia> da
-	4x3 DataArrays.DataArray{Float64,2}:
+	4×3 DataArrays.DataArray{Float64,2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
@@ -215,17 +219,18 @@ da[2,2] = NA
 Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 
 ```julia
-arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(da[i])?Nullable{Float64}():Nullable{Float64}(da[i]) for i=1:length(da)],size(da)))
+tmp_da = da;
+arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i])?Nullable{Float64}():Nullable{Float64}(tmp_da[i]) for i=1:length(tmp_da)],size(tmp_da)))
 
 
 ```
 ```
 	julia> arrayWithNA
-	4x3 Array{Nullable{Float64},2}:
-	 Nullable(3.0)  Nullable(2.0)        Nullable(1.0)
-	 Nullable(4.0)  Nullable{Float64}()  Nullable(6.0)
-	 Nullable(9.0)  Nullable(7.0)        Nullable(8.0)
-	 Nullable(5.0)  Nullable(2.0)        Nullable(8.0)
+	4×3 Array{Nullable{Float64},2}:
+	 3.0  2.0    1.0
+	 4.0  #NULL  6.0
+	 9.0  7.0    8.0
+	 5.0  2.0    8.0
 ```
 ```julia
 qn = normalizeQuantiles(arrayWithNA)
@@ -234,25 +239,26 @@ qn = normalizeQuantiles(arrayWithNA)
 ```
 ```
 	julia> qn
-	4x3 Array{Nullable{Float64},2}:
-	 Nullable(2.0)  Nullable(3.5)        Nullable(2.0)
-	 Nullable(5.0)  Nullable{Float64}()  Nullable(5.0)
-	 Nullable(8.0)  Nullable(8.0)        Nullable(6.5)
-	 Nullable(5.0)  Nullable(3.5)        Nullable(6.5)
+	4×3 Array{Nullable{Float64},2}:
+	 2.0  3.5    2.0
+	 5.0  #NULL  5.0
+	 8.0  8.0    6.5
+	 5.0  3.5    6.5
 ```
 
 Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `NAs`:
 
 ```julia
-daqn = DataArray(Float64,size(qn));
-for index in eachindex(daqn) daqn[index]=isnull(qn[index])?NA:get(qn[index]) end
+tmp_qn = qn;
+daqn = DataArray(Float64,size(tmp_qn));
+for index in eachindex(daqn) daqn[index]=isnull(tmp_qn[index])?NA:get(tmp_qn[index]) end
 daqn
 
 
 ```
 ```
 	julia> daqn
-	4x3 DataArrays.DataArray{Float64,2}:
+	4×3 DataArrays.DataArray{Float64,2}:
 	 2.0  3.5  2.0
 	 5.0   NA  5.0
 	 8.0  8.0  6.5
