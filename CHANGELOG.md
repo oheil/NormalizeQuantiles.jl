@@ -1,3 +1,18 @@
+## 0.3.1 (2017-05-16)
+
+####Features:
+
+  - none
+	
+####Bug fixes:
+
+  - none
+
+####Remarks:
+
+  - Julia 0.6 syntax change and deprecation
+  -- WARNING: !(A::AbstractArray{Bool}) is deprecated, use .!(A) instead.
+
 ## 0.3.0 (2017-01-20)
 
 ####Features:
@@ -10,7 +25,7 @@
 
 ####Remarks:
 
-- dropped julia 0.3 support
+  - dropped julia 0.3 support
 
 ## 0.2.1 (2017-01-20)
 
@@ -24,8 +39,8 @@
 
 ####Remarks:
 
-- Only changes to reflect changes in syntax coming with julia 0.6
-- This version still supports julia 0.3
+  - Only changes to reflect changes in syntax coming with julia 0.6
+  - This version still supports julia 0.3
 
 ## 0.2.0 (2016-08-11)
 
