@@ -285,8 +285,6 @@ qn = normalizeQuantiles(sa)
 For small data sets performance using `SharedArrays` decreases:
 
 ```julia
-addprocs()
-using NormalizeQuantiles
 la = randn((100,100));
 tf = Array{Nullable{Float64}}(la);
 sa = SharedArray{Nullable{Float64}}((size(tf,1),size(tf,2)));
@@ -295,14 +293,14 @@ normalizeQuantiles(tf); @time normalizeQuantiles(tf);
 ```
 ```
 	julia> @time normalizeQuantiles(tf);
-	  0.003372 seconds (6.63 k allocations: 4.471 MB)
+	  0.003926 seconds (6.71 k allocations: 4.466 MB)
 ```
 ```julia
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  0.009590 seconds (11.24 k allocations: 359.422 KB)
+	  0.012880 seconds (11.14 k allocations: 354.813 KB)
 ```
 
 For larger data sets performance increases with multicore processors:
@@ -316,14 +314,14 @@ normalizeQuantiles(tf); @time normalizeQuantiles(tf);
 ```
 ```
 	julia> @time normalizeQuantiles(tf);
-	  31.156555 seconds (1.04 M allocations: 38.215 GB, 12.82% gc time)
+	  33.469397 seconds (1.06 M allocations: 38.215 GB, 12.81% gc time)
 ```
 ```julia
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  10.184312 seconds (11.23 k allocations: 356.531 KB)
+	  11.311243 seconds (11.22 k allocations: 355.859 KB)
 ```
 
 ## Behaviour of function `normalizeQuantiles`
