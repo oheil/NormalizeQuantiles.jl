@@ -294,29 +294,36 @@ sa[:] = tf[:];
 normalizeQuantiles(tf); @time normalizeQuantiles(tf);
 ```
 ```
-	0.003372 seconds (6.63 k allocations: 4.471 MB)
+	julia> @time normalizeQuantiles(tf);
+	  0.003372 seconds (6.63 k allocations: 4.471 MB)
 ```
 ```julia
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
-	0.009590 seconds (11.24 k allocations: 359.422 KB)
+	julia> @time normalizeQuantiles(sa);
+	  0.009590 seconds (11.24 k allocations: 359.422 KB)
 ```
+
+For larger data sets performance increases with multicore processors:
+
 ```julia
-la=randn((10000,10000));
+la = randn((10000,10000));
 tf = Array{Nullable{Float64}}(la);
 sa = SharedArray{Nullable{Float64}}((size(tf,1),size(tf,2)));
 sa[:] = tf[:];
 normalizeQuantiles(tf); @time normalizeQuantiles(tf);
 ```
 ```
-	31.156555 seconds (1.04 M allocations: 38.215 GB, 12.82% gc time)
+	julia> @time normalizeQuantiles(tf);
+	  31.156555 seconds (1.04 M allocations: 38.215 GB, 12.82% gc time)
 ```
 ```julia
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
-	10.184312 seconds (11.23 k allocations: 356.531 KB)
+	julia> @time normalizeQuantiles(sa);
+	  10.184312 seconds (11.23 k allocations: 356.531 KB)
 ```
 
 ## Behaviour of function `normalizeQuantiles`
