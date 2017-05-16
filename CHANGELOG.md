@@ -11,6 +11,7 @@
 ####Remarks:
 
   - Julia 0.6 syntax change and deprecation
+  
   -- WARNING: !(A::AbstractArray{Bool}) is deprecated, use .!(A) instead.
 
 ## 0.3.0 (2017-01-20)
