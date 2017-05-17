@@ -19,20 +19,20 @@ of a given vector or matrix.
 
 **Table of Contents**
 
-- [Dependencies](#dependencies)
-- [Remarks](#remarks)
-- [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
-  - [General usage](#general-usage)
-  - [Missing values](#missing-values)
-  - [NullableArrays](#nullablearrays)
-  - [DataArrays](#dataarrays)
-  - [SharedArray and multicore usage examples](#sharedarray-and-multicore-usage-examples)
-- [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
-- [Data prerequisites](#data-prerequisites)
-- [Remarks on data with `NA`](#remarks-on-data-with-na)
-- [List of all exported definitions for `normalizeQuantiles`](#list-of-all-exported-definitions-for-normalizequantiles)
-- [Usage examples `sampleRanks`](#usage-examples-sampleranks)
-- [List of all exported definitions for `sampleRanks`](#list-of-all-exported-definitions-for-sampleranks)
+* [Dependencies](#dependencies)
+* [Remarks](#remarks)
+* [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
+  * [General usage](#general-usage)
+  * [Missing values](#missing-values)
+  * [NullableArrays](#nullablearrays)
+  * [DataArrays](#dataarrays)
+  * [SharedArray and multicore usage examples](#sharedarray-and-multicore-usage-examples)
+* [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
+* [Data prerequisites](#data-prerequisites)
+* [Remarks on data with `NA`](#remarks-on-data-with-na)
+* [List of all exported definitions for `normalizeQuantiles`](#list-of-all-exported-definitions-for-normalizequantiles)
+* [Usage examples `sampleRanks`](#usage-examples-sampleranks)
+* [List of all exported definitions for `sampleRanks`](#list-of-all-exported-definitions-for-sampleranks)
 
 ## Dependencies
 
@@ -42,8 +42,9 @@ No other dependencies
 
 ## Remarks
 
-- Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
-- Last commit with julia v3.0 support: [Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36](https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36)
+* Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
+* Last commit with julia v3.0 support: [Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36](https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36)
+  * git checkout eb97d24ff77d470d0d121fabf83d59979ad0db36
 
 ## Usage examples `normalizeQuantiles`
 
