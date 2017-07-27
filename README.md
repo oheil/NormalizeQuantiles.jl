@@ -23,6 +23,7 @@ of a given vector or matrix.
 * [Remarks](#remarks)
 * [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
   * [General usage](#general-usage)
+  * [NaN](#NaN)
   * [Missing values](#missing-values)
   * [NullableArrays](#nullablearrays)
   * [DataArrays](#dataarrays)
@@ -71,6 +72,41 @@ qn = normalizeQuantiles(array)
 ```
 
 The columns in `qn` are now quantile normalized to each other.
+
+#### NaN
+
+If your data contains some NaN (Not a Number) those are internally changed to missing values and changed back after processing to NaN:
+
+```julia
+arrayWithNaN=array
+arrayWithNaN[2,2]=NaN
+```
+```
+	julia> arrayWithNaN
+	4×3 Array{Float64,2}:
+	 3.0    2.0  1.0
+	 4.0  NaN    6.0
+	 9.0    7.0  8.0
+	 5.0    2.0  8.0
+```
+```julia
+qn = normalizeQuantiles(arrayWithNaN)
+```
+```
+	julia> qn
+	4×3 Array{Float64,2}:
+	 2.0    3.5  2.0
+	 5.0  NaN    5.0
+	 8.0    8.0  6.5
+	 5.0    3.5  6.5
+```
+
+NaN is of type Float64, so there is nothing similar for Int types.
+
+```
+	julia> typeof(NaN)
+	Float64
+```
 
 #### Missing values
 

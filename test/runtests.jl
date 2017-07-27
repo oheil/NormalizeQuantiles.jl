@@ -31,6 +31,14 @@ r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
+testfloat[2,2]=NaN
+testfloat[3,4]=NaN
+r=normalizeQuantiles(testfloat)
+@test mean(r[:,1]) >= 4.91 && mean(r[:,1]) <= 4.92
+@test isnan(r[2,2])
+@test isnan(r[3,4])
+@test mean(r[:,3]) >= 4.91 && mean(r[:,3]) <= 4.92
+
 testfloat = [ 3.5 2.0 8.1 1.0 ; 4.5 5.0 6.0 2.0 ; 9.0 7.6 8.2 3.0 ; 5.0 2.0 8.0 4.0 ]
 r=normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
@@ -60,15 +68,17 @@ qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
 qn=normalizeQuantiles(testint)
 @test qn == testint
+
 sa=@SharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
 qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 @test qn == testint
+
 sa=@SharedArray(Int,(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
-
+@test qn == testint
 
 dafloat=Array{Nullable{Float64}}(testfloat)
 dafloat[2,2]=Nullable{Float64}()

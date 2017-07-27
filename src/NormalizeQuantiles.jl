@@ -24,6 +24,8 @@ Method for input type Array{Float64}
 function normalizeQuantiles(matrix::Array{Float64})
     damatrix=Array{Nullable{Float64}}(matrix)
     r=normalizeQuantiles(damatrix)
+	nan_indices=[ isnull(x) for x in vec(r) ]
+	r[nan_indices]=NaN
 	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
@@ -35,6 +37,8 @@ Method for input type Array{Int}
 function normalizeQuantiles(matrix::Array{Int})
     dafloat=Array{Nullable{Float64}}(convert(Array{Float64},matrix))
     r=normalizeQuantiles(dafloat)
+	nan_indices=[ isnull(x) for x in vec(r) ]
+	r[nan_indices]=NaN
 	convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
 end
 
@@ -81,6 +85,8 @@ Examples:
 
 " ->
 function normalizeQuantiles(matrix::Array{Nullable{Float64}})
+	nan_indices=[ isnull(x) || isnan(get(x)) for x in vec(matrix) ]
+	matrix[nan_indices]=Nullable{Float64}()
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
@@ -173,6 +179,8 @@ Example:
 " ->
 function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
 	local nrows
+	nan_indices=[ isnull(x) || isnan(get(x)) for x in vec(matrix) ]
+	matrix[nan_indices]=Nullable{Float64}()
     nrows=size(matrix,1)
     ncols=size(matrix,2)
 	# preparing the result matrix
@@ -186,24 +194,6 @@ function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
 		# foreach column: equal values in original column should all be mean of normalized values
 		# foreach column: reorder the values back to the original order
 		multicoreEqualValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
-	end
-    qnmatrix
-end
-
-function Old_normalizeQuantiles(matrix::Array{Nullable{Float64}})
-    nrows=size(matrix,1)
-    ncols=size(matrix,2)
-	# preparing the result matrix
-    qnmatrix=Array{Nullable{Float64}}((nrows,ncols))
-	if ncols>0 && nrows>0
-		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
-		sortColumns(matrix,qnmatrix,nrows,ncols)
-		# foreach row: set all values to the mean of the row, except NAs
-		meanRows(qnmatrix,nrows)
-		# foreach column: equal values in original column should all be mean of normalized values
-		equalValuesInColumn(matrix,qnmatrix,nrows,ncols)
-		# foreach column: reorder the values back to the original order
-		orderToOriginal(matrix,qnmatrix,nrows,ncols)
 	end
     qnmatrix
 end
@@ -458,6 +448,8 @@ m is a dictionary with rank as keys and as value the indices of all values of th
 
 " ->
 function sampleRanks(array::Array{Nullable{Float64}};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	nan_indices=[ isnull(x) || isnan(get(x)) for x in vec(array) ]
+	array[nan_indices]=Nullable{Float64}()
 	nrows=length(array)
 	indices=[ !isnull(x) for x in array ]
 	reducedArray=[ Float64(get(x)) for x in array[indices] ]
