@@ -23,7 +23,7 @@ of a given vector or matrix.
 * [Remarks](#remarks)
 * [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
   * [General usage](#general-usage)
-  * [NaN](#NaN)
+  * [NaN](#nan)
   * [Missing values](#missing-values)
   * [NullableArrays](#nullablearrays)
   * [DataArrays](#dataarrays)
