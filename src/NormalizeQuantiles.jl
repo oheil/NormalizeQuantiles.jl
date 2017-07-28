@@ -93,12 +93,12 @@ function normalizeQuantiles(matrix::Array{Nullable{Float64}})
     qnmatrix=Array{Nullable{Float64}}((nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
-		sortColumns(matrix,qnmatrix,nrows,ncols)
+		sortColumns!(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
-		meanRows(qnmatrix,nrows)
+		meanRows!(qnmatrix,nrows)
 		# foreach column: equal values in original column should all be mean of normalized values
 		# foreach column: reorder the values back to the original order
-		equalValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
+		equalValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
 	end
     qnmatrix
 end
@@ -188,17 +188,17 @@ function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
 	qnmatrix=@SharedArray(Nullable{Float64},(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
-		multicoreSortColumns(matrix,qnmatrix,nrows,ncols)
+		multicoreSortColumns!(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
-		multicoreMeanRows(qnmatrix,nrows,ncols)
+		multicoreMeanRows!(qnmatrix,nrows,ncols)
 		# foreach column: equal values in original column should all be mean of normalized values
 		# foreach column: reorder the values back to the original order
-		multicoreEqualValuesInColumnAndOrderToOriginal(matrix,qnmatrix,nrows,ncols)
+		multicoreEqualValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
 	end
     qnmatrix
 end
 
-function sortColumns(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
+function sortColumns!(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
@@ -220,7 +220,7 @@ function sortColumns(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{F
 	end
 end
 
-function multicoreSortColumns(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
+function multicoreSortColumns!(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[indices]
@@ -242,7 +242,7 @@ function multicoreSortColumns(matrix::SharedArray{Nullable{Float64}},qnmatrix::S
 	end
 end
 
-function meanRows(qnmatrix::Array{Nullable{Float64}},nrows)
+function meanRows!(qnmatrix::Array{Nullable{Float64}},nrows)
 	for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
 		#nacount=sum(!indices)
@@ -255,7 +255,7 @@ function meanRows(qnmatrix::Array{Nullable{Float64}},nrows)
 	end
 end
 
-function multicoreMeanRows(qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
+function multicoreMeanRows!(qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for row = 1:nrows
 		indices=[ !isnull(x) for x in qnmatrix[row,:] ]
 		#nacount=sum(!indices)
@@ -312,7 +312,7 @@ function orderToOriginal(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullab
 	end
 end
 
-function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
+function multicoreEqualValuesInColumnAndOrderToOriginal!(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
@@ -334,7 +334,7 @@ function multicoreEqualValuesInColumnAndOrderToOriginal(matrix::SharedArray{Null
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
+function equalValuesInColumnAndOrderToOriginal!(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nullable{Float64}},nrows,ncols)
 	for column = 1:ncols
 		indices=[ !isnull(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float64(get(x)) for x in vec(matrix[:,column])[indices] ]
