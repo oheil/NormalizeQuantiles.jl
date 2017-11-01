@@ -294,7 +294,12 @@ To use multiple cores on a single machine you can use `SharedArray{Nullable{Floa
 
 ```julia
 addprocs();
+```
+For julia >= 0.7 we now need:
+```
 @everywhere using SharedArrays;
+```
+```
 @everywhere using NormalizeQuantiles;
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 # sa = SharedArray(Nullable{Float64},(size(array,1),size(array,2)));  # julia 0.4
