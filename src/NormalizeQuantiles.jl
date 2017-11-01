@@ -5,7 +5,11 @@ export normalizeQuantiles
 export sampleRanks
 export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
-macro SharedArray(mytype,mysize)
+if VERSION >= v"0.7.0-"
+	using SharedArrays;
+end # if VERSION >= v"0.7.0-"
+
+macro MySharedArray(mytype,mysize)
 	if VERSION >= v"0.6.0-"
 		return :( SharedArray{$(esc(mytype))}($(esc(mysize))) )
 	end # if VERSION >= v"0.6.0-"
@@ -110,16 +114,16 @@ Method for input type SharedArray{Float64}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Float64})
     #nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
-	nullable=@SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable=@MySharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
     r=normalizeQuantiles(nullable)
 	#nullable=SharedArray(Nullable{Float64},(0,0))
-	nullable=@SharedArray(Nullable{Float64},(0,0))
+	nullable=@MySharedArray(Nullable{Float64},(0,0))
 	#ra=SharedArray(Float64,(size(r,1),size(r,2)))
-	ra=@SharedArray(Float64,(size(r,1),size(r,2)))
+	ra=@MySharedArray(Float64,(size(r,1),size(r,2)))
 	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
 	#r=SharedArray(Nullable{Float64},(0,0))
-	r=@SharedArray(Nullable{Float64},(0,0))
+	r=@MySharedArray(Nullable{Float64},(0,0))
 	ra
 end
 
@@ -130,16 +134,16 @@ Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Int})
     #nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
-	nullable=@SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable=@MySharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=[ Float64(x) for x in matrix ][:]
     r=normalizeQuantiles(nullable)
 	#nullable=SharedArray(Nullable{Float64},(0,0))
-	nullable=@SharedArray(Nullable{Float64},(0,0))
+	nullable=@MySharedArray(Nullable{Float64},(0,0))
 	#ra=SharedArray(Float64,(size(r,1),size(r,2)))
-	ra=@SharedArray(Float64,(size(r,1),size(r,2)))
+	ra=@MySharedArray(Float64,(size(r,1),size(r,2)))
 	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
 	#r=SharedArray(Nullable{Float64},(0,0))
-	r=@SharedArray(Nullable{Float64},(0,0))
+	r=@MySharedArray(Nullable{Float64},(0,0))
 	ra
 end
 
@@ -150,7 +154,7 @@ Method for input type SharedArray{Int}
 " ->
 function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})
 	#nullable=SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
-	nullable=@SharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
+	nullable=@MySharedArray(Nullable{Float64},(size(matrix,1),size(matrix,2)))
 	nullable[:]=matrix[:]
 	normalizeQuantiles(nullable)
 end
@@ -185,7 +189,7 @@ function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})
     ncols=size(matrix,2)
 	# preparing the result matrix
     #qnmatrix=SharedArray(Nullable{Float64},(nrows,ncols))
-	qnmatrix=@SharedArray(Nullable{Float64},(nrows,ncols))
+	qnmatrix=@MySharedArray(Nullable{Float64},(nrows,ncols))
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
 		multicoreSortColumns!(matrix,qnmatrix,nrows,ncols)
@@ -250,8 +254,7 @@ function meanRows!(qnmatrix::Array{Nullable{Float64}},nrows)
 		nacount=sum(naindices)
 		rowmean=mean([Float64(get(x)) for x in qnmatrix[row,indices]])
 		qnmatrix[row,:]=Nullable{Float64}(rowmean)
-		#nacount>0?qnmatrix[row,!indices]=Nullable{Float64}():false
-		nacount>0?qnmatrix[row,naindices]=Nullable{Float64}():false
+		nacount>0 ? qnmatrix[row,naindices]=Nullable{Float64}() : false
 	end
 end
 
@@ -263,7 +266,7 @@ function multicoreMeanRows!(qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols
 		nacount=sum(naindices)
 		rowmean=mean([Float64(get(x)) for x in qnmatrix[row,indices]])
 		qnmatrix[row,:]=Nullable{Float64}(rowmean)
-		nacount>0?qnmatrix[row,naindices]=Nullable{Float64}():false
+		nacount>0 ? qnmatrix[row,naindices]=Nullable{Float64}() : false
 	end
 end
 
@@ -283,7 +286,7 @@ function equalValuesInColumn(matrix::Array{Nullable{Float64}},qnmatrix::Array{Nu
 			lastvalue=sortcol[1]
 			for i in 2:length(sortcol)
 				nextvalue=sortcol[i]
-				get(nextvalue)==get(lastvalue)?ranks[i]=ranks[i-1]:ranks[i]=ranks[i-1]+1
+				get(nextvalue)==get(lastvalue) ? ranks[i]=ranks[i-1] : ranks[i]=ranks[i-1]+1
 				lastrank=ranks[i]
 				lastvalue=sortcol[i]
 			end
@@ -478,7 +481,7 @@ function sampleRanks(array::Array{Nullable{Float64}};tiesMethod::qnTiesMethods=t
 		if !last && !indices[i]
 			if naIncreasesRank
 				rank+=1
-				tiesCount>0?narank+=1:false
+				tiesCount>0 ? narank+=1 : false
 			end
 		else
 			if last || newvalue != lastvalue

@@ -1,9 +1,14 @@
 
 using NormalizeQuantiles
 
-using Base.Test
+if VERSION >= v"0.7.0-"
+	using SharedArrays;
+	using Test;
+else
+	using Base.Test
+end # if VERSION >= v"0.7.0-"
 
-macro SharedArray(mytype,mysize)
+macro MySharedArray(mytype,mysize)
 	if VERSION >= v"0.6.0-"
 		return :( SharedArray{$(esc(mytype))}($(esc(mysize))) )
 	end # if VERSION >= v"0.6.0-"
@@ -22,7 +27,7 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
-sa=@SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 r=normalizeQuantiles(sa)
 r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
@@ -46,7 +51,7 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
 
-sa=@SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 r=normalizeQuantiles(sa)
 r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
@@ -59,7 +64,7 @@ testfloat=[ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check=[ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn=normalizeQuantiles(testfloat)
 @test qn == check
-sa=@SharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
 qn=normalizeQuantiles(sa)
 qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
@@ -69,13 +74,13 @@ testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
 qn=normalizeQuantiles(testint)
 @test qn == testint
 
-sa=@SharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
+sa=@MySharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
 qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
 @test qn == testint
 
-sa=@SharedArray(Int,(size(testint,1),size(testint,2)));
+sa=@MySharedArray(Int,(size(testint,1),size(testint,2)));
 sa[:]=testint[:]
 qn=normalizeQuantiles(sa)
 @test qn == testint
@@ -86,7 +91,7 @@ qn=normalizeQuantiles(dafloat)
 @test isnull(qn[2,2])
 @test get(qn[1,2])==3.5
 @test get(qn[2,1])==5.0
-sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[2,2])
@@ -98,7 +103,7 @@ qn=normalizeQuantiles(dafloat)
 @test isnull(qn[2,1])
 @test isnull(qn[2,2])
 @test isnull(qn[2,3])
-sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[2,1])
@@ -109,7 +114,7 @@ dafloat[3,1:2]=Nullable{Float64}()
 qn=normalizeQuantiles(dafloat)
 @test isnull(qn[3,1])
 @test isnull(qn[3,2])
-sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[3,1])
@@ -132,7 +137,7 @@ qn = normalizeQuantiles(dafloat)
 @test isnull(qn[4,1])
 @test isnull(qn[4,2])
 @test isnull(qn[4,3])
-sa=@SharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
+sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnull(qn[1,1])
