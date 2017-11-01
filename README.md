@@ -37,9 +37,10 @@ of a given vector or matrix.
 
 ## Dependencies
 
-Julia 0.4 or higher
-
-No other dependencies
+* Julia 0.4 or higher
+* Julia <= 0.6: no dependencies
+* Julia >  0.6: SharedArrays
+  * SharedArray has moved to stdlib as `using SharedArrays`, see [#23931](https://github.com/JuliaLang/julia/pull/23931)
 
 ## Remarks
 
@@ -246,7 +247,7 @@ Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
 
 ```julia
 tmp_da = da;
-arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i])?Nullable{Float64}():Nullable{Float64}(tmp_da[i]) for i=1:length(tmp_da)],size(tmp_da)))
+arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i]) ? Nullable{Float64}() : Nullable{Float64}(tmp_da[i]) for i=1:length(tmp_da)],size(tmp_da)))
 ```
 ```
 	julia> arrayWithNA
@@ -273,7 +274,7 @@ Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `N
 ```julia
 tmp_qn = qn;
 daqn = DataArray(Float64,size(tmp_qn));
-for index in eachindex(daqn) daqn[index]=isnull(tmp_qn[index])?NA:get(tmp_qn[index]) end
+for index in eachindex(daqn) daqn[index]=isnull(tmp_qn[index]) ? NA : get(tmp_qn[index]) end
 daqn
 ```
 ```
@@ -293,7 +294,8 @@ To use multiple cores on a single machine you can use `SharedArray{Nullable{Floa
 
 ```julia
 addprocs();
-using NormalizeQuantiles;
+@everywhere using SharedArrays;
+@everywhere using NormalizeQuantiles;
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 # sa = SharedArray(Nullable{Float64},(size(array,1),size(array,2)));  # julia 0.4
 sa = SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));
