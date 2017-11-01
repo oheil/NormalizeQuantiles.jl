@@ -295,7 +295,7 @@ To use multiple cores on a single machine you can use `SharedArray{Nullable{Floa
 ```julia
 addprocs();
 ```
-For julia >= 0.7 we now need:
+For julia >= 0.7 we now need the following line:
 ```
 @everywhere using SharedArrays;
 ```
