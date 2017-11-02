@@ -39,7 +39,7 @@ of a given vector or matrix.
 
 * Julia 0.4 or higher
 * Julia <= 0.6: no dependencies
-* Julia >  0.6: SharedArrays
+* Julia >= 0.7: SharedArrays
   * SharedArray has moved to stdlib as `using SharedArrays`, see [#23931](https://github.com/JuliaLang/julia/pull/23931)
 
 ## Remarks
