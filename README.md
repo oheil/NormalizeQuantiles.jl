@@ -45,6 +45,9 @@ of a given vector or matrix.
 ## Remarks
 
 * Version 0.3.x is the last version for julia <= 0.6, julia 0.7 requires fundamental changes
+  * latest vesion for julia <= 0.6:
+        https://github.com/oheil/NormalizeQuantiles.jl/tree/v0.3.3
+        git checkout 6ae5e76b3f81e53914e8f363fc0cea8dfd2c9467
 * Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 * Last commit with julia v3.0 support: [Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36](https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36)
   * git checkout eb97d24ff77d470d0d121fabf83d59979ad0db36
