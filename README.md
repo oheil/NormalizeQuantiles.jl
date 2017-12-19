@@ -39,11 +39,12 @@ of a given vector or matrix.
 
 * Julia 0.4 or higher
 * Julia <= 0.6: no dependencies
-* Julia >= 0.7: SharedArrays
-  * SharedArray has moved to stdlib as `using SharedArrays`, see [#23931](https://github.com/JuliaLang/julia/pull/23931)
+* ~~Julia >= 0.7: SharedArrays~~
+  * ~~SharedArray has moved to stdlib as `using SharedArrays`, see [#23931](https://github.com/JuliaLang/julia/pull/23931)~~
 
 ## Remarks
 
+* Version 0.3.x is the last version for julia <= 0.6, julia 0.7 require fundamental changes
 * Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 * Last commit with julia v3.0 support: [Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36](https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36)
   * git checkout eb97d24ff77d470d0d121fabf83d59979ad0db36
