@@ -47,7 +47,7 @@ of a given vector or matrix.
 * Version 0.3.x is the last version for julia <= 0.6, julia 0.7 requires fundamental changes
   * latest vesion for julia <= 0.6:
     * Pkg.add("NormalizeQuantiles",v"0.3.0",v"0.3.999")
-    * https://github.com/oheil/NormalizeQuantiles.jl/tree/v0.3.3
+    * https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
     * git checkout backport-0.6
   * julia 0.4 had to be removed from REQUIRE file, to install in julia 0.4 use:
 
@@ -57,9 +57,9 @@ of a given vector or matrix.
 	;git pull origin backport-0.6
 ```
 
-* Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 * Last commit with julia 0.3 support: [Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36](https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36)
   * git checkout eb97d24ff77d470d0d121fabf83d59979ad0db36
+* Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 
 ## Usage examples `normalizeQuantiles`
 
