@@ -44,9 +44,9 @@ of a given vector or matrix.
 
 ## Remarks
 
-* Version 0.3.x is the last version for julia <= 0.6, julia 0.7 requires fundamental changes
+* Version 0.4.x is the last version for julia <= 0.6, julia 0.7 requires fundamental changes
   * latest vesion for julia <= 0.6:
-    * Pkg.add("NormalizeQuantiles",v"0.3.0",v"0.3.999")
+    * Pkg.add("NormalizeQuantiles",v"0.3.0",v"0.4.999")
     * https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
     * git checkout backport-0.6
   * julia 0.4 had to be removed from REQUIRE file, to install in julia 0.4 use:
@@ -78,7 +78,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -97,7 +97,7 @@ arrayWithNaN[2,2]=NaN
 ```
 ```
 	julia> arrayWithNaN
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 3.0    2.0  1.0
 	 4.0  NaN    6.0
 	 9.0    7.0  8.0
@@ -108,7 +108,7 @@ qn = normalizeQuantiles(arrayWithNaN)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 2.0    3.5  2.0
 	 5.0  NaN    5.0
 	 8.0    8.0  6.5
@@ -133,7 +133,7 @@ arrayWithNA
 ```
 ```
 	julia> arrayWithNA
-	4×3 Array{Nullable{Float64},2}:
+	4Ã—3 Array{Nullable{Float64},2}:
 	 3.0  2.0    1.0
 	 4.0  #NULL  6.0
 	 9.0  7.0    8.0
@@ -144,7 +144,7 @@ qn = normalizeQuantiles(arrayWithNA)
 ```
 ```
 	julia> qn
-	4×3 Array{Nullable{Float64},2}:
+	4Ã—3 Array{Nullable{Float64},2}:
 	 2.0  3.5    2.0
 	 5.0  #NULL  5.0
 	 8.0  8.0    6.5
@@ -175,7 +175,7 @@ qn_array
 ```
 ```
 	julia> qn_array
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 2.0  3.5  2.0
 	 5.0  0.0  5.0
 	 8.0  8.0  6.5
@@ -195,7 +195,7 @@ na
 ```
 ```
 	julia> na
-	4×3 NullableArrays.NullableArray{Float64,2}:
+	4Ã—3 NullableArrays.NullableArray{Float64,2}:
 	 3.0  2.0    1.0
 	 4.0  #NULL  6.0
 	 9.0  7.0    8.0
@@ -211,7 +211,7 @@ qn = normalizeQuantiles(arrayOfNullables)
 ```
 ```
 	julia> qn
-	4×3 Array{Nullable{Float64},2}:
+	4Ã—3 Array{Nullable{Float64},2}:
 	 2.0  3.5    2.0
 	 5.0  #NULL  5.0
 	 8.0  8.0    6.5
@@ -228,7 +228,7 @@ qna = NullableArray(convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:lengt
 ```
 ```
 	julia> qna
-	4×3 NullableArrays.NullableArray{Float64,2}:
+	4Ã—3 NullableArrays.NullableArray{Float64,2}:
 	 2.0  3.5    2.0
 	 5.0  #NULL  5.0
 	 8.0  8.0    6.5
@@ -246,7 +246,7 @@ da = DataArray(array)
 ```
 ```
 	julia> da
-	4×3 DataArrays.DataArray{Float64,2}:
+	4Ã—3 DataArrays.DataArray{Float64,2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
@@ -264,7 +264,7 @@ arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i]) ? Nullab
 ```
 ```
 	julia> arrayWithNA
-	4×3 Array{Nullable{Float64},2}:
+	4Ã—3 Array{Nullable{Float64},2}:
 	 3.0  2.0    1.0
 	 4.0  #NULL  6.0
 	 9.0  7.0    8.0
@@ -275,7 +275,7 @@ qn = normalizeQuantiles(arrayWithNA)
 ```
 ```
 	julia> qn
-	4×3 Array{Nullable{Float64},2}:
+	4Ã—3 Array{Nullable{Float64},2}:
 	 2.0  3.5    2.0
 	 5.0  #NULL  5.0
 	 8.0  8.0    6.5
@@ -292,7 +292,7 @@ daqn
 ```
 ```
 	julia> daqn
-	4×3 DataArrays.DataArray{Float64,2}:
+	4Ã—3 DataArrays.DataArray{Float64,2}:
 	 2.0  3.5  2.0
 	 5.0   NA  5.0
 	 8.0  8.0  6.5
@@ -322,7 +322,7 @@ sa
 ```
 ```
 	julia> sa
-	4×3 SharedArray{Nullable{Float64},2}:
+	4Ã—3 SharedArray{Nullable{Float64},2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
@@ -333,7 +333,7 @@ qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-	4×3 SharedArray{Nullable{Float64},2}:
+	4Ã—3 SharedArray{Nullable{Float64},2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -480,7 +480,7 @@ array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
 ```
 ```
 	julia> array
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	  1.0   2.0   3.0
 	  4.0   5.0   6.0
 	  7.0   8.0   9.0
