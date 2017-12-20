@@ -52,8 +52,7 @@ of a given vector or matrix.
   * julia 0.4 had to be removed from REQUIRE file, to install in julia 0.4 use:
 
 ```julia
-
-    Pkg.add("NormalizeQuantiles",v"0.3.0")
+        Pkg.add("NormalizeQuantiles",v"0.3.0")
 	cd(Pkg.dir("NormalizeQuantiles"))
 	;git pull origin backport-0.6
 ```
