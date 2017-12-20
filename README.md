@@ -52,10 +52,12 @@ of a given vector or matrix.
   * julia 0.4 had to be removed from REQUIRE file, to install in julia 0.4 use:
 
 ```julia
+
     Pkg.add("NormalizeQuantiles",v"0.3.0")
 	cd(Pkg.dir("NormalizeQuantiles"))
 	;git pull origin backport-0.6
-``` 
+```
+
 * Code examples and output on this page have been used on and copied from the julia 0.5 [REPL](https://docs.julialang.org/en/stable/manual/interacting-with-julia/)
 * Last commit with julia 0.3 support: [Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36](https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36)
   * git checkout eb97d24ff77d470d0d121fabf83d59979ad0db36
