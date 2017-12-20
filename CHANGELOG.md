@@ -1,3 +1,32 @@
+## 0.3.3 (2017-12-20)
+
+####Features:
+
+* none
+	
+####Bug fixes:
+
+* none
+
+####Remarks:
+
+  * julia 0.7-DEV introduces "missing", therefor major recoding is needed.
+  * This version will be freezed for julia 0.4 to 0.6(including)
+
+## 0.3.2
+
+####Features:
+
+* none
+	
+####Bug fixes:
+
+* none
+
+####Remarks:
+
+  * Julia 0.7-DEV sharedArrayes removed from base
+
 ## 0.3.1 (2017-05-16)
 
 ####Features:
