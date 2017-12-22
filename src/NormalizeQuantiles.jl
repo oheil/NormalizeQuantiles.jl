@@ -110,9 +110,9 @@ function normalizeQuantiles(matrix::Any)
 	if ! isa(matrix,AbstractArray)
 		throw(ArgumentError("parameter must be a subtype of AbstractArray"))
 	end
-	missing_indices=[ ! isa(x,Integer) && ! isa(x,Real) for x in vec(matrix) ]
-	matrix[missing_indices]=missing
+	missing_indices=[ (!isa(x,Integer) && !isa(x,Real)) || isnan(x) for x in vec(matrix) ]
 	matrix=convert(Array{Union{Missing, Float64}},matrix)
+	matrix[missing_indices]=missing
 	nrows=size(matrix,1)
 	ncols=size(matrix,2)
 	# preparing the result matrix
@@ -126,7 +126,7 @@ function normalizeQuantiles(matrix::Any)
 		# foreach column: reorder the values back to the original order
 		NormalizeQuantiles.equalValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
 	end
-	throw(ErrorException("normalizeQuantiles not yet implemented for julia 0.7"))
+	#throw(ErrorException("normalizeQuantiles not yet implemented for julia 0.7"))
 	qnmatrix
 end
 
