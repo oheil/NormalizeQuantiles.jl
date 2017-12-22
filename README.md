@@ -2,7 +2,6 @@
 
 julia 0.7 support is currently under development, first release will be v0.5.0
 
-
 For julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
 
 [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl/builds/)
