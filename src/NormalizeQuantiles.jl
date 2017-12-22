@@ -113,8 +113,21 @@ function normalizeQuantiles(matrix::Any)
 	missing_indices=[ ! isa(x,Integer) && ! isa(x,Real) for x in vec(matrix) ]
 	matrix[missing_indices]=missing
 	matrix=convert(Array{Union{Missing, Float64}},matrix)
-
+	nrows=size(matrix,1)
+	ncols=size(matrix,2)
+	# preparing the result matrix
+	qnmatrix=Array{Union{Missing, Float64}}(uninitialized,nrows,ncols)
+	if ncols>0 && nrows>0
+		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
+		NormalizeQuantiles.sortColumns!(matrix,qnmatrix,nrows,ncols)
+		# foreach row: set all values to the mean of the row, except NAs
+		NormalizeQuantiles.meanRows!(qnmatrix,nrows)
+		# foreach column: equal values in original column should all be mean of normalized values
+		# foreach column: reorder the values back to the original order
+		NormalizeQuantiles.equalValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
+	end
 	throw(ErrorException("normalizeQuantiles not yet implemented for julia 0.7"))
+	qnmatrix
 end
 
 ##### @doc "
@@ -233,6 +246,26 @@ end
 ##### 		qnmatrix[:,column]=sortcol
 ##### 	end
 ##### end
+function sortColumns!(matrix::Array{Union{Missing, Float64}},qnmatrix::Array{Union{Missing, Float64}},nrows,ncols)
+	for column = 1:ncols
+		goodIndices=[ !ismissing(x) for x in vec(matrix[:,column]) ]
+		sortcol=vec(matrix[:,column])[goodIndices]
+		sortcol=[Float64(x) for x in sortcol]
+		sort!(sortcol)
+		sortcol=Array{Union{Missing, Float64}}(sortcol)
+		missingIndices=(1:nrows)[ convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices))) ]
+		isEmpty=sum(goodIndices)==0
+		for missingPos in missingIndices
+			if isEmpty
+				isEmpty=false
+				sortcol=Array{Union{Missing, Float64}}([missing])
+			else
+				sortcol=vcat(sortcol[1:missingPos-1],missing,sortcol[missingPos:end])
+			end
+		end
+		qnmatrix[:,column]=sortcol
+	end
+end
 
 ##### function multicoreSortColumns!(matrix::SharedArray{Nullable{Float64}},qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 ##### 	@sync @parallel for column = 1:ncols
@@ -267,6 +300,16 @@ end
 ##### 		nacount>0 ? qnmatrix[row,naindices]=Nullable{Float64}() : false
 ##### 	end
 ##### end
+function meanRows!(qnmatrix::Array{Union{Missing, Float64}},nrows)
+	for row = 1:nrows
+		goodIndices=[ !ismissing(x) for x in qnmatrix[row,:] ]
+		missingIndices=convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices)))
+		missingCount=sum(missingIndices)
+		rowmean=mean([Float64(x) for x in qnmatrix[row,goodIndices]])
+		qnmatrix[row,:]=Union{Missing, Float64}(rowmean)
+		missingCount>0 ? qnmatrix[row,missingIndices]=missing : false
+	end
+end
 
 ##### function multicoreMeanRows!(qnmatrix::SharedArray{Nullable{Float64}},nrows,ncols)
 ##### 	@sync @parallel for row = 1:nrows
@@ -368,6 +411,27 @@ end
 ##### 		qnmatrix[:,column]=qncol
 ##### 	end
 ##### end
+function equalValuesInColumnAndOrderToOriginal!(matrix::Array{Union{Missing, Float64}},qnmatrix::Array{Union{Missing, Float64}},nrows,ncols)
+	for column = 1:ncols
+		goodIndices=[ !ismissing(x) for x in vec(matrix[:,column]) ]
+		sortp=[ Float64(x) for x in vec(matrix[:,column])[goodIndices] ]
+		sortp=sortperm(sortp)
+		goodIndices2=[ !ismissing(x) for x in vec(qnmatrix[:,column]) ]
+		if length(matrix[:,column][goodIndices][sortp])>0
+			allRanks=Dict{Int,Array{Int}}()
+			sizehint!(allRanks,nrows)
+			rankColumns=NormalizeQuantiles.getRankMatrix(matrix[:,column][goodIndices][sortp],allRanks,goodIndices)
+			for i in 1:rankColumns
+				rankIndices=unique(allRanks[i])
+				qnmatrix[rankIndices,column]=mean([ Float64(x) for x in qnmatrix[rankIndices,column] ])
+			end
+		end
+		qncol=Array{Union{Missing, Float64}}(uninitialized,nrows,1)
+		fill!(qncol,missing)
+		qncol[(1:nrows)[goodIndices][sortp]]=vec(qnmatrix[(1:nrows)[goodIndices2],column])
+		qnmatrix[:,column]=qncol
+	end
+end
 
 ##### function getRankMatrix(sortedArrayNoNAs::Array{Nullable{Float64}},allranks::Dict{Int,Array{Int}},indices::Array{Bool})
 ##### 	rankColumns=0
@@ -397,6 +461,34 @@ end
 ##### 	end
 ##### 	rankColumns
 ##### end
+function getRankMatrix(sortedArrayNoNAs::Array{Union{Missing, Float64}},allRanks::Dict{Int,Array{Int}},goodIndices::Array{Bool})
+	rankColumns=0
+	nrows=length(sortedArrayNoNAs)
+	lastValue=sortedArrayNoNAs[1]
+	goodIndices2=(1:length(goodIndices))[goodIndices]
+	count=1
+	for i in 2:nrows
+		nextValue=sortedArrayNoNAs[i]
+		if !ismissing(nextValue) && !ismissing(lastValue) && nextValue==lastValue
+			if haskey(allRanks,rankColumns+1)
+				allRanks[rankColumns+1]=vcat(allRanks[rankColumns+1],Array{Int}([goodIndices2[i-1],goodIndices2[i]]))
+			else
+				allRanks[rankColumns+1]=Array{Int}([goodIndices2[i-1],goodIndices2[i]])
+			end
+			count+=1
+		else
+			if count>1
+				rankColumns+=1
+			end
+			count=1
+		end
+		lastValue=sortedArrayNoNAs[i]
+	end
+	if count>1
+		rankColumns+=1
+	end
+	rankColumns		
+end
 
 ##### @doc "
 ##### ### (Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int};tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
