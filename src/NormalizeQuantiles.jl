@@ -20,6 +20,18 @@ export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
 @enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
+function convertToUnionFloatMissing(matrix::Any)
+	if ! isa(matrix,AbstractArray)
+		throw(ArgumentError("parameter must be a subtype of AbstractArray"))
+	end
+	missing_indices=[ (!isa(x,Integer) && !isa(x,Real)) || isnan(x) for x in vec(matrix) ]
+	matrix=convert(Array{Any},matrix)
+	matrix[missing_indices]=missing
+	matrix=convert(Array{Union{Missing, Float64}},matrix)
+	matrix[missing_indices]=missing
+	matrix
+end
+
 ##### @doc "
 ##### ### qnmatrix::Array{Float64} function normalizeQuantiles(matrix::Array{Float64})
 ##### 
@@ -107,12 +119,7 @@ export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 #####     qnmatrix
 ##### end
 function normalizeQuantiles(matrix::Any)
-	if ! isa(matrix,AbstractArray)
-		throw(ArgumentError("parameter must be a subtype of AbstractArray"))
-	end
-	missing_indices=[ (!isa(x,Integer) && !isa(x,Real)) || isnan(x) for x in vec(matrix) ]
-	matrix=convert(Array{Union{Missing, Float64}},matrix)
-	matrix[missing_indices]=missing
+	matrix=convertToUnionFloatMissing(matrix)
 	nrows=size(matrix,1)
 	ncols=size(matrix,2)
 	# preparing the result matrix
@@ -630,5 +637,81 @@ end
 ##### 	end
 ##### 	(result,rankMatrix)
 ##### end
+function sampleRanks(array::Any;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	array=convertToUnionFloatMissing(array)
+	nrows=length(array)
+	goodIndices=[ !ismissing(x) for x in array ]
+ 	reducedArray=[ Float64(x) for x in array[goodIndices] ]
+ 	sortp=sortperm(reducedArray)
+ 	result=Array{Union{Missing,Int}}(uninitialized,nrows)
+ 	result[:]=missing
+ 	rankMatrix=Dict{Int,Array{Int}}()
+ 	if resultMatrix
+ 		sizehint!(rankMatrix,nrows)
+ 	end	
+ 	goodIndices2=reshape((1:nrows),(1,nrows))[goodIndices[:]][sortp]
+ 	rank=1
+ 	narank=0
+ 	lastvalue=reducedArray[sortp[1]]
+ 	ties=Array{Int}(uninitialized,0)
+ 	tieIndices=Array{Int}(uninitialized,0)
+ 	tiesCount=0
+ 	index=1
+ 	for i in 1:(nrows+1)
+ 		last=i>nrows
+ 		if !last 
+ 			newvalue=reducedArray[sortp[index]]
+ 		end
+ 		if !last && !goodIndices[i]
+ 			if naIncreasesRank
+ 				rank+=1
+ 				tiesCount>0 ? narank+=1 : false
+ 			end
+ 		else
+ 			if last || newvalue != lastvalue
+ 				if tiesMethod==tmMin
+ 					ties[:]=minimum(ties)
+ 					rank=ties[end]+narank+1
+ 				elseif tiesMethod==tmMax
+ 					ties[:]=maximum(ties)
+ 					rank=ties[end]+narank+1
+ 				elseif tiesMethod==tmReverse
+ 					ties=flipdim(ties,1)
+ 					rank=ties[1]+narank+1
+ 				elseif tiesMethod==tmRandom
+ 					rank=ties[end]+narank+1
+ 					ties=ties[randperm(tiesCount)]
+ 				elseif tiesMethod==tmAverage
+ 					ties[:]=round(Int,mean(ties))
+ 					rank=ties[end]+narank+1
+ 				end
+ 				narank=0
+ 				for j in 1:tiesCount
+ 					if resultMatrix
+ 						if haskey(rankMatrix,ties[j])
+ 							rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
+ 						else
+ 							rankMatrix[ties[j]]=Array{Int}([tieIndices[j]])
+ 						end
+ 					end
+ 					result[tieIndices[j]]=ties[j]
+ 				end
+ 				ties=Array{Int}(uninitialized,0)
+ 				tieIndices=Array{Int}(uninitialized,0)
+ 				tiesCount=0
+ 			end
+ 			if !last
+ 				tieIndices=vcat(tieIndices,Array{Int}([goodIndices2[index]]))
+ 				ties=vcat(ties,Array{Int}([rank]))
+ 				tiesCount+=1
+ 				rank+=1
+ 				lastvalue=newvalue
+ 				index+=1
+ 			end
+ 		end
+ 	end
+ 	(result,rankMatrix)
+end
+
 
 end # module
