@@ -1,8 +1,8 @@
 module NormalizeQuantiles
 
-export normalizeQuantiles
+export normalizeQuantiles,normalizeQuantiles!
 
-export sampleRanks
+export sampleRanks,sampleRanks!
 export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
 using Distributed
@@ -38,6 +38,8 @@ Return value:
     qnmatrix::Array{Union{Missing,Float64}}
 The quantile normalized data as Array{Union{Missing,Float64}}
 
+If the input array can be altered use normalizeQuantiles!(matrix::AbstractArray) to be more memory efficient.
+
 Example:
 
     using NormalizeQuantiles
@@ -50,23 +52,25 @@ Example:
     array=convert(Array{Any},array)
     array[row,column] = missing
     qn = normalizeQuantiles(array)
-
 " ->
 function normalizeQuantiles(matrix::AbstractArray)
 	myMatrix=deepcopy(matrix)
-	myMatrix=NormalizeQuantiles.convertToSharedFloat(myMatrix)
-	nrows=size(myMatrix,1)
-	ncols=size(myMatrix,2)
+	normalizeQuantiles!(myMatrix)
+end
+function normalizeQuantiles!(matrix::AbstractArray)
+	matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
+	nrows=size(matrix,1)
+	ncols=size(matrix,2)
 	# preparing the result matrix
 	qnmatrix=SharedArray{Float64}(nrows,ncols)
 	if ncols>0 && nrows>0
 		# foreach column: sort the values without NAs; put NAs (if any) back into sorted list
-		NormalizeQuantiles.sortColumns!(myMatrix,qnmatrix,nrows,ncols)
+		NormalizeQuantiles.sortColumns!(matrix,qnmatrix,nrows,ncols)
 		# foreach row: set all values to the mean of the row, except NAs
 		NormalizeQuantiles.meanRows!(qnmatrix,nrows)
 		# foreach column: equal values in original column should all be mean of normalized values
 		# foreach column: reorder the values back to the original order
-		NormalizeQuantiles.equalValuesInColumnAndOrderToOriginal!(myMatrix,qnmatrix,nrows,ncols)
+		NormalizeQuantiles.equalValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
 	end
 	#throw(ErrorException("normalizeQuantiles not yet implemented for julia 0.7"))
 	convertToFloatMissing(qnmatrix)	
@@ -170,6 +174,8 @@ Parameters:
 	naIncreasesRank: if true than any NA increases the following ranks by 1
 	resultMatrix: if true than return a dictionary of rank keys and array of indices values
 
+	If the input array can be altered use sampleRanks!(matrix::AbstractArray) to be more memory efficient.	
+	
 Example:
 	
 	using NormalizeQuantiles
@@ -187,10 +193,13 @@ m is a dictionary with rank as keys and as value the indices of all values of th
 " ->
 function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	myArray=deepcopy(array)
-	myArray=convertToFloatMissing(myArray)
-	nrows=length(myArray)
-	goodIndices=[ !ismissing(x) for x in myArray ]
- 	reducedArray=[ Float64(x) for x in myArray[goodIndices] ]
+	sampleRanks!(myArray)
+end
+function sampleRanks!(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+	array=convertToFloatMissing(array)
+	nrows=length(array)
+	goodIndices=[ !ismissing(x) for x in array ]
+ 	reducedArray=[ Float64(x) for x in array[goodIndices] ]
  	sortp=sortperm(reducedArray)
  	result=Array{Union{Missing,Int}}(uninitialized,nrows)
  	result[:]=missing
