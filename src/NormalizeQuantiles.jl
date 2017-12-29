@@ -10,20 +10,24 @@ using SharedArrays
 
 @enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
-function convertToSharedFloat(matrix::AbstractArray)
-	missing_indices=[ (!isa(x,Integer) && !isa(x,Real)) || isnan(x) for x in vec(matrix) ]
-	matrix=convert(Array{Any},matrix)
-	matrix[missing_indices]=NaN
-	matrix=convert(SharedArray{Float64},matrix)
-	matrix
-end
+###function convertToSharedFloat(matrix::AbstractArray)
+###	missing_indices=[ checkForNotANumber(x) for x in vec(matrix) ]
+###	matrix=convert(Array{Any},matrix)
+###	matrix[missing_indices]=NaN
+###	matrix=convert(SharedArray{Float64},matrix)
+###	matrix
+###end
 
 function convertToFloatMissing(matrix::AbstractArray)
-	missing_indices=[ (!isa(x,Integer) && !isa(x,Real)) || isnan(x) for x in vec(matrix) ]
+	missing_indices=[ checkForNotANumber(x) for x in vec(matrix) ]
 	matrix=convert(Array{Any},matrix)
 	matrix[missing_indices]=missing
 	matrix=convert(Array{Union{Missing,Float64}},matrix)
 	matrix
+end
+
+function checkForNotANumber(x::Any)
+	(!isa(x,Integer) && !isa(x,Real)) || isnan(x)
 end
 
 @doc "
@@ -53,12 +57,12 @@ Example:
     array[row,column] = missing
     qn = normalizeQuantiles(array)
 " ->
+###function normalizeQuantiles(matrix::AbstractArray)
+###	myMatrix=deepcopy(matrix)
+###	normalizeQuantiles!(myMatrix)
+###end
 function normalizeQuantiles(matrix::AbstractArray)
-	myMatrix=deepcopy(matrix)
-	normalizeQuantiles!(myMatrix)
-end
-function normalizeQuantiles!(matrix::AbstractArray)
-	matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
+	#matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
 	nrows=size(matrix,1)
 	ncols=size(matrix,2)
 	# preparing the result matrix
@@ -76,9 +80,9 @@ function normalizeQuantiles!(matrix::AbstractArray)
 	convertToFloatMissing(qnmatrix)	
 end
 
-function sortColumns!(matrix::SharedArray{Float64},qnmatrix::SharedArray{Float64},nrows,ncols)
+function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for column = 1:ncols
-		goodIndices=[ !isnan(x) for x in vec(matrix[:,column]) ]
+		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[goodIndices]
 		sortcol=[Float64(x) for x in sortcol]
 		sort!(sortcol)
@@ -98,9 +102,9 @@ function sortColumns!(matrix::SharedArray{Float64},qnmatrix::SharedArray{Float64
 	end
 end
 
-function meanRows!(qnmatrix::SharedArray{Float64},nrows)
+function meanRows!(qnmatrix::AbstractArray,nrows)
 	@sync @parallel for row = 1:nrows
-		goodIndices=[ !isnan(x) for x in qnmatrix[row,:] ]
+		goodIndices=[ !checkForNotANumber(x) for x in qnmatrix[row,:] ]
 		missingIndices=convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices)))
 		missingCount=sum(missingIndices)
 		rowmean=mean([Float64(x) for x in qnmatrix[row,goodIndices]])
@@ -109,12 +113,12 @@ function meanRows!(qnmatrix::SharedArray{Float64},nrows)
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal!(matrix::SharedArray{Float64},qnmatrix::SharedArray{Float64},nrows,ncols)
+function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for column = 1:ncols
-		goodIndices=[ !isnan(x) for x in vec(matrix[:,column]) ]
+		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float64(x) for x in vec(matrix[:,column])[goodIndices] ]
 		sortp=sortperm(sortp)
-		goodIndices2=[ !isnan(x) for x in vec(qnmatrix[:,column]) ]
+		goodIndices2=[ !checkForNotANumber(x) for x in vec(qnmatrix[:,column]) ]
 		if length(matrix[:,column][goodIndices][sortp])>0
 			allRanks=Dict{Int,Array{Int}}()
 			sizehint!(allRanks,nrows)
@@ -131,7 +135,7 @@ function equalValuesInColumnAndOrderToOriginal!(matrix::SharedArray{Float64},qnm
 	end
 end
 
-function getRankMatrix(sortedArrayNoNAs::Array{Float64},allRanks::Dict{Int,Array{Int}},goodIndices::Array{Bool})
+function getRankMatrix(sortedArrayNoNAs::AbstractArray,allRanks::Dict{Int,Array{Int}},goodIndices::Array{Bool})
 	rankColumns=0
 	nrows=length(sortedArrayNoNAs)
 	lastValue=sortedArrayNoNAs[1]
@@ -139,7 +143,7 @@ function getRankMatrix(sortedArrayNoNAs::Array{Float64},allRanks::Dict{Int,Array
 	count=1
 	for i in 2:nrows
 		nextValue=sortedArrayNoNAs[i]
-		if !isnan(nextValue) && !isnan(lastValue) && nextValue==lastValue
+		if !checkForNotANumber(nextValue) && !checkForNotANumber(lastValue) && nextValue==lastValue
 			if haskey(allRanks,rankColumns+1)
 				allRanks[rankColumns+1]=vcat(allRanks[rankColumns+1],Array{Int}([goodIndices2[i-1],goodIndices2[i]]))
 			else
@@ -191,14 +195,14 @@ r is the vector of ranks.
 m is a dictionary with rank as keys and as value the indices of all values of this rank.
 
 " ->
+###function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+###	myArray=deepcopy(array)
+###	sampleRanks!(myArray)
+###end
 function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	myArray=deepcopy(array)
-	sampleRanks!(myArray)
-end
-function sampleRanks!(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-	array=convertToFloatMissing(array)
+	#array=convertToFloatMissing(array)
 	nrows=length(array)
-	goodIndices=[ !ismissing(x) for x in array ]
+	goodIndices=[ !checkForNotANumber(x) for x in array ]
  	reducedArray=[ Float64(x) for x in array[goodIndices] ]
  	sortp=sortperm(reducedArray)
  	result=Array{Union{Missing,Int}}(uninitialized,nrows)

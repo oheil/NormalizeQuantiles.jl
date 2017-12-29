@@ -4,8 +4,10 @@ julia 0.7 support is currently under development, first release will be v0.5.0
 
 For julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
 
-[![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl/builds/)
-[![Build status](https://ci.appveyor.com/api/projects/status/24mlc8g1x65a57h7?svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl)
+Linux: [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
+Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=master&svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/master)
+
+[![Coverage Status](https://coveralls.io/repos/oheil/normalizequantiles.jl/badge.svg?branch=master)](https://coveralls.io/r/oheil/normalizequantiles.jl?branch=master)
 
 Package NormalizeQuantiles implements quantile normalization
 
