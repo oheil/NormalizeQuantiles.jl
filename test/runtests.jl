@@ -1,23 +1,11 @@
 
+#using Distributed
+
 using NormalizeQuantiles
 
-##### if VERSION >= v"0.7.0-"
-##### 	using SharedArrays;
-##### 	using Test;
-##### else
-##### 	using Base.Test
-##### end # if VERSION >= v"0.7.0-"
-
 using Test
+using SharedArrays
 
-##### macro MySharedArray(mytype,mysize)
-##### 	if VERSION >= v"0.6.0-"
-##### 		return :( SharedArray{$(esc(mytype))}($(esc(mysize))) )
-##### 	end # if VERSION >= v"0.6.0-"
-##### 	if VERSION >= v"0.4.0-"
-##### 		return :( SharedArray($(esc(mytype)),$(esc(mysize))) )
-##### 	end # if VERSION >= v"0.4.0-"
-##### end
 
 # write your own tests here
 @test 1 == 1
@@ -29,14 +17,13 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
 @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
-##### sa=@MySharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
-##### sa[:]=testfloat[:]
-##### r=normalizeQuantiles(sa)
-##### r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
-##### @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
-##### @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
-##### @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
-##### @test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
+sa=SharedArray{Float64}((size(testfloat,1),size(testfloat,2)));
+sa[:]=testfloat[:]
+r=normalizeQuantiles(sa)
+@test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
+@test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
+@test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
+@test mean(r[:,4]) >= 4.8124 && mean(r[:,4]) <= 4.8126
 
 testfloat[2,2]=NaN
 testfloat[3,4]=NaN
@@ -53,39 +40,32 @@ r=normalizeQuantiles(testfloat)
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
 @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
 
-##### sa=@MySharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
-##### sa[:]=testfloat[:]
-##### r=normalizeQuantiles(sa)
-##### r=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))
-##### @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
-##### @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
-##### @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
-##### @test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
+sa=SharedArray{Float64}((size(testfloat,1),size(testfloat,2)));
+sa[:]=testfloat[:]
+r=normalizeQuantiles(sa)
+@test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
+@test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
+@test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
+@test mean(r[:,4]) >= 4.93124 && mean(r[:,4]) <= 4.93125
 
 testfloat=[ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check=[ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
 qn=normalizeQuantiles(testfloat)
 @test qn == check
-##### sa=@MySharedArray(Nullable{Float64},(size(testfloat,1),size(testfloat,2)));
-##### sa[:]=testfloat[:]
-##### qn=normalizeQuantiles(sa)
-##### qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
-##### @test qn == check
+
+sa=SharedArray{Float64}((size(testfloat,1),size(testfloat,2)));
+sa[:]=testfloat[:]
+qn=normalizeQuantiles(sa)
+@test qn == check
 
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
 qn=normalizeQuantiles(testint)
 @test qn == testint
 
-##### sa=@MySharedArray(Nullable{Int},(size(testint,1),size(testint,2)));
-##### sa[:]=testint[:]
-##### qn=normalizeQuantiles(sa)
-##### qn=convert(Array{Float64},reshape([get(qn[i]) for i=1:length(qn)],size(qn)))
-##### @test qn == testint
-
-##### sa=@MySharedArray(Int,(size(testint,1),size(testint,2)));
-##### sa[:]=testint[:]
-##### qn=normalizeQuantiles(sa)
-##### @test qn == testint
+sa=SharedArray{Int}((size(testint,1),size(testint,2)));
+sa[:]=testint[:]
+qn=normalizeQuantiles(sa)
+@test qn == testint
 
 dafloat=Array{Union{Missing, Float64}}(testfloat)
 dafloat[2,2]=missing
@@ -93,12 +73,14 @@ qn=normalizeQuantiles(dafloat)
 @test ismissing(qn[2,2])
 @test qn[1,2]==3.5
 @test qn[2,1]==5.0
-##### sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
-##### sa[:]=dafloat[:]
-##### qn=normalizeQuantiles(sa)
-##### @test isnull(qn[2,2])
-##### @test get(qn[1,2])==3.5
-##### @test get(qn[2,1])==5.0
+
+dafloat[2,2]=NaN
+sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
+sa[:]=dafloat[:]
+qn=normalizeQuantiles(sa)
+@test ismissing(qn[2,2])
+@test qn[1,2]==3.5
+@test qn[2,1]==5.0
 
 dafloat[2,:]=missing
 qn=normalizeQuantiles(dafloat)
