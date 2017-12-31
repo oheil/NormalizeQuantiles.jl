@@ -12,4 +12,6 @@ notifications:
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone("https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6"); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)'
+after_success:
+  - julia -e 'cd(Pkg.dir("NormalizeQuantiles")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
 
