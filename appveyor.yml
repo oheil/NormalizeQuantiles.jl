@@ -4,13 +4,10 @@ environment:
   - JULIA_URL: "https://julialang-s3.julialang.org/bin/winnt/x64/0.5/julia-0.5-latest-win64.exe"
   - JULIA_URL: "https://julialang-s3.julialang.org/bin/winnt/x86/0.6/julia-0.6-latest-win32.exe"
   - JULIA_URL: "https://julialang-s3.julialang.org/bin/winnt/x64/0.6/julia-0.6-latest-win64.exe"
-  - JULIA_URL: "https://julialangnightlies-s3.julialang.org/bin/winnt/x86/julia-latest-win32.exe"
-  - JULIA_URL: "https://julialangnightlies-s3.julialang.org/bin/winnt/x64/julia-latest-win64.exe"
 
 branches:
   only:
-    - master
-    - /release-.*/
+    - backport-0.6
 
 notifications:
   - provider: Email
@@ -31,12 +28,8 @@ build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
-      Pkg.clone(pwd(), \"NormalizeQuantiles\"); Pkg.build(\"NormalizeQuantiles\")"
+      Pkg.clone("https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6", \"NormalizeQuantiles\"); Pkg.build(\"NormalizeQuantiles\")"
 
 test_script:
   - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"NormalizeQuantiles\")"
 
-matrix:
-  allow_failures:
-    - JULIA_URL: "https://julialangnightlies-s3.julialang.org/bin/winnt/x86/julia-latest-win32.exe"
-    - JULIA_URL: "https://julialangnightlies-s3.julialang.org/bin/winnt/x64/julia-latest-win64.exe"

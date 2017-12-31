@@ -6,14 +6,10 @@ os:
 julia:
   - 0.5
   - 0.6
-  - nightly
 notifications:
   email: false
 #  uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)'
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia -e 'Pkg.clone("https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6"); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)'
 
-matrix:
-  allow_failures:
-    - julia: nightly
