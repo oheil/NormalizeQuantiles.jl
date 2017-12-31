@@ -87,22 +87,26 @@ qn=normalizeQuantiles(dafloat)
 @test ismissing(qn[2,1])
 @test ismissing(qn[2,2])
 @test ismissing(qn[2,3])
-##### sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
-##### sa[:]=dafloat[:]
-##### qn=normalizeQuantiles(sa)
-##### @test isnull(qn[2,1])
-##### @test isnull(qn[2,2])
-##### @test isnull(qn[2,3])
+
+dafloat[2,:]=NaN
+sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
+sa[:]=dafloat[:]
+qn=normalizeQuantiles(sa)
+@test ismissing(qn[2,1])
+@test ismissing(qn[2,2])
+@test ismissing(qn[2,3])
 
 dafloat[3,1:2]=missing
 qn=normalizeQuantiles(dafloat)
 @test ismissing(qn[3,1])
 @test ismissing(qn[3,2])
-##### sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
-##### sa[:]=dafloat[:]
-##### qn=normalizeQuantiles(sa)
-##### @test isnull(qn[3,1])
-##### @test isnull(qn[3,2])
+
+dafloat[3,1:2]=NaN
+sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
+sa[:]=dafloat[:]
+qn=normalizeQuantiles(sa)
+@test ismissing(qn[3,1])
+@test ismissing(qn[3,2])
 
 dafloat[1,:]=missing
 dafloat[2,:]=missing
@@ -121,21 +125,26 @@ qn = normalizeQuantiles(dafloat)
 @test ismissing(qn[4,1])
 @test ismissing(qn[4,2])
 @test ismissing(qn[4,3])
-##### sa=@MySharedArray(Nullable{Float64},(size(dafloat,1),size(dafloat,2)));
-##### sa[:]=dafloat[:]
-##### qn=normalizeQuantiles(sa)
-##### @test isnull(qn[1,1])
-##### @test isnull(qn[1,2])
-##### @test isnull(qn[1,3])
-##### @test isnull(qn[2,1])
-##### @test isnull(qn[2,2])
-##### @test isnull(qn[2,3])
-##### @test isnull(qn[3,1])
-##### @test isnull(qn[3,2])
-##### @test isnull(qn[3,3])
-##### @test isnull(qn[4,1])
-##### @test isnull(qn[4,2])
-##### @test isnull(qn[4,3])
+
+dafloat[1,:]=NaN
+dafloat[2,:]=NaN
+dafloat[3,:]=NaN
+dafloat[4,:]=NaN
+a=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
+sa[:]=dafloat[:]
+qn=normalizeQuantiles(sa)
+@test ismissing(qn[1,1])
+@test ismissing(qn[1,2])
+@test ismissing(qn[1,3])
+@test ismissing(qn[2,1])
+@test ismissing(qn[2,2])
+@test ismissing(qn[2,3])
+@test ismissing(qn[3,1])
+@test ismissing(qn[3,2])
+@test ismissing(qn[3,3])
+@test ismissing(qn[4,1])
+@test ismissing(qn[4,2])
+@test ismissing(qn[4,3])
 
 
 testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
