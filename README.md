@@ -1,7 +1,9 @@
 # NormalizeQuantiles
 
-[![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl/builds/)
-[![Build status](https://ci.appveyor.com/api/projects/status/24mlc8g1x65a57h7?svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl)
+[![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=backport-0.6)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=backport-0.6&svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/backport-0.6)
+
+[![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=backport-0.6)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=backport-0.6)
 
 Package NormalizeQuantiles implements quantile normalization
 
