@@ -28,7 +28,7 @@ build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
-      Pkg.clone("https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6", \"NormalizeQuantiles\"); Pkg.build(\"NormalizeQuantiles\")"
+      Pkg.clone(\"https://github.com/oheil/NormalizeQuantiles.jl.git\", \"NormalizeQuantiles\"); Pkg.checkout(\"NormalizeQuantiles\",\"backport-0.6\"); Pkg.build(\"NormalizeQuantiles\")"
 
 test_script:
   - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"NormalizeQuantiles\")"
