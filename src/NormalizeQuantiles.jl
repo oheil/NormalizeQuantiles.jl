@@ -121,7 +121,7 @@ function normalizeQuantiles(matrix::SharedArray{Float64})
 	nullable=@MySharedArray(Nullable{Float64},(0,0))
 	#ra=SharedArray(Float64,(size(r,1),size(r,2)))
 	ra=@MySharedArray(Float64,(size(r,1),size(r,2)))
-	ra[:]=convert(Array{Float64},reshape([get(r[i]) for i=1:length(r)],size(r)))[:]
+	ra[:]=convert(Array{Float64},reshape([ if isnull(r[i]) NaN else get(r[i]) end for i=1:length(r)],size(r)))[:]
 	#r=SharedArray(Nullable{Float64},(0,0))
 	r=@MySharedArray(Nullable{Float64},(0,0))
 	ra
