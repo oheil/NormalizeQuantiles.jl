@@ -57,10 +57,6 @@ Example:
     array[row,column] = missing
     qn = normalizeQuantiles(array)
 " ->
-###function normalizeQuantiles(matrix::AbstractArray)
-###	myMatrix=deepcopy(matrix)
-###	normalizeQuantiles!(myMatrix)
-###end
 function normalizeQuantiles(matrix::AbstractArray)
 	#matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
 	nrows=size(matrix,1)
@@ -195,10 +191,6 @@ r is the vector of ranks.
 m is a dictionary with rank as keys and as value the indices of all values of this rank.
 
 " ->
-###function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-###	myArray=deepcopy(array)
-###	sampleRanks!(myArray)
-###end
 function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	#array=convertToFloatMissing(array)
 	nrows=length(array)
