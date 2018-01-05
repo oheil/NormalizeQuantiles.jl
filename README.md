@@ -149,46 +149,66 @@ qn = normalizeQuantiles(sa)
      6.0  3.0  7.0
 ```
 
+> Remark: restart julia again.
+
 For small data sets performance using `SharedArrays` decreases:
 
 ```julia
+using NormalizeQuantiles
 la = randn((10,10));
-tf = Array{Float64}(la);
-sa = SharedArray{Float64}((size(tf,1),size(tf,2)));
-sa[:] = tf[:];
-normalizeQuantiles(tf); @time normalizeQuantiles(tf);
+normalizeQuantiles(la); @time normalizeQuantiles(la);
 ```
 ```
-	julia> @time normalizeQuantiles(tf);
-	  0.015021 seconds (12.73 k allocations: 348.203 KiB)
+	julia> @time normalizeQuantiles(la);
+	  0.000668 seconds (1.43 k allocations: 86.625 KiB)
 ```
+
+> Remark: restart julia.
+
 ```julia
+using Distributed
+addprocs();
+@everywhere using SharedArrays
+@everywhere using NormalizeQuantiles
+la = randn((10,10));
+sa = SharedArray{Float64}((size(la,1),size(la,2)));
+sa[:] = la[:];
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  0.024173 seconds (12.63 k allocations: 348.078 KiB)
+	  0.077545 seconds (12.68 k allocations: 360.021 KiB)
 ```
+
+> Remark: restart julia.
 
 For larger data sets performance increases with multicore processors:
 
 ```julia
-la = randn((10000,10000));
-tf = Array{Float64}(la);
-sa = SharedArray{Float64}((size(tf,1),size(tf,2)));
-sa[:] = tf[:];
-normalizeQuantiles(tf); @time normalizeQuantiles(tf);
+using NormalizeQuantiles
+la = randn((1000,10000));
+normalizeQuantiles(la); @time normalizeQuantiles(la);
 ```
 ```
-	julia> @time normalizeQuantiles(tf);
-	  109.319339 seconds (200.01 M allocations: 4.657 GiB, 24.76% gc time)
+	julia> @time normalizeQuantiles(la);
+	  3.760109 seconds (20.77 M allocations: 2.671 GiB, 23.87% gc time)
 ```
+
+> Remark: restart julia.
+
 ```julia
+using Distributed
+addprocs();
+@everywhere using SharedArrays
+@everywhere using NormalizeQuantiles
+la = randn((1000,10000));
+sa = SharedArray{Float64}((size(la,1),size(la,2)));
+sa[:] = la[:];
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  32.670799 seconds (200.01 M allocations: 4.657 GiB, 44.22% gc time)
+	  1.892696 seconds (20.08 M allocations: 481.220 MiB, 22.93% gc time)
 ```
 
 ## Behaviour of function `normalizeQuantiles`
