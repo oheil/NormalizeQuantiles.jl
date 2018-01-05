@@ -218,7 +218,7 @@ Currently there seems to be no general agreement on how to deal with missing val
 | -----------------------: | ----------------------- | 
 | **Definition:** | `Array{Union{Missing,Float64}} function normalizeQuantiles(matrix::AbstractArray)` |
 | Input type: | `AbstractArray` |
-| Return type: | `Array{Union{Missing,Float64}} |
+| Return type: | `Array{Union{Missing,Float64}}` |
 
 
 ## Usage examples `sampleRanks`
@@ -423,7 +423,7 @@ a[m[2]]   #all values of rank 2
 | | sampleRanks | |
 | -----------------------: | ----------------------- | ----------------------- | 
 | **Definition:** | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}}) sampleRanks(array::AbstractArray; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `array::AbstractArray` | data |
+| Input type: | `AbstractArray` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
