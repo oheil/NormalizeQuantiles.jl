@@ -86,11 +86,11 @@ array = [ NaN 2.0 1.0 ; 4.0 "empty" 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 ```
 ```
 julia> array
-    4×3 Array{Any,2}:
-     NaN    2.0       1.0
-       4.0   "empty"  6.0
-       9.0  7.0       8.0
-       5.0  2.0       8.0
+	4×3 Array{Any,2}:
+	 NaN    2.0       1.0
+	4.0   "empty"  6.0
+	9.0  7.0       8.0
+	5.0  2.0       8.0
 ```
 ```julia
 qn = normalizeQuantiles(array)
