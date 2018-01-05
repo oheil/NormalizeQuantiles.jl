@@ -29,7 +29,7 @@ of a given vector or matrix.
 * [Remarks](#remarks)
 * [Usage examples `normalizeQuantiles`](#usage-examples-normalizequantiles)
   * [General usage](#general-usage)
-  * [NaN](#nan)
+  * [Missing Values](#missing-values)
   * [SharedArray and multicore usage examples](#sharedarray-and-multicore-usage-examples)
 * [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
 * [Data prerequisites](#data-prerequisites)
@@ -77,32 +77,31 @@ The columns in `qn` are now quantile normalized to each other.
 
 Return type of function normalizeQuantiles is always Array{Union{Missing, Float64},2}
 
-#### NaN
+#### Missing Values
 
-If your data contains some NaN (Not a Number) those are changed to missing values (missing::Missing):
+If your data contain some missing values like `NaN` (Not a Number), they will be changed to missing values `missing::Missing`:
 
 ```julia
-arrayWithNaN = array
-arrayWithNaN[2,2] = NaN
+array = [ NaN 2.0 1.0 ; 4.0 "empty" 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 ```
 ```
-	julia> arrayWithNaN
-	4×3 Array{Float64,2}:
-	 3.0    2.0  1.0
-	 4.0  NaN    6.0
-	 9.0    7.0  8.0
-	 5.0    2.0  8.0
+	julia> array
+    4×3 Array{Any,2}:
+     NaN    2.0       1.0
+       4.0   "empty"  6.0
+       9.0  7.0       8.0
+       5.0  2.0       8.0
 ```
 ```julia
-qn = normalizeQuantiles(arrayWithNaN)
+qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
     4×3 Array{Union{Missing, Float64},2}:
-     2.0  3.5       2.0
-     5.0   missing  5.0
-     8.0  8.0       6.5
-     5.0  3.5       6.5
+      missing  3.25      1.5
+     5.0        missing  5.0
+     8.0       8.0       6.5
+     5.0       3.25      6.5
 ```
 
 NaN is of type Float64, so there is nothing similar for Int types.
