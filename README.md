@@ -69,7 +69,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
+	4×3 Array{Union{Missing, Float64},2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -78,13 +78,15 @@ qn = normalizeQuantiles(array)
 
 The columns in `qn` are now quantile normalized to each other.
 
+Return type of function normalizeQuantiles is always Array{Union{Missing, Float64},2}
+
 #### NaN
 
-If your data contains some NaN (Not a Number) those are internally changed to missing values and changed back after processing to NaN:
+If your data contains some NaN (Not a Number) those are changed to missing values (missing::Missing):
 
 ```julia
-arrayWithNaN=array
-arrayWithNaN[2,2]=NaN
+arrayWithNaN = array
+arrayWithNaN[2,2] = NaN
 ```
 ```
 	julia> arrayWithNaN
@@ -99,11 +101,11 @@ qn = normalizeQuantiles(arrayWithNaN)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
-	 2.0    3.5  2.0
-	 5.0  NaN    5.0
-	 8.0    8.0  6.5
-	 5.0    3.5  6.5
+    4×3 Array{Union{Missing, Float64},2}:
+     2.0  3.5       2.0
+     5.0   missing  5.0
+     8.0  8.0       6.5
+     5.0  3.5       6.5
 ```
 
 NaN is of type Float64, so there is nothing similar for Int types.
@@ -113,264 +115,83 @@ NaN is of type Float64, so there is nothing similar for Int types.
 	Float64
 ```
 
-#### Missing values
-
-Missing values `NA` are handled using [Nullables](http://docs.julialang.org/en/stable/manual/types/#nullable-types-representing-missing-values):
-
-```julia
-arrayWithNA = Array{Nullable{Float64}}(array);
-arrayWithNA[2,2] = Nullable{Float64}();
-arrayWithNA
-```
-```
-	julia> arrayWithNA
-	4×3 Array{Nullable{Float64},2}:
-	 3.0  2.0    1.0
-	 4.0  #NULL  6.0
-	 9.0  7.0    8.0
-	 5.0  2.0    8.0
-```
-```julia
-qn = normalizeQuantiles(arrayWithNA)
-```
-```
-	julia> qn
-	4×3 Array{Nullable{Float64},2}:
-	 2.0  3.5    2.0
-	 5.0  #NULL  5.0
-	 8.0  8.0    6.5
-	 5.0  3.5    6.5
-```
-```julia
-isnull(qn[2,2])
-```
-```
-	julia> isnull(qn[2,2])
-	true
-```
-
-The result must be of type `Array{Nullable{Float64}}`, because `NAs` stay `NAs` after quantile normalization. Setting the `NA` to `0.0` we can convert the result back to `Array{Float64}`:
-
-```julia
-qn[2,2] = 0.0;
-isnull(qn[2,2])
-```
-```
-	julia> isnull(qn[2,2])
-	false
-```
-```julia
-tmp_qn = qn;
-qn_array = convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn)));
-qn_array
-```
-```
-	julia> qn_array
-	4×3 Array{Float64,2}:
-	 2.0  3.5  2.0
-	 5.0  0.0  5.0
-	 8.0  8.0  6.5
-	 5.0  3.5  6.5
-```
-
-#### NullableArrays
-
-How to deal with [NullableArrays](https://github.com/JuliaStats/NullableArrays.jl):
-
-```julia
-Pkg.add("NullableArrays")
-using NullableArrays;
-na = NullableArray(array);
-na[2,2] = Nullable();
-na
-```
-```
-	julia> na
-	4×3 NullableArrays.NullableArray{Float64,2}:
-	 3.0  2.0    1.0
-	 4.0  #NULL  6.0
-	 9.0  7.0    8.0
-	 5.0  2.0    8.0
-```
-
-Convert the `NullableArray` `na` to `Array{Nullable{Float64}}`:
-
-```julia
-tmp_na = na;
-arrayOfNullables = convert(Array{Nullable{Float64}},reshape([tmp_na[i] for i=1:length(tmp_na)],size(tmp_na)));
-qn = normalizeQuantiles(arrayOfNullables)
-```
-```
-	julia> qn
-	4×3 Array{Nullable{Float64},2}:
-	 2.0  3.5    2.0
-	 5.0  #NULL  5.0
-	 8.0  8.0    6.5
-	 5.0  3.5    6.5
-```
-
-Convert the result `Array{Nullable{Float64}}` back to `NullableArray`:
-
-```julia
-tmp_qn = qn;
-isn = convert(Array{Bool},reshape([isnull(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn)));
-tmp_qn[isn] = 0.0;
-qna = NullableArray(convert(Array{Float64},reshape([get(tmp_qn[i]) for i=1:length(tmp_qn)],size(tmp_qn))),isn)
-```
-```
-	julia> qna
-	4×3 NullableArrays.NullableArray{Float64,2}:
-	 2.0  3.5    2.0
-	 5.0  #NULL  5.0
-	 8.0  8.0    6.5
-	 5.0  3.5    6.5
-```
-
-#### DataArrays
-
-Dealing with `DataArrays`:
-
-```julia
-Pkg.add("DataArrays")
-using DataArrays;
-da = DataArray(array)
-```
-```
-	julia> da
-	4×3 DataArrays.DataArray{Float64,2}:
-	 3.0  2.0  1.0
-	 4.0  5.0  6.0
-	 9.0  7.0  8.0
-	 5.0  2.0  8.0
-```
-```julia
-da[2,2] = NA
-```
-
-Converting the DataArray `da` containing `NAs` to an `Array{Nullable{Float64}}`:
-
-```julia
-tmp_da = da;
-arrayWithNA = convert(Array{Nullable{Float64}},reshape([isna(tmp_da[i]) ? Nullable{Float64}() : Nullable{Float64}(tmp_da[i]) for i=1:length(tmp_da)],size(tmp_da)))
-```
-```
-	julia> arrayWithNA
-	4×3 Array{Nullable{Float64},2}:
-	 3.0  2.0    1.0
-	 4.0  #NULL  6.0
-	 9.0  7.0    8.0
-	 5.0  2.0    8.0
-```
-```julia
-qn = normalizeQuantiles(arrayWithNA)
-```
-```
-	julia> qn
-	4×3 Array{Nullable{Float64},2}:
-	 2.0  3.5    2.0
-	 5.0  #NULL  5.0
-	 8.0  8.0    6.5
-	 5.0  3.5    6.5
-```
-
-Converting the result `Array{Nullable{Float64}}` back to `DataArray` containg `NAs`:
-
-```julia
-tmp_qn = qn;
-daqn = DataArray(Float64,size(tmp_qn));
-for index in eachindex(daqn) daqn[index]=isnull(tmp_qn[index]) ? NA : get(tmp_qn[index]) end
-daqn
-```
-```
-	julia> daqn
-	4×3 DataArrays.DataArray{Float64,2}:
-	 2.0  3.5  2.0
-	 5.0   NA  5.0
-	 8.0  8.0  6.5
-	 5.0  3.5  6.5
-```
-
 #### SharedArray and multicore usage examples
 
-> Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`. Doing it the other way round will result in an error as observed with julia 0.4.
+> Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`.
 
-To use multiple cores on a single machine you can use `SharedArray{Nullable{Float64}}`:
+To use multiple cores on a single machine you can use `SharedArray{Float64}`:
 
 ```julia
+using Distributed
 addprocs();
-```
-For julia >= 0.7 we now need the following line:
-```
-@everywhere using SharedArrays;
-```
-```
-@everywhere using NormalizeQuantiles;
+@everywhere using SharedArrays
+@everywhere using NormalizeQuantiles
+
 array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
-# sa = SharedArray(Nullable{Float64},(size(array,1),size(array,2)));  # julia 0.4
-sa = SharedArray{Nullable{Float64}}((size(array,1),size(array,2)));
+sa = SharedArray{Float64}((size(array,1),size(array,2)));
 sa[:] = array[:];
 sa
 ```
 ```
 	julia> sa
-	4×3 SharedArray{Nullable{Float64},2}:
-	 3.0  2.0  1.0
-	 4.0  5.0  6.0
-	 9.0  7.0  8.0
-	 5.0  2.0  8.0
+    4×3 SharedArray{Float64,2}:
+     3.0  2.0  1.0
+     4.0  5.0  6.0
+     9.0  7.0  8.0
+     5.0  2.0  8.0
 ```
 ```julia
 qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-	4×3 SharedArray{Nullable{Float64},2}:
-	 2.0  3.0  2.0
-	 4.0  6.0  4.0
-	 8.0  8.0  7.0
-	 6.0  3.0  7.0
+    4×3 Array{Union{Missing, Float64},2}:
+     2.0  3.0  2.0
+     4.0  6.0  4.0
+     8.0  8.0  7.0
+     6.0  3.0  7.0
 ```
 
 For small data sets performance using `SharedArrays` decreases:
 
 ```julia
-la = randn((100,100));
-tf = Array{Nullable{Float64}}(la);
-sa = SharedArray{Nullable{Float64}}((size(tf,1),size(tf,2)));
+la = randn((10,10));
+tf = Array{Float64}(la);
+sa = SharedArray{Float64}((size(tf,1),size(tf,2)));
 sa[:] = tf[:];
 normalizeQuantiles(tf); @time normalizeQuantiles(tf);
 ```
 ```
 	julia> @time normalizeQuantiles(tf);
-	  0.003926 seconds (6.71 k allocations: 4.466 MB)
+	  0.015021 seconds (12.73 k allocations: 348.203 KiB)
 ```
 ```julia
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  0.012880 seconds (11.14 k allocations: 354.813 KB)
+	  0.024173 seconds (12.63 k allocations: 348.078 KiB)
 ```
 
 For larger data sets performance increases with multicore processors:
 
 ```julia
 la = randn((10000,10000));
-tf = Array{Nullable{Float64}}(la);
-sa = SharedArray{Nullable{Float64}}((size(tf,1),size(tf,2)));
+tf = Array{Float64}(la);
+sa = SharedArray{Float64}((size(tf,1),size(tf,2)));
 sa[:] = tf[:];
 normalizeQuantiles(tf); @time normalizeQuantiles(tf);
 ```
 ```
 	julia> @time normalizeQuantiles(tf);
-	  33.469397 seconds (1.06 M allocations: 38.215 GB, 12.81% gc time)
+	  109.319339 seconds (200.01 M allocations: 4.657 GiB, 24.76% gc time)
 ```
 ```julia
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  11.311243 seconds (11.22 k allocations: 355.859 KB)
+	  32.670799 seconds (200.01 M allocations: 4.657 GiB, 44.22% gc time)
 ```
 
 ## Behaviour of function `normalizeQuantiles`
@@ -378,9 +199,9 @@ normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-The function 'normalizeQuantiles' always returns a matrix of equal dimension as the input matrix and of type `Array{Float64}` or `Array{Nullable{Float64}}`. In case of Float64-type input matrices `normalizeQuantiles` returns the same type, in case of Int-type input matrices the result matrix will be the same but with base type Float64, e.g. a `Array{Nullable{Int}}` will result in `Array{Nullable{Float64}}`.
+The function 'normalizeQuantiles' always returns a matrix of equal dimension as the input matrix and of type `Array{Union{Missing, Float64}}`.
 
-`NA` values are of type `Nullable{Float64}` and are treated as random missing values and the result value will be `Nullable{Float64}` again. See "Remarks on data with `NA`" below.
+`NaN` values are of type `Float64` and are treated as random missing values and the result value will be `missing::Missing`. See "Remarks on data with `NA`" below.
 
 ## Data prerequisites
 
@@ -388,61 +209,20 @@ To use quantile normalization your data should have the following properties:
 
 * the distribution of values in each column should be similar
 * number of values for each column should be large
-* number of `NA` in the data should be small and of random nature
+* number of missing values in the data should be small and of random nature
 
-## Remarks on data with `NA`
+## Remarks on data with missing values
 
-Currently there seems to be no general agreement on how to deal with `NA` during quantile normalization. Here we put any given `NA` back into the sorted column at the original position before calculating the mean of the rows.
+Currently there seems to be no general agreement on how to deal with missing values during quantile normalization. Here we put any given missing value back into the sorted column at the original position before calculating the mean of the rows.
 
 ## List of all exported definitions for `normalizeQuantiles`
 
 | | normalizeQuantiles |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Float64})` |
-| Input type: | `Array{Float64}` |
-| Return type: | `Array{Float64}` |
+| **Definition:** | `Array{Union{Missing,Float64}} function normalizeQuantiles(matrix::AbstractArray)` |
+| Input type: | `AbstractArray` |
+| Return type: | `Array{Union{Missing,Float64}} |
 
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::Array{Int})` |
-| Input type: | `Array{Int}` |
-| Return type: | `Array{Float64}` |
-
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Float64}})` |
-| Input type: | `Array{Nullable{Float64}}` |
-| Return type: | `Array{Nullable{Float64}}` |
-
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Nullable{Float64}} function normalizeQuantiles(matrix::Array{Nullable{Int}})` |
-| Input type: | `Array{Nullable{Int}}` |
-| Return type: | `Array{Nullable{Float64}}` |
-
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Float64})` |
-| Input type: | `SharedArray{Float64}` |
-| Return type: | `SharedArray{Float64}` |
-
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Float64} function normalizeQuantiles(matrix::SharedArray{Int})` |
-| Input type: | `SharedArray{Int}` |
-| Return type: | `SharedArray{Float64}` |
-
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Float64}})` |
-| Input type: | `SharedArray{Nullable{Float64}}` |
-| Return type: | `SharedArray{Nullable{Float64}}` |
-
-| | normalizeQuantiles |
-| -----------------------: | ----------------------- | 
-| **Definition:** | `SharedArray{Nullable{Float64}} function normalizeQuantiles(matrix::SharedArray{Nullable{Int}})` |
-| Input type: | `SharedArray{Nullable{Int}}` |
-| Return type: | `SharedArray{Nullable{Float64}}` |
 
 ## Usage examples `sampleRanks`
 
@@ -456,7 +236,7 @@ r
 ```
 ```
 	julia> r
-	5-element Array{Int64,1}:
+	5-element Array{Union{Missing, Int64},1}:
 	 5
 	 2
 	 4
@@ -485,7 +265,7 @@ r
 ```
 ```
 	julia> r
-	12-element Array{Int64,1}:
+	12-element Array{Union{Missing, Int64},1}:
 	  1
 	  4
 	  7
@@ -532,7 +312,7 @@ r
 ```
 ```
 	julia> r
-	5-element Array{Int64,1}:
+	5-element Array{Union{Missing, Int64},1}:
 	 4
 	 2
 	 3
@@ -545,7 +325,7 @@ r
 ```
 ```
 	julia> r
-	5-element Array{Int64,1}:
+	5-element Array{Union{Missing, Int64},1}:
 	 5
 	 3
 	 4
@@ -558,7 +338,7 @@ r
 ```
 ```
 	julia> r
-	5-element Array{Int64,1}:
+	5-element Array{Union{Missing, Int64},1}:
 	 5
 	 3
 	 4
@@ -566,19 +346,19 @@ r
 	 1
 ```
 
-One or more `NA` in the vector are never equal and remain on there position after sorting. The rank of each `NA` is always `NA`. The default is that a `NA` does not increase the rank for successive values. Giving true keyword parameter `naIncreasesRank` changes that behavior to increasing the rank by 1 for successive values:
+One or more missing values in the vector are never equal and remain on there position after sorting. The rank of each missing value is always missing::Missing. The default is that a missing value does not increase the rank for successive values. Giving true keyword parameter `naIncreasesRank` changes that behavior to increasing the rank by 1 for successive values:
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-n = Array{Nullable{Float64}}(a);
-n[1] = Nullable{Float64}();
+n = Array{Float64}(a);
+n[1] = NaN;
 (r,m) = sampleRanks(n);
 r
 ```
 ```
 	julia> r
-	5-element Array{Nullable{Int64},1}:
-	 #NULL
+	5-element Array{Union{Missing, Int64},1}:
+	  missing
 	 2
 	 3
 	 2
@@ -590,8 +370,8 @@ r
 ```
 ```
 	julia> r
-	5-element Array{Nullable{Int64},1}:
-	 #NULL
+	5-element Array{Union{Missing, Int64},1}:
+	  missing
 	 3
 	 4
 	 3
@@ -607,7 +387,7 @@ m
 ```
 ```
 	julia> m
-	Dict{Int64,Array{Int64,N}} with 4 entries:
+	Dict{Int64,Array{Int64,N} where N} with 4 entries:
 	  4 => [1]
 	  2 => [2,4]
 	  3 => [3]
@@ -645,37 +425,11 @@ a[m[2]]   #all values of rank 2
 
 | | sampleRanks | |
 | -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Float64}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `Array{Nullable{Float64}}` | data |
+| **Definition:** | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}}) sampleRanks(array::AbstractArray; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| Input type: | `array::AbstractArray` | data |
 | Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
+| Return type: | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}})` ||
 
-| | sampleRanks | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Nullable{Int}},Dict{Int,Array{Int}}) sampleRanks(array::Array{Nullable{Int}}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `Array{Nullable{Int}}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Nullable{Int}},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Float64}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `Array{Float64}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
-
-| | sampleRanks | |
-| -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Int},Dict{Int,Array{Int}}) sampleRanks(array::Array{Int}; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `Array{Int}` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Int},Dict{Int,Array{Int}})` ||
 
