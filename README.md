@@ -216,9 +216,9 @@ normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-The function 'normalizeQuantiles' always returns a matrix of equal dimension as the input matrix and of type `Array{Union{Missing, Float64}}`.
+The function `normalizeQuantiles` always returns a matrix of equal dimension as the input matrix and of type `Array{Union{Missing, Float64}}`.
 
-`NaN` values are of type `Float64` and are treated as random missing values and the result value will be `missing::Missing`. See "Remarks on data with `NA`" below.
+`NaN` values are of type `Float64` and are treated as random missing values and the result value will be `missing::Missing`. See "Remarks on data with missing values" below.
 
 ## Data prerequisites
 
@@ -237,7 +237,7 @@ Currently there seems to be no general agreement on how to deal with missing val
 | | normalizeQuantiles |
 | -----------------------: | ----------------------- | 
 | **Definition:** | `Array{Union{Missing,Float64}} function normalizeQuantiles(matrix::AbstractArray)` |
-| Input type: | `AbstractArray` |
+| Input type: | `matrix::AbstractArray` |
 | Return type: | `Array{Union{Missing,Float64}}` |
 
 
@@ -367,9 +367,8 @@ One or more missing values in the vector are never equal and remain on there pos
 
 ```julia
 a = [ 7.0 2.0 4.0 2.0 1.0 ];
-n = Array{Float64}(a);
-n[1] = NaN;
-(r,m) = sampleRanks(n);
+a[1] = NaN;
+(r,m) = sampleRanks(a);
 r
 ```
 ```
@@ -382,7 +381,7 @@ r
 	 1
 ```
 ```julia
-(r,m) = sampleRanks(n,naIncreasesRank=true);
+(r,m) = sampleRanks(a,naIncreasesRank=true);
 r
 ```
 ```
@@ -443,10 +442,10 @@ a[m[2]]   #all values of rank 2
 | | sampleRanks | |
 | -----------------------: | ----------------------- | ----------------------- | 
 | **Definition:** | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}}) sampleRanks(array::AbstractArray; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
-| Input type: | `AbstractArray` | data |
-| Input type: | `qnTiesMethods` | how to treat ties (default: `tmMin`) |
-| Input type: | `bool` | increase rank by one if NA (default: `false`) |
-| Input type: | `bool` | create rank dictionary (default: `false`) |
+| Input type: | `array::AbstractArray` | data |
+| Input type: | `tiesMethod::qnTiesMethods` | how to treat ties (default: `tmMin`) |
+| Input type: | `naIncreasesRank::bool` | increase rank by one if NA (default: `false`) |
+| Input type: | `resultMatrix::bool` | create rank dictionary (default: `false`) |
 | Return type: | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}})` ||
 
 
