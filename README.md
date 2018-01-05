@@ -85,7 +85,7 @@ If your data contain some missing values like `NaN` (Not a Number), they will be
 array = [ NaN 2.0 1.0 ; 4.0 "empty" 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 ```
 ```
-julia> array
+	julia> array
 	4×3 Array{Any,2}:
 	 NaN    2.0       1.0
 	4.0   "empty"  6.0
@@ -97,11 +97,11 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-    4×3 Array{Union{Missing, Float64},2}:
-      missing  3.25      1.5
-     5.0        missing  5.0
-     8.0       8.0       6.5
-     5.0       3.25      6.5
+	4×3 Array{Union{Missing, Float64},2}:
+	  missing  3.25      1.5
+	 5.0        missing  5.0
+	 8.0       8.0       6.5
+	 5.0       3.25      6.5
 ```
 
 NaN is of type Float64, so there is nothing similar for Int types.
@@ -130,22 +130,22 @@ sa
 ```
 ```
 	julia> sa
-    4×3 SharedArray{Float64,2}:
-     3.0  2.0  1.0
-     4.0  5.0  6.0
-     9.0  7.0  8.0
-     5.0  2.0  8.0
+	4×3 SharedArray{Float64,2}:
+	 3.0  2.0  1.0
+	 4.0  5.0  6.0
+	 9.0  7.0  8.0
+	 5.0  2.0  8.0
 ```
 ```julia
 qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-    4×3 Array{Union{Missing, Float64},2}:
-     2.0  3.0  2.0
-     4.0  6.0  4.0
-     8.0  8.0  7.0
-     6.0  3.0  7.0
+	4×3 Array{Union{Missing, Float64},2}:
+	 2.0  3.0  2.0
+	 4.0  6.0  4.0
+	 8.0  8.0  7.0
+	 6.0  3.0  7.0
 ```
 
 > Remark: restart julia again.
