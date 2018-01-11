@@ -61,6 +61,9 @@ Example:
 " ->
 function normalizeQuantiles(matrix::AbstractArray)
 	#matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
+	if ndims(matrix) > 2
+		throw(ArgumentError("normalizeQuantiles expects an array of dimension 2"))
+	end
 	nrows=size(matrix,1)
 	ncols=size(matrix,2)
 	# preparing the result matrix

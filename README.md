@@ -75,6 +75,8 @@ qn = normalizeQuantiles(array)
 
 The columns in `qn` are now quantile normalized to each other.
 
+The input array must not have dimension larger than 2.
+
 Return type of function normalizeQuantiles is always Array{Float64,2}
 
 #### Missing Values
@@ -239,9 +241,9 @@ Using non-SharedArrays in a multicore setup is slowest:
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-The function `normalizeQuantiles` always returns a matrix of equal dimension as the input matrix and of type `Array{Float64}`.
+The function `normalizeQuantiles` expects an array with dimension <= 2 and always returns a matrix of equal size as the input matrix and of type `Array{Float64,2}`.
 
-`NaN` values of type `Float64` and any other non-numbers, like strings, values are treated as random missing values and the result value will be `NaN`. See "Remarks on data with missing values" below.
+`NaN` values of type `Float64` and any other non-numbers, like strings, are treated as random missing values and the result value will be `NaN`. See "Remarks on data with missing values" below.
 
 ## Data prerequisites
 
@@ -259,9 +261,9 @@ Currently there seems to be no general agreement on how to deal with missing val
 
 | | normalizeQuantiles |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::AbstractArray)` |
+| **Definition:** | `Array{Float64,2} function normalizeQuantiles(matrix::AbstractArray)` |
 | Input type: | `matrix::AbstractArray` |
-| Return type: | `Array{Float64}` |
+| Return type: | `Array{Float64,2}` |
 
 
 ## Usage examples `sampleRanks`
@@ -464,11 +466,11 @@ a[m[2]]   #all values of rank 2
 
 | | sampleRanks | |
 | -----------------------: | ----------------------- | ----------------------- | 
-| **Definition:** | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}}) sampleRanks(array::AbstractArray; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
+| **Definition:** | `(Array{Union{Missing,Int},1},Dict{Int,Array{Int}}) sampleRanks(array::AbstractArray; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)` | **keyword arguments** |
 | Input type: | `array::AbstractArray` | data |
 | Input type: | `tiesMethod::qnTiesMethods` | how to treat ties (default: `tmMin`) |
 | Input type: | `naIncreasesRank::bool` | increase rank by one if NA (default: `false`) |
 | Input type: | `resultMatrix::bool` | create rank dictionary (default: `false`) |
-| Return type: | `(Array{Union{Missing,Int}},Dict{Int,Array{Int}})` ||
+| Return type: | `(Array{Union{Missing,Int},1},Dict{Int,Array{Int}})` ||
 
 
