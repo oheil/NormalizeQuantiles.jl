@@ -134,7 +134,7 @@ You can convert the result to `Array{Union{Missing, Float64},2}` with:
 
 > Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`.
 
-To use multiple cores on a single machine you can use the standard package `Distributed` and `SharedArrays`:
+To use multiple cores on a single machine you can use the standard packages `Distributed` and `SharedArrays`:
 
 ```julia
 using Distributed
@@ -166,7 +166,7 @@ qn = normalizeQuantiles(sa)
 
 > Remark: restart julia again.
 
-For small data sets performance using `SharedArrays` decreases:
+For small data sets using `Distributed` and `SharedArrays` decreases performance:
 
 ```julia
 using NormalizeQuantiles
@@ -222,8 +222,8 @@ normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 	julia> @time normalizeQuantiles(sa);
 	  1.030016 seconds (83.85 k allocations: 80.754 MiB, 5.77% gc time)
 ```
-```
 Using non-SharedArrays in a multicore setup is slowest:
+```
 	julia> @time normalizeQuantiles(la);
 	  5.776685 seconds (294.06 k allocations: 92.532 MiB, 0.28% gc time)
 ```
