@@ -134,7 +134,7 @@ You can convert the result to `Array{Union{Missing, Float64},2}` with:
 
 > Remark: restart julia now. `addprocs()` must be called before `using NormalizeQuantiles;`.
 
-To use multiple cores on a single machine you can use `SharedArray{Float64}`:
+To use multiple cores on a single machine you can use the standard package `Distributed` and `SharedArrays`:
 
 ```julia
 using Distributed
@@ -142,10 +142,7 @@ addprocs();
 @everywhere using SharedArrays
 @everywhere using NormalizeQuantiles
 
-array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
-sa = SharedArray{Float64}((size(array,1),size(array,2)));
-sa[:] = array[:];
-sa
+sa = SharedArray{Float64}([ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ])
 ```
 ```
 	julia> sa
@@ -173,12 +170,12 @@ For small data sets performance using `SharedArrays` decreases:
 
 ```julia
 using NormalizeQuantiles
-la = randn((10,10));
+la = randn((100,100));
 normalizeQuantiles(la); @time normalizeQuantiles(la);
 ```
 ```
 	julia> @time normalizeQuantiles(la);
-	  0.000668 seconds (1.43 k allocations: 86.625 KiB)
+	  0.003178 seconds (8.35 k allocations: 2.813 MiB)
 ```
 
 > Remark: restart julia.
@@ -188,14 +185,12 @@ using Distributed
 addprocs();
 @everywhere using SharedArrays
 @everywhere using NormalizeQuantiles
-la = randn((10,10));
-sa = SharedArray{Float64}((size(la,1),size(la,2)));
-sa[:] = la[:];
+sa = SharedArray{Float64}( randn((100,100)) );
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  0.077545 seconds (12.68 k allocations: 360.021 KiB)
+	  0.013014 seconds (12.10 k allocations: 432.146 KiB)
 ```
 
 > Remark: restart julia.
@@ -209,7 +204,7 @@ normalizeQuantiles(la); @time normalizeQuantiles(la);
 ```
 ```
 	julia> @time normalizeQuantiles(la);
-	  3.760109 seconds (20.77 M allocations: 2.671 GiB, 23.87% gc time)
+	  2.959431 seconds (784.18 k allocations: 2.281 GiB, 12.13% gc time)
 ```
 
 > Remark: restart julia.
@@ -220,13 +215,17 @@ addprocs();
 @everywhere using SharedArrays
 @everywhere using NormalizeQuantiles
 la = randn((1000,10000));
-sa = SharedArray{Float64}((size(la,1),size(la,2)));
-sa[:] = la[:];
+sa = SharedArray{Float64}(la);
 normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 ```
 	julia> @time normalizeQuantiles(sa);
-	  1.892696 seconds (20.08 M allocations: 481.220 MiB, 22.93% gc time)
+	  1.030016 seconds (83.85 k allocations: 80.754 MiB, 5.77% gc time)
+```
+```
+Using non-SharedArrays in a multicore setup is slowest:
+	julia> @time normalizeQuantiles(la);
+	  5.776685 seconds (294.06 k allocations: 92.532 MiB, 0.28% gc time)
 ```
 
 ## Behaviour of function `normalizeQuantiles`

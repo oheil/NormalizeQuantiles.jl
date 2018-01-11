@@ -79,7 +79,7 @@ function normalizeQuantiles(matrix::AbstractArray)
 	convert(Array{Float64},qnmatrix)
 end
 
-function sortColumns!(matrix::AbstractArray,qnmatrix::AbstractArray,nrows,ncols)
+function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[goodIndices]
@@ -101,7 +101,7 @@ function sortColumns!(matrix::AbstractArray,qnmatrix::AbstractArray,nrows,ncols)
 	end
 end
 
-function meanRows!(qnmatrix::AbstractArray,nrows)
+function meanRows!(qnmatrix::SharedArray{Float64},nrows)
 	@sync @parallel for row = 1:nrows
 		goodIndices=[ !checkForNotANumber(x) for x in qnmatrix[row,:] ]
 		missingIndices=convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices)))
@@ -112,7 +112,7 @@ function meanRows!(qnmatrix::AbstractArray,nrows)
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::AbstractArray,nrows,ncols)
+function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float64(x) for x in vec(matrix[:,column])[goodIndices] ]
