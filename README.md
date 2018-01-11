@@ -125,7 +125,8 @@ qnMissing = convert(Array{Union{Missing,Float64}},qn)
 	   5.0    3.25  6.5
 ```
 ```julia
-	julia> qnMissing[isnan.(qnMissing)]=missing;
+qnMissing[isnan.(qnMissing)]=missing;
+```
 ```
 	julia> qnMissing
 	4×3 Array{Union{Missing, Float64},2}:
