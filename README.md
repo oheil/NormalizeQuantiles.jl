@@ -111,7 +111,7 @@ NaN is of type Float64, so there is nothing similar for Int types.
 	Float64
 ```
 
-You can convert the result to `Array{Union{Missing, Float64}` with:
+You can convert the result to `Array{Union{Missing, Float64},2}` with:
 
 ```
 	julia> qnMissing = convert(Array{Union{Missing,Float64}},qn)
@@ -121,7 +121,8 @@ You can convert the result to `Array{Union{Missing, Float64}` with:
 	   8.0    8.0   6.5
 	   5.0    3.25  6.5
 	
-	julia> qnMissing[isnan.(qnMissing)]=missing
+	julia> qnMissing[isnan.(qnMissing)]=missing;
+	julia> qnMissing
 	4×3 Array{Union{Missing, Float64},2}:
 	  missing  3.25      1.5
 	 5.0        missing  5.0
