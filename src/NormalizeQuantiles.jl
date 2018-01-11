@@ -18,20 +18,24 @@ using SharedArrays
 ###	matrix
 ###end
 
-function convertToFloatMissing(matrix::AbstractArray)
-	missing_indices=[ checkForNotANumber(x) for x in vec(matrix) ]
-	matrix=convert(Array{Any},matrix)
-	matrix[missing_indices]=missing
-	matrix=convert(Array{Union{Missing,Float64}},matrix)
-	matrix
-end
+###function convertToFloatMissing(matrix::AbstractArray)
+###	missing_indices=[ checkForNotANumber(x) for x in vec(matrix) ]
+###	if sum(missing_indices) > 0
+###		matrix=convert(Array{Any},matrix)
+###		matrix[missing_indices]=missing
+###		matrix=convert(Array{Union{Missing,Float64}},matrix)
+###	else
+###		matrix=convert(Array{Float64},matrix)
+###	end
+###	matrix
+###end
 
 function checkForNotANumber(x::Any)
 	(!isa(x,Integer) && !isa(x,Real)) || isnan(x)
 end
 
 @doc "
-### qnmatrix::Array{Union{Missing,Float64}} function normalizeQuantiles(matrix::AbstractArray)
+### qnmatrix::Array{Float64} function normalizeQuantiles(matrix::AbstractArray)
 Calculate the quantile normalized data for the input matrix
 
 Parameter:
@@ -39,10 +43,8 @@ Parameter:
 The input data as an array of values interpreted as matrix(rows,columns)
 
 Return value: 
-    qnmatrix::Array{Union{Missing,Float64}}
-The quantile normalized data as Array{Union{Missing,Float64}}
-
-If the input array can be altered use normalizeQuantiles!(matrix::AbstractArray) to be more memory efficient.
+    qnmatrix::Array{Float64}
+The quantile normalized data as Array{Float64}
 
 Example:
 
@@ -73,10 +75,11 @@ function normalizeQuantiles(matrix::AbstractArray)
 		NormalizeQuantiles.equalValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
 	end
 	#throw(ErrorException("normalizeQuantiles not yet implemented for julia 0.7"))
-	convertToFloatMissing(qnmatrix)	
+	#convertToFloatMissing(qnmatrix)
+	convert(Array{Float64},qnmatrix)
 end
 
-function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
+function sortColumns!(matrix::AbstractArray,qnmatrix::AbstractArray,nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[goodIndices]
@@ -109,7 +112,7 @@ function meanRows!(qnmatrix::AbstractArray,nrows)
 	end
 end
 
-function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
+function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::AbstractArray,nrows,ncols)
 	@sync @parallel for column = 1:ncols
 		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float64(x) for x in vec(matrix[:,column])[goodIndices] ]

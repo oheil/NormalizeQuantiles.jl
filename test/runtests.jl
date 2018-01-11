@@ -29,8 +29,8 @@ testfloat[2,2]=NaN
 testfloat[3,4]=NaN
 r=normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.91 && mean(r[:,1]) <= 4.92
-@test ismissing(r[2,2])
-@test ismissing(r[3,4])
+@test isnan(r[2,2])
+@test isnan(r[3,4])
 @test mean(r[:,3]) >= 4.91 && mean(r[:,3]) <= 4.92
 
 testfloat = [ 3.5 2.0 8.1 1.0 ; 4.5 5.0 6.0 2.0 ; 9.0 7.6 8.2 3.0 ; 5.0 2.0 8.0 4.0 ]
@@ -70,7 +70,7 @@ qn=normalizeQuantiles(sa)
 dafloat=Array{Union{Missing, Float64}}(testfloat)
 dafloat[2,2]=missing
 qn=normalizeQuantiles(dafloat)
-@test ismissing(qn[2,2])
+@test isnan(qn[2,2])
 @test qn[1,2]==3.5
 @test qn[2,1]==5.0
 
@@ -78,53 +78,53 @@ dafloat[2,2]=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
-@test ismissing(qn[2,2])
+@test isnan(qn[2,2])
 @test qn[1,2]==3.5
 @test qn[2,1]==5.0
 
 dafloat[2,:]=missing
 qn=normalizeQuantiles(dafloat)
-@test ismissing(qn[2,1])
-@test ismissing(qn[2,2])
-@test ismissing(qn[2,3])
+@test isnan(qn[2,1])
+@test isnan(qn[2,2])
+@test isnan(qn[2,3])
 
 dafloat[2,:]=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
-@test ismissing(qn[2,1])
-@test ismissing(qn[2,2])
-@test ismissing(qn[2,3])
+@test isnan(qn[2,1])
+@test isnan(qn[2,2])
+@test isnan(qn[2,3])
 
 dafloat[3,1:2]=missing
 qn=normalizeQuantiles(dafloat)
-@test ismissing(qn[3,1])
-@test ismissing(qn[3,2])
+@test isnan(qn[3,1])
+@test isnan(qn[3,2])
 
 dafloat[3,1:2]=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
-@test ismissing(qn[3,1])
-@test ismissing(qn[3,2])
+@test isnan(qn[3,1])
+@test isnan(qn[3,2])
 
 dafloat[1,:]=missing
 dafloat[2,:]=missing
 dafloat[3,:]=missing
 dafloat[4,:]=missing
 qn = normalizeQuantiles(dafloat)
-@test ismissing(qn[1,1])
-@test ismissing(qn[1,2])
-@test ismissing(qn[1,3])
-@test ismissing(qn[2,1])
-@test ismissing(qn[2,2])
-@test ismissing(qn[2,3])
-@test ismissing(qn[3,1])
-@test ismissing(qn[3,2])
-@test ismissing(qn[3,3])
-@test ismissing(qn[4,1])
-@test ismissing(qn[4,2])
-@test ismissing(qn[4,3])
+@test isnan(qn[1,1])
+@test isnan(qn[1,2])
+@test isnan(qn[1,3])
+@test isnan(qn[2,1])
+@test isnan(qn[2,2])
+@test isnan(qn[2,3])
+@test isnan(qn[3,1])
+@test isnan(qn[3,2])
+@test isnan(qn[3,3])
+@test isnan(qn[4,1])
+@test isnan(qn[4,2])
+@test isnan(qn[4,3])
 
 dafloat[1,:]=NaN
 dafloat[2,:]=NaN
@@ -133,18 +133,18 @@ dafloat[4,:]=NaN
 a=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
-@test ismissing(qn[1,1])
-@test ismissing(qn[1,2])
-@test ismissing(qn[1,3])
-@test ismissing(qn[2,1])
-@test ismissing(qn[2,2])
-@test ismissing(qn[2,3])
-@test ismissing(qn[3,1])
-@test ismissing(qn[3,2])
-@test ismissing(qn[3,3])
-@test ismissing(qn[4,1])
-@test ismissing(qn[4,2])
-@test ismissing(qn[4,3])
+@test isnan(qn[1,1])
+@test isnan(qn[1,2])
+@test isnan(qn[1,3])
+@test isnan(qn[2,1])
+@test isnan(qn[2,2])
+@test isnan(qn[2,3])
+@test isnan(qn[3,1])
+@test isnan(qn[3,2])
+@test isnan(qn[3,3])
+@test isnan(qn[4,1])
+@test isnan(qn[4,2])
+@test isnan(qn[4,3])
 
 
 testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]

@@ -66,7 +66,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4×3 Array{Union{Missing, Float64},2}:
+	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -75,11 +75,11 @@ qn = normalizeQuantiles(array)
 
 The columns in `qn` are now quantile normalized to each other.
 
-Return type of function normalizeQuantiles is always Array{Union{Missing, Float64},2}
+Return type of function normalizeQuantiles is always Array{Float64,2}
 
 #### Missing Values
 
-If your data contain some missing values like `NaN` (Not a Number), they will be changed to missing values `missing::Missing`:
+If your data contain some missing values like `NaN` (Not a Number) or something else, they will be changed to `NaN`:
 
 ```julia
 array = [ NaN 2.0 1.0 ; 4.0 "empty" 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
@@ -97,11 +97,11 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4×3 Array{Union{Missing, Float64},2}:
-	  missing  3.25      1.5
-	 5.0        missing  5.0
-	 8.0       8.0       6.5
-	 5.0       3.25      6.5
+	4×3 Array{Float64,2}:
+	 NaN      3.25  1.5
+	   5.0  NaN     5.0
+	   8.0    8.0   6.5
+	   5.0    3.25  6.5
 ```
 
 NaN is of type Float64, so there is nothing similar for Int types.
@@ -109,6 +109,24 @@ NaN is of type Float64, so there is nothing similar for Int types.
 ```
 	julia> typeof(NaN)
 	Float64
+```
+
+You can convert the result to `Array{Union{Missing, Float64}` with:
+
+```
+	julia> qnMissing = convert(Array{Union{Missing,Float64}},qn)
+	4×3 Array{Union{Missing, Float64},2}:
+	 NaN      3.25  1.5
+	   5.0  NaN     5.0
+	   8.0    8.0   6.5
+	   5.0    3.25  6.5
+	
+	julia> qnMissing[isnan.(qnMissing)]=missing
+	4×3 Array{Union{Missing, Float64},2}:
+	  missing  3.25      1.5
+	 5.0        missing  5.0
+	 8.0       8.0       6.5
+	 5.0       3.25      6.5
 ```
 
 #### SharedArray and multicore usage examples
@@ -141,7 +159,7 @@ qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-	4×3 Array{Union{Missing, Float64},2}:
+	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -215,9 +233,9 @@ normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-The function `normalizeQuantiles` always returns a matrix of equal dimension as the input matrix and of type `Array{Union{Missing, Float64}}`.
+The function `normalizeQuantiles` always returns a matrix of equal dimension as the input matrix and of type `Array{Float64}`.
 
-`NaN` values are of type `Float64` and are treated as random missing values and the result value will be `missing::Missing`. See "Remarks on data with missing values" below.
+`NaN` values of type `Float64` and any other non-numbers, like strings, values are treated as random missing values and the result value will be `NaN`. See "Remarks on data with missing values" below.
 
 ## Data prerequisites
 
@@ -235,9 +253,9 @@ Currently there seems to be no general agreement on how to deal with missing val
 
 | | normalizeQuantiles |
 | -----------------------: | ----------------------- | 
-| **Definition:** | `Array{Union{Missing,Float64}} function normalizeQuantiles(matrix::AbstractArray)` |
+| **Definition:** | `Array{Float64} function normalizeQuantiles(matrix::AbstractArray)` |
 | Input type: | `matrix::AbstractArray` |
-| Return type: | `Array{Union{Missing,Float64}}` |
+| Return type: | `Array{Float64}` |
 
 
 ## Usage examples `sampleRanks`
