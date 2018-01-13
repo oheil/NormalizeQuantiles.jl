@@ -232,7 +232,7 @@ normalizeQuantiles(sa); @time normalizeQuantiles(sa);
 ```
 Using non-SharedArrays in a multicore setup is slowest:
 ```
-	julia> @time normalizeQuantiles(la);
+	julia> normalizeQuantiles(la); @time normalizeQuantiles(la);
 	  5.776685 seconds (294.06 k allocations: 92.532 MiB, 0.28% gc time)
 ```
 
