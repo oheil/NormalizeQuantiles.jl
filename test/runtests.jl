@@ -178,6 +178,33 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
+(r,m)=sampleRanks(a,tiesMethod=tmMax,naIncreasesRank=false,resultMatrix=true)
+r[4]=0
+r=[ Int(x) for x in r ]
+@test r==Array{Int}([2,2,4,0,3])
+
+testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
+a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
+a[:]=testfloat[:]
+a[4]=missing
+(r,m)=sampleRanks(a,tiesMethod=tmRandom,naIncreasesRank=false,resultMatrix=true)
+r[4]=0
+r=[ Int(x) for x in r ]
+@test r==Array{Int}([1,2,4,0,3]) || r==Array{Int}([2,1,4,0,3])
+
+testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
+a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
+a[:]=testfloat[:]
+a[4]=missing
+(r,m)=sampleRanks(a,tiesMethod=tmAverage,naIncreasesRank=false,resultMatrix=true)
+r[4]=0
+r=[ Int(x) for x in r ]
+@test r==Array{Int}([2,2,4,0,3])
+
+testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
+a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
+a[:]=testfloat[:]
+a[4]=missing
 (r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
@@ -286,5 +313,7 @@ a[3]=missing
 @test r[10]==7
 @test r[11]==10
 @test r[12]==12
+
+
 
 
