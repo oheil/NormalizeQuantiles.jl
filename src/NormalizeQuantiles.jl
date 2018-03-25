@@ -238,7 +238,8 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
                         ties[:]=maximum(ties)
                         rank=ties[end]+narank+1
                     elseif tiesMethod==tmReverse
-                        ties=flipdim(ties,1)
+                        #ties=flipdim(ties,1)
+                        ties=reverse(ties,dims=1)
                         rank=ties[1]+narank+1
                     elseif tiesMethod==tmRandom
                         rank=ties[end]+narank+1
