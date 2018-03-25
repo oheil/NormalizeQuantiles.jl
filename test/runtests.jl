@@ -156,6 +156,15 @@ r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,4,0,2])
 
+testfloat = [ 2.0 2.0 8.0 7.0 0.0 ]
+a=Array{Union{Missing, Float64}}(uninitialized,(size(testfloat,1),size(testfloat,2)));
+a[:]=testfloat[:]
+a[5]=missing
+(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+r[5]=0
+r=[ Int(x) for x in r ]
+@test r==Array{Int}([1,1,3,2,0])
+
 testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(uninitialized,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
