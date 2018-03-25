@@ -202,17 +202,17 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
     #array=convertToFloatMissing(array)
     nrows=length(array)
     goodIndices=[ !checkForNotANumber(x) for x in array ]
-     reducedArray=[ Float64(x) for x in array[goodIndices] ]
-     sortp=sortperm(reducedArray)
-     result=Array{Union{Missing,Int}}(undef,nrows)
-     result[:]=missing
-     rankMatrix=Dict{Int,Array{Int}}()
-     if resultMatrix
-         sizehint!(rankMatrix,nrows)
-     end    
-     goodIndices2=reshape((1:nrows),(1,nrows))[goodIndices[:]][sortp]
-     rank=1
-     narank=0
+    reducedArray=[ Float64(x) for x in array[goodIndices] ]
+    sortp=sortperm(reducedArray)
+    result=Array{Union{Missing,Int}}(undef,nrows)
+    result[:]=missing
+    rankMatrix=Dict{Int,Array{Int}}()
+    if resultMatrix
+        sizehint!(rankMatrix,nrows)
+    end    
+    goodIndices2=reshape((1:nrows),(1,nrows))[goodIndices[:]][sortp]
+    rank=1
+    narank=0
     if length(reducedArray)>0
         lastvalue=reducedArray[sortp[1]]
         ties=Array{Int}(undef,0)
@@ -249,14 +249,16 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
                         rank=ties[end]+narank+1
                     end
                     narank=0
-                    for j in 1:tiesCount
-                        if resultMatrix
+                    if resultMatrix
+                        for j in 1:tiesCount
                             if haskey(rankMatrix,ties[j])
                                 rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
                             else
                                 rankMatrix[ties[j]]=Array{Int}([tieIndices[j]])
                             end
                         end
+                    end
+                    for j in 1:tiesCount
                         result[tieIndices[j]]=ties[j]
                     end
                     ties=Array{Int}(undef,0)
@@ -274,7 +276,7 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
             end
         end
     end
-     (result,rankMatrix)
+    (result,rankMatrix)
 end
 
 
