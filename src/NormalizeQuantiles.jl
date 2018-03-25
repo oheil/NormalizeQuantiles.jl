@@ -7,6 +7,7 @@ export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
 using Distributed
 using SharedArrays
+using Random
 
 @enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
@@ -58,7 +59,7 @@ Example:
     array=convert(Array{Any},array)
     array[row,column] = missing
     qn = normalizeQuantiles(array)
-" ->
+"
 function normalizeQuantiles(matrix::AbstractArray)
 	#matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
 	if ndims(matrix) > 2
@@ -83,7 +84,7 @@ function normalizeQuantiles(matrix::AbstractArray)
 end
 
 function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
-	@sync @parallel for column = 1:ncols
+	@sync @distributed for column = 1:ncols
 		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortcol=vec(matrix[:,column])[goodIndices]
 		sortcol=[Float64(x) for x in sortcol]
@@ -105,7 +106,7 @@ function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows
 end
 
 function meanRows!(qnmatrix::SharedArray{Float64},nrows)
-	@sync @parallel for row = 1:nrows
+	@sync @distributed for row = 1:nrows
 		goodIndices=[ !checkForNotANumber(x) for x in qnmatrix[row,:] ]
 		missingIndices=convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices)))
 		missingCount=sum(missingIndices)
@@ -116,7 +117,7 @@ function meanRows!(qnmatrix::SharedArray{Float64},nrows)
 end
 
 function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
-	@sync @parallel for column = 1:ncols
+	@sync @distributed for column = 1:ncols
 		goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
 		sortp=[ Float64(x) for x in vec(matrix[:,column])[goodIndices] ]
 		sortp=sortperm(sortp)
@@ -130,7 +131,7 @@ function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::
 				qnmatrix[rankIndices,column]=mean([ Float64(x) for x in qnmatrix[rankIndices,column] ])
 			end
 		end
-		qncol=Array{Float64}(uninitialized,nrows,1)
+		qncol=Array{Float64}(undef,nrows,1)
 		fill!(qncol,NaN)
 		qncol[(1:nrows)[goodIndices][sortp]]=vec(qnmatrix[(1:nrows)[goodIndices2],column])
 		qnmatrix[:,column]=qncol
@@ -196,14 +197,14 @@ r is the vector of ranks.
 
 m is a dictionary with rank as keys and as value the indices of all values of this rank.
 
-" ->
+"
 function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
 	#array=convertToFloatMissing(array)
 	nrows=length(array)
 	goodIndices=[ !checkForNotANumber(x) for x in array ]
  	reducedArray=[ Float64(x) for x in array[goodIndices] ]
  	sortp=sortperm(reducedArray)
- 	result=Array{Union{Missing,Int}}(uninitialized,nrows)
+ 	result=Array{Union{Missing,Int}}(undef,nrows)
  	result[:]=missing
  	rankMatrix=Dict{Int,Array{Int}}()
  	if resultMatrix
@@ -212,64 +213,66 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
  	goodIndices2=reshape((1:nrows),(1,nrows))[goodIndices[:]][sortp]
  	rank=1
  	narank=0
- 	lastvalue=reducedArray[sortp[1]]
- 	ties=Array{Int}(uninitialized,0)
- 	tieIndices=Array{Int}(uninitialized,0)
- 	tiesCount=0
- 	index=1
- 	for i in 1:(nrows+1)
- 		last=i>nrows
- 		if !last 
- 			newvalue=reducedArray[sortp[index]]
- 		end
- 		if !last && !goodIndices[i]
- 			if naIncreasesRank
- 				rank+=1
- 				tiesCount>0 ? narank+=1 : false
- 			end
- 		else
- 			if last || newvalue != lastvalue
- 				if tiesMethod==tmMin
- 					ties[:]=minimum(ties)
- 					rank=ties[end]+narank+1
- 				elseif tiesMethod==tmMax
- 					ties[:]=maximum(ties)
- 					rank=ties[end]+narank+1
- 				elseif tiesMethod==tmReverse
- 					ties=flipdim(ties,1)
- 					rank=ties[1]+narank+1
- 				elseif tiesMethod==tmRandom
- 					rank=ties[end]+narank+1
- 					ties=ties[randperm(tiesCount)]
- 				elseif tiesMethod==tmAverage
- 					ties[:]=round(Int,mean(ties))
- 					rank=ties[end]+narank+1
- 				end
- 				narank=0
- 				for j in 1:tiesCount
- 					if resultMatrix
- 						if haskey(rankMatrix,ties[j])
- 							rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
- 						else
- 							rankMatrix[ties[j]]=Array{Int}([tieIndices[j]])
- 						end
- 					end
- 					result[tieIndices[j]]=ties[j]
- 				end
- 				ties=Array{Int}(uninitialized,0)
- 				tieIndices=Array{Int}(uninitialized,0)
- 				tiesCount=0
- 			end
- 			if !last
- 				tieIndices=vcat(tieIndices,Array{Int}([goodIndices2[index]]))
- 				ties=vcat(ties,Array{Int}([rank]))
- 				tiesCount+=1
- 				rank+=1
- 				lastvalue=newvalue
- 				index+=1
- 			end
- 		end
- 	end
+    if length(reducedArray)>0
+        lastvalue=reducedArray[sortp[1]]
+        ties=Array{Int}(undef,0)
+        tieIndices=Array{Int}(undef,0)
+        tiesCount=0
+        index=1
+        for i in 1:(nrows+1)
+            last=i>nrows
+            if !last && index<=length(sortp)
+                newvalue=reducedArray[sortp[index]]
+            end
+            if !last && !goodIndices[i]
+                if naIncreasesRank
+                    rank+=1
+                    tiesCount>0 ? narank+=1 : false
+                end
+            else
+                if last || newvalue != lastvalue
+                    if tiesMethod==tmMin
+                        ties[:]=minimum(ties)
+                        rank=ties[end]+narank+1
+                    elseif tiesMethod==tmMax
+                        ties[:]=maximum(ties)
+                        rank=ties[end]+narank+1
+                    elseif tiesMethod==tmReverse
+                        ties=flipdim(ties,1)
+                        rank=ties[1]+narank+1
+                    elseif tiesMethod==tmRandom
+                        rank=ties[end]+narank+1
+                        ties=ties[randperm(tiesCount)]
+                    elseif tiesMethod==tmAverage
+                        ties[:]=round(Int,mean(ties))
+                        rank=ties[end]+narank+1
+                    end
+                    narank=0
+                    for j in 1:tiesCount
+                        if resultMatrix
+                            if haskey(rankMatrix,ties[j])
+                                rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
+                            else
+                                rankMatrix[ties[j]]=Array{Int}([tieIndices[j]])
+                            end
+                        end
+                        result[tieIndices[j]]=ties[j]
+                    end
+                    ties=Array{Int}(undef,0)
+                    tieIndices=Array{Int}(undef,0)
+                    tiesCount=0
+                end
+                if !last
+                    tieIndices=vcat(tieIndices,Array{Int}([goodIndices2[index]]))
+                    ties=vcat(ties,Array{Int}([rank]))
+                    tiesCount+=1
+                    rank+=1
+                    lastvalue=newvalue
+                    index+=1
+                end
+            end
+        end
+    end
  	(result,rankMatrix)
 end
 
