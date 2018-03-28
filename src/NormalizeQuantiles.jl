@@ -11,26 +11,6 @@ using Random
 
 @enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
-###function convertToSharedFloat(matrix::AbstractArray)
-###    missing_indices=[ checkForNotANumber(x) for x in vec(matrix) ]
-###    matrix=convert(Array{Any},matrix)
-###    matrix[missing_indices]=NaN
-###    matrix=convert(SharedArray{Float64},matrix)
-###    matrix
-###end
-
-###function convertToFloatMissing(matrix::AbstractArray)
-###    missing_indices=[ checkForNotANumber(x) for x in vec(matrix) ]
-###    if sum(missing_indices) > 0
-###        matrix=convert(Array{Any},matrix)
-###        matrix[missing_indices]=missing
-###        matrix=convert(Array{Union{Missing,Float64}},matrix)
-###    else
-###        matrix=convert(Array{Float64},matrix)
-###    end
-###    matrix
-###end
-
 function checkForNotANumber(x::Any)
     (!isa(x,Integer) && !isa(x,Real)) || isnan(x)
 end
@@ -61,7 +41,6 @@ Example:
     qn = normalizeQuantiles(array)
 "
 function normalizeQuantiles(matrix::AbstractArray)
-    #matrix=NormalizeQuantiles.convertToSharedFloat(matrix)
     if ndims(matrix) > 2
         throw(ArgumentError("normalizeQuantiles expects an array of dimension 2"))
     end
@@ -78,8 +57,6 @@ function normalizeQuantiles(matrix::AbstractArray)
         # foreach column: reorder the values back to the original order
         NormalizeQuantiles.equalValuesInColumnAndOrderToOriginal!(matrix,qnmatrix,nrows,ncols)
     end
-    #throw(ErrorException("normalizeQuantiles not yet implemented for julia 0.7"))
-    #convertToFloatMissing(qnmatrix)
     convert(Array{Float64},qnmatrix)
 end
 
@@ -199,84 +176,126 @@ m is a dictionary with rank as keys and as value the indices of all values of th
 
 "
 function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
-    #array=convertToFloatMissing(array)
     nrows=length(array)
     goodIndices=[ !checkForNotANumber(x) for x in array ]
     reducedArray=[ Float64(x) for x in array[goodIndices] ]
-    sortp=sortperm(reducedArray)
+    reducedArraySortedIndices=sortperm(reducedArray)
+    reducedArraySorted=reducedArray[reducedArraySortedIndices]
+    naCounts=similar(reducedArraySortedIndices,Int)
+    naCount=0
+    reducedIndex=1
+    for arrayIndex in 1:length(array)
+        if checkForNotANumber(array[arrayIndex])
+            naCount+=1
+        else
+            naCounts[reducedIndex]=naCount
+            reducedIndex+=1
+        end
+    end
     result=Array{Union{Missing,Int}}(undef,nrows)
     result[:]=missing
     rankMatrix=Dict{Int,Array{Int}}()
-    if resultMatrix
-        sizehint!(rankMatrix,nrows)
-    end    
-    goodIndices2=reshape((1:nrows),(1,nrows))[goodIndices[:]][sortp]
-    rank=1
-    narank=0
-    if length(reducedArray)>0
-        lastvalue=reducedArray[sortp[1]]
-        ties=Array{Int}(undef,0)
-        tieIndices=Array{Int}(undef,0)
-        tiesCount=0
-        index=1
-        for i in 1:(nrows+1)
-            last=i>nrows
-            if !last && index<=length(sortp)
-                newvalue=reducedArray[sortp[index]]
+    group = Array{Int,1}()
+    firstFound = true
+    lastFound = undef
+    nextRank=1
+    rankIncrement=0
+    doIncreaseRank=false
+    headingNA=false
+    groupIndex=1
+    for resultIndex in 1:nrows
+        if goodIndices[resultIndex]
+            if headingNA
+                headingNA=false
+                if doIncreaseRank
+                    nextRank+=rankIncrement
+                    rankIncrement=0
+                    doIncreaseRank=false
+                end
             end
-            if !last && !goodIndices[i]
-                if naIncreasesRank
-                    rank+=1
-                    tiesCount>0 ? narank+=1 : false
+            if !firstFound && lastFound != reducedArraySorted[groupIndex]
+                nextRank = setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
+                group = [naCounts[reducedArraySortedIndices[groupIndex]]+reducedArraySortedIndices[groupIndex]]
+                if doIncreaseRank
+                    nextRank+=rankIncrement
+                    rankIncrement=0
+                    doIncreaseRank=false
                 end
             else
-                if last || newvalue != lastvalue
-                    if tiesMethod==tmMin
-                        ties[:]=minimum(ties)
-                        rank=ties[end]+narank+1
-                    elseif tiesMethod==tmMax
-                        ties[:]=maximum(ties)
-                        rank=ties[end]+narank+1
-                    elseif tiesMethod==tmReverse
-                        #ties=flipdim(ties,1)
-                        ties=reverse(ties,dims=1)
-                        rank=ties[1]+narank+1
-                    elseif tiesMethod==tmRandom
-                        rank=ties[end]+narank+1
-                        ties=ties[randperm(tiesCount)]
-                    elseif tiesMethod==tmAverage
-                        ties[:]=round(Int,mean(ties))
-                        rank=ties[end]+narank+1
-                    end
-                    narank=0
-                    if resultMatrix
-                        for j in 1:tiesCount
-                            if haskey(rankMatrix,ties[j])
-                                rankMatrix[ties[j]]=vcat(rankMatrix[ties[j]],tieIndices[j])
-                            else
-                                rankMatrix[ties[j]]=Array{Int}([tieIndices[j]])
-                            end
-                        end
-                    end
-                    for j in 1:tiesCount
-                        result[tieIndices[j]]=ties[j]
-                    end
-                    ties=Array{Int}(undef,0)
-                    tieIndices=Array{Int}(undef,0)
-                    tiesCount=0
-                end
-                if !last
-                    tieIndices=vcat(tieIndices,Array{Int}([goodIndices2[index]]))
-                    ties=vcat(ties,Array{Int}([rank]))
-                    tiesCount+=1
-                    rank+=1
-                    lastvalue=newvalue
-                    index+=1
-                end
+                push!(group,naCounts[reducedArraySortedIndices[groupIndex]]+reducedArraySortedIndices[groupIndex])
+            end
+            lastFound = reducedArraySorted[groupIndex]
+            firstFound = false
+            groupIndex+=1
+        else
+            if naIncreasesRank
+                doIncreaseRank=true
+                rankIncrement+=1
+            end
+            if firstFound
+                headingNA=true
             end
         end
     end
+    setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
     (result,rankMatrix)
+end 
+
+function setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
+    ranksCount=length(group)
+    ranks=nextRank:(nextRank+ranksCount-1)
+    if tiesMethod==tmMin
+        minRank=minimum(ranks)
+        result[group]=minRank
+        if resultMatrix
+            rankMatrix[minRank]=group
+        end
+        nextRank+=1
+    elseif tiesMethod==tmMax
+        maxRank=maximum(ranks)
+        result[group]=maxRank
+        if resultMatrix
+            rankMatrix[maxRank]=group
+        end
+        nextRank=maxRank+1
+    elseif tiesMethod==tmOrder
+        maxRank=maximum(ranks)
+        result[group]=ranks
+        if resultMatrix
+            for rankIndex in 1:length(ranks)
+                rankMatrix[ranks[rankIndex]]=[group[rankIndex]]
+            end
+        end
+        nextRank=maxRank+1
+    elseif tiesMethod==tmReverse
+        maxRank=maximum(ranks)
+        ranks=reverse(ranks,dims=1)
+        result[group]=ranks
+        if resultMatrix
+            for rankIndex in 1:length(ranks)
+                rankMatrix[ranks[rankIndex]]=[group[rankIndex]]
+            end
+        end
+        nextRank=maxRank+1
+    elseif tiesMethod==tmRandom
+        maxRank=maximum(ranks)
+        ranks=ranks[randperm(ranksCount)]
+        result[group]=ranks
+        if resultMatrix
+            for rankIndex in 1:length(ranks)
+                rankMatrix[ranks[rankIndex]]=[group[rankIndex]]
+            end
+        end
+        nextRank=maxRank+1
+    elseif tiesMethod==tmAverage
+        rankMean=round(Int,mean(ranks))
+        result[group]=rankMean
+        if resultMatrix
+            rankMatrix[rankMean]=group
+        end
+        nextRank=rankMean+1
+    end
+    nextRank
 end
 
 
