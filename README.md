@@ -21,6 +21,12 @@ and provides a function to calculate sample ranks
 
 of a given vector or matrix.
 
+**References**
+
+* Amaratunga, D.; Cabrera, J. (2001). "Analysis of Data from Viral DNA Microchips". Journal of the American Statistical Association. 96 (456): 1161. [doi:10.1198/016214501753381814](https://doi.org/10.1198/016214501753381814)
+* Bolstad, B. M.; Irizarry, R. A.; Astrand, M.; Speed, T. P. (2003). "A comparison of normalization methods for high density oligonucleotide array data based on variance and bias". Bioinformatics. 19 (2): 185–193. [doi:10.1093/bioinformatics/19.2.185](https://doi.org/10.1093/bioinformatics/19.2.185) [PMID 12538238](https://www.ncbi.nlm.nih.gov/pubmed/12538238)
+* [Wikipedia](https://en.wikipedia.org/wiki/Quantile_normalization)
+
 **Table of Contents**
 
 * [Dependencies](#dependencies)
