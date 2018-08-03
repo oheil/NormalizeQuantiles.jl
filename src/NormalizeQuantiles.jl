@@ -8,6 +8,7 @@ export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 using Distributed
 using SharedArrays
 using Random
+using Statistics
 
 @enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage
 
@@ -88,8 +89,8 @@ function meanRows!(qnmatrix::SharedArray{Float64},nrows)
         missingIndices=convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices)))
         missingCount=sum(missingIndices)
         rowmean=mean([Float64(x) for x in qnmatrix[row,goodIndices]])
-        qnmatrix[row,:]=Float64(rowmean)
-        missingCount>0 ? qnmatrix[row,missingIndices]=NaN : false
+        qnmatrix[row,:].=Float64(rowmean)
+        missingCount>0 ? qnmatrix[row,missingIndices].=NaN : false
     end
 end
 
@@ -105,7 +106,7 @@ function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::
             rankColumns=NormalizeQuantiles.getRankMatrix(matrix[:,column][goodIndices][sortp],allRanks,goodIndices)
             for i in 1:rankColumns
                 rankIndices=unique(allRanks[i])
-                qnmatrix[rankIndices,column]=mean([ Float64(x) for x in qnmatrix[rankIndices,column] ])
+                qnmatrix[rankIndices,column].=mean([ Float64(x) for x in qnmatrix[rankIndices,column] ])
             end
         end
         qncol=Array{Float64}(undef,nrows,1)
@@ -193,7 +194,7 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
         end
     end
     result=Array{Union{Missing,Int}}(undef,nrows)
-    result[:]=missing
+    result[:].=missing
     rankMatrix=Dict{Int,Array{Int}}()
     group = Array{Int,1}()
     firstFound = true
@@ -246,14 +247,14 @@ function setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
     ranks=nextRank:(nextRank+ranksCount-1)
     if tiesMethod==tmMin
         minRank=minimum(ranks)
-        result[group]=minRank
+        result[group].=minRank
         if resultMatrix
             rankMatrix[minRank]=group
         end
         nextRank+=1
     elseif tiesMethod==tmMax
         maxRank=maximum(ranks)
-        result[group]=maxRank
+        result[group].=maxRank
         if resultMatrix
             rankMatrix[maxRank]=group
         end
@@ -289,7 +290,7 @@ function setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
         nextRank=maxRank+1
     elseif tiesMethod==tmAverage
         rankMean=round(Int,mean(ranks))
-        result[group]=rankMean
+        result[group].=rankMean
         if resultMatrix
             rankMatrix[rankMean]=group
         end

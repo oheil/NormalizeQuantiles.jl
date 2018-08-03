@@ -5,6 +5,7 @@ using NormalizeQuantiles
 
 using Test
 using SharedArrays
+using Statistics
 
 
 # write your own tests here
@@ -82,13 +83,13 @@ qn=normalizeQuantiles(sa)
 @test qn[1,2]==3.5
 @test qn[2,1]==5.0
 
-dafloat[2,:]=missing
+dafloat[2,:].=missing
 qn=normalizeQuantiles(dafloat)
 @test isnan(qn[2,1])
 @test isnan(qn[2,2])
 @test isnan(qn[2,3])
 
-dafloat[2,:]=NaN
+dafloat[2,:].=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
@@ -96,22 +97,22 @@ qn=normalizeQuantiles(sa)
 @test isnan(qn[2,2])
 @test isnan(qn[2,3])
 
-dafloat[3,1:2]=missing
+dafloat[3,1:2].=missing
 qn=normalizeQuantiles(dafloat)
 @test isnan(qn[3,1])
 @test isnan(qn[3,2])
 
-dafloat[3,1:2]=NaN
+dafloat[3,1:2].=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)
 @test isnan(qn[3,1])
 @test isnan(qn[3,2])
 
-dafloat[1,:]=missing
-dafloat[2,:]=missing
-dafloat[3,:]=missing
-dafloat[4,:]=missing
+dafloat[1,:].=missing
+dafloat[2,:].=missing
+dafloat[3,:].=missing
+dafloat[4,:].=missing
 qn = normalizeQuantiles(dafloat)
 @test isnan(qn[1,1])
 @test isnan(qn[1,2])
@@ -126,10 +127,10 @@ qn = normalizeQuantiles(dafloat)
 @test isnan(qn[4,2])
 @test isnan(qn[4,3])
 
-dafloat[1,:]=NaN
-dafloat[2,:]=NaN
-dafloat[3,:]=NaN
-dafloat[4,:]=NaN
+dafloat[1,:].=NaN
+dafloat[2,:].=NaN
+dafloat[3,:].=NaN
+dafloat[4,:].=NaN
 a=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
 qn=normalizeQuantiles(sa)

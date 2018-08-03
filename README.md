@@ -1,4 +1,3 @@
-[![Project Status: Active â€“ The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 # NormalizeQuantiles
 
 For julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
@@ -40,6 +39,7 @@ of a given vector or matrix.
 ## Dependencies
 
 * Julia 0.7
+* Statistics (Standard Library)
 
 ## Remarks
 
@@ -65,7 +65,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4Ã—3 Array{Float64,2}:
+	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -87,7 +87,7 @@ array = [ NaN 2.0 1.0 ; 4.0 "empty" 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 ```
 ```
 	julia> array
-	4Ã—3 Array{Any,2}:
+	4×3 Array{Any,2}:
 	 NaN    2.0       1.0
 	4.0   "empty"  6.0
 	9.0  7.0       8.0
@@ -98,7 +98,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4Ã—3 Array{Float64,2}:
+	4×3 Array{Float64,2}:
 	 NaN      3.25  1.5
 	   5.0  NaN     5.0
 	   8.0    8.0   6.5
@@ -119,7 +119,7 @@ qnMissing = convert(Array{Union{Missing,Float64}},qn)
 ```
 ```
 	julia> qnMissing
-	4Ã—3 Array{Union{Missing, Float64},2}:
+	4×3 Array{Union{Missing, Float64},2}:
 	 NaN      3.25  1.5
 	   5.0  NaN     5.0
 	   8.0    8.0   6.5
@@ -130,7 +130,7 @@ qnMissing[isnan.(qnMissing)] = missing;
 ```
 ```
 	julia> qnMissing
-	4Ã—3 Array{Union{Missing, Float64},2}:
+	4×3 Array{Union{Missing, Float64},2}:
 	  missing  3.25      1.5
 	 5.0        missing  5.0
 	 8.0       8.0       6.5
@@ -153,7 +153,7 @@ sa = SharedArray{Float64}([ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.
 ```
 ```
 	julia> sa
-	4Ã—3 SharedArray{Float64,2}:
+	4×3 SharedArray{Float64,2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
@@ -164,7 +164,7 @@ qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-	4Ã—3 Array{Float64,2}:
+	4×3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -292,7 +292,7 @@ array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
 ```
 ```
 	julia> array
-	4Ã—3 Array{Float64,2}:
+	4×3 Array{Float64,2}:
 	  1.0   2.0   3.0
 	  4.0   5.0   6.0
 	  7.0   8.0   9.0
