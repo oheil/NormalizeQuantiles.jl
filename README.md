@@ -1,3 +1,5 @@
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
 # NormalizeQuantiles
 
 For julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
