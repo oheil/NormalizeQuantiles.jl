@@ -39,7 +39,6 @@ of a given vector or matrix.
 ## Dependencies
 
 * Julia 0.7
-* Statistics (Standard Library)
 
 ## Remarks
 
