@@ -1,18 +1,24 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
+
 os:
   - linux
   - osx
+
 julia:
-#  - 0.7
+  - 0.7
   - nightly
+
 notifications:
   email: false
+
 script: # the default script is equivalent to the following
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone(pwd()); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)';
+
 matrix:
   allow_failures:
     - julia: nightly
+
 after_success:
   - julia -e 'cd(Pkg.dir("NormalizeQuantiles")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
