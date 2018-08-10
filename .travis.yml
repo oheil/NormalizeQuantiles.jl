@@ -14,7 +14,7 @@ notifications:
 
 script: # the default script is equivalent to the following
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'if VERSION >= v"0.7.0-" using Pkg; end; Pkg.clone(pwd()); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)';
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)';
 
 matrix:
   allow_failures:
