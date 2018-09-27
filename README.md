@@ -49,7 +49,7 @@ of a given vector or matrix.
 
 * Julia 0.7 or above
 
-#### third party packages
+#### Third party packages
 
 * none
 
