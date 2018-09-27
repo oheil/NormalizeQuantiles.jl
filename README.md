@@ -1,7 +1,7 @@
 Linux: [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=master&svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/master)
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Active â€“ The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master)
 
 # NormalizeQuantiles
@@ -25,7 +25,7 @@ of a given vector or matrix.
 **References**
 
 * Amaratunga, D.; Cabrera, J. (2001). "Analysis of Data from Viral DNA Microchips". Journal of the American Statistical Association. 96 (456): 1161. [doi:10.1198/016214501753381814](https://doi.org/10.1198/016214501753381814)
-* Bolstad, B. M.; Irizarry, R. A.; Astrand, M.; Speed, T. P. (2003). "A comparison of normalization methods for high density oligonucleotide array data based on variance and bias". Bioinformatics. 19 (2): 185–193. [doi:10.1093/bioinformatics/19.2.185](https://doi.org/10.1093/bioinformatics/19.2.185) [PMID 12538238](https://www.ncbi.nlm.nih.gov/pubmed/12538238)
+* Bolstad, B. M.; Irizarry, R. A.; Astrand, M.; Speed, T. P. (2003). "A comparison of normalization methods for high density oligonucleotide array data based on variance and bias". Bioinformatics. 19 (2): 185â€“193. [doi:10.1093/bioinformatics/19.2.185](https://doi.org/10.1093/bioinformatics/19.2.185) [PMID 12538238](https://www.ncbi.nlm.nih.gov/pubmed/12538238)
 * Wikipedia contributors. (2018, June 12). Quantile normalization. In Wikipedia, The Free Encyclopedia. Retrieved 11:54, August 3, 2018, from [https://en.wikipedia.org/w/index.php?title=Quantile_normalization](https://en.wikipedia.org/w/index.php?title=Quantile_normalization)
 
 **Table of Contents**
@@ -45,7 +45,20 @@ of a given vector or matrix.
 
 ## Dependencies
 
-* Julia 0.7
+#### Julia versions
+
+* Julia 0.7 or above
+
+#### third party packages
+
+* none
+
+#### Standard Library packages
+
+* [Distributed](https://docs.julialang.org/en/v1/stdlib/Distributed/)
+* [SharedArrays](https://docs.julialang.org/en/v1/stdlib/SharedArrays/)
+* [Random](https://docs.julialang.org/en/v1/stdlib/Random/)
+* [Statistics](https://docs.julialang.org/en/v1/stdlib/Statistics/)
 
 ## Remarks
 
@@ -71,7 +84,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -93,7 +106,7 @@ array = [ NaN 2.0 1.0 ; 4.0 "empty" 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
 ```
 ```
 	julia> array
-	4×3 Array{Any,2}:
+	4Ã—3 Array{Any,2}:
 	 NaN    2.0       1.0
 	4.0   "empty"  6.0
 	9.0  7.0       8.0
@@ -104,7 +117,7 @@ qn = normalizeQuantiles(array)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 NaN      3.25  1.5
 	   5.0  NaN     5.0
 	   8.0    8.0   6.5
@@ -125,7 +138,7 @@ qnMissing = convert(Array{Union{Missing,Float64}},qn)
 ```
 ```
 	julia> qnMissing
-	4×3 Array{Union{Missing, Float64},2}:
+	4Ã—3 Array{Union{Missing, Float64},2}:
 	 NaN      3.25  1.5
 	   5.0  NaN     5.0
 	   8.0    8.0   6.5
@@ -136,7 +149,7 @@ qnMissing[isnan.(qnMissing)] = missing;
 ```
 ```
 	julia> qnMissing
-	4×3 Array{Union{Missing, Float64},2}:
+	4Ã—3 Array{Union{Missing, Float64},2}:
 	  missing  3.25      1.5
 	 5.0        missing  5.0
 	 8.0       8.0       6.5
@@ -159,7 +172,7 @@ sa = SharedArray{Float64}([ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.
 ```
 ```
 	julia> sa
-	4×3 SharedArray{Float64,2}:
+	4Ã—3 SharedArray{Float64,2}:
 	 3.0  2.0  1.0
 	 4.0  5.0  6.0
 	 9.0  7.0  8.0
@@ -170,7 +183,7 @@ qn = normalizeQuantiles(sa)
 ```
 ```
 	julia> qn
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	 2.0  3.0  2.0
 	 4.0  6.0  4.0
 	 8.0  8.0  7.0
@@ -298,7 +311,7 @@ array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]
 ```
 ```
 	julia> array
-	4×3 Array{Float64,2}:
+	4Ã—3 Array{Float64,2}:
 	  1.0   2.0   3.0
 	  4.0   5.0   6.0
 	  7.0   8.0   9.0
