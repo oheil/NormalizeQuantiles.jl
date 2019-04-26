@@ -13,9 +13,9 @@ julia:
 notifications:
   email: false
 
-script: # the default script is equivalent to the following
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'VERSION >= v"0.7.0-DEV.5183" && using Pkg; Pkg.clone(pwd()); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)';
+#script: # the default script is equivalent to the following
+#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+#  - julia -e 'VERSION >= v"0.7.0-DEV.5183" && using Pkg; Pkg.clone(pwd()); Pkg.build("NormalizeQuantiles"); Pkg.test("NormalizeQuantiles"; coverage=true)';
 
 matrix:
   allow_failures:
