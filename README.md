@@ -362,6 +362,8 @@ These methods are defined and exported as
 ```
 
 Internally ties have increasing ranks. On these the chosen method is applied.
+
+The next rank for the successive values after the ties is the so far highest used rank plus 1.
 	
 Examples:
 
