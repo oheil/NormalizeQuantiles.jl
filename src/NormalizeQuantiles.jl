@@ -1,8 +1,8 @@
 module NormalizeQuantiles
 
-export normalizeQuantiles,normalizeQuantiles!
+export normalizeQuantiles
 
-export sampleRanks,sampleRanks!
+export sampleRanks
 export qnTiesMethods,tmMin,tmMax,tmOrder,tmReverse,tmRandom,tmAverage
 
 using Distributed
@@ -62,87 +62,72 @@ function normalizeQuantiles(matrix::AbstractArray)
 end
 
 function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
-    @sync @distributed for column = 1:ncols
-        goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
-        sortcol=vec(matrix[:,column])[goodIndices]
-        sortcol=[Float64(x) for x in sortcol]
+    @inbounds @sync @distributed for column = 1:ncols
+        sortcol=matrix[:,column]
+        goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in sortcol ]
+        missingIndices=(1:nrows)[.!goodIndices]
+        sortcol[goodIndices]=Array{Float64}(sortcol[goodIndices])
+        length(missingIndices)>0 ? sortcol[missingIndices].=NaN : nothing
         sort!(sortcol)
-        sortcol=Array{Float64}(sortcol)
-        missingIndices=(1:nrows)[ convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices))) ]
-        isEmpty=sum(goodIndices)==0
         for missingPos in missingIndices
-            if isEmpty
-                isEmpty=false
-                sortcol=Array{Float64}([NaN])
-            else
-                sortcol=vcat(sortcol[1:missingPos-1],NaN,sortcol[missingPos:end])
-                #splice!(sortcol,missingPos,[NaN,sortcol[missingPos]])
-            end
+            sortcol[(missingPos+1):end]=sortcol[missingPos:(end-1)]
+            sortcol[missingPos]=NaN
         end
         qnmatrix[:,column]=sortcol
     end
 end
 
 function meanRows!(qnmatrix::SharedArray{Float64},nrows)
-    @sync @distributed for row = 1:nrows
-        goodIndices=[ !checkForNotANumber(x) for x in qnmatrix[row,:] ]
-        missingIndices=convert(Array{Bool},reshape([!i for i in goodIndices],size(goodIndices)))
-        missingCount=sum(missingIndices)
-        rowmean=mean([Float64(x) for x in qnmatrix[row,goodIndices]])
-        qnmatrix[row,:].=Float64(rowmean)
-        missingCount>0 ? qnmatrix[row,missingIndices].=NaN : false
+    @inbounds @sync @distributed for row = 1:nrows
+        goodIndices=[ ! NormalizeQuantiles.checkForNotANumber(x) for x in qnmatrix[row,:] ]
+        rowmean=mean(qnmatrix[row,goodIndices])
+        qnmatrix[row,goodIndices].=rowmean
     end
 end
 
 function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
-    @sync @distributed for column = 1:ncols
-        goodIndices=[ !checkForNotANumber(x) for x in vec(matrix[:,column]) ]
-        sortp=[ Float64(x) for x in vec(matrix[:,column])[goodIndices] ]
-        sortp=sortperm(sortp)
-        goodIndices2=[ !checkForNotANumber(x) for x in vec(qnmatrix[:,column]) ]
-        if length(matrix[:,column][goodIndices][sortp])>0
-            allRanks=Dict{Int,Array{Int}}()
-            sizehint!(allRanks,nrows)
-            rankColumns=NormalizeQuantiles.getRankMatrix(matrix[:,column][goodIndices][sortp],allRanks,goodIndices)
-            for i in 1:rankColumns
-                rankIndices=unique(allRanks[i])
-                qnmatrix[rankIndices,column].=mean([ Float64(x) for x in qnmatrix[rankIndices,column] ])
-            end
+    qncol=Array{Float64}(undef,nrows,1)
+    @inbounds @sync @distributed for column = 1:ncols
+        goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in vec(matrix[:,column]) ]
+        sortp=sortperm([ Float64(x) for x in vec(matrix[goodIndices,column]) ])
+        goodIndices2=[ !NormalizeQuantiles.checkForNotANumber(x) for x in vec(qnmatrix[:,column]) ]
+        if length(sortp)>0
+            NormalizeQuantiles.setMeanForEqualOrigValues(matrix[goodIndices,column][sortp],qnmatrix,column,goodIndices)
         end
-        qncol=Array{Float64}(undef,nrows,1)
         fill!(qncol,NaN)
         qncol[(1:nrows)[goodIndices][sortp]]=vec(qnmatrix[(1:nrows)[goodIndices2],column])
         qnmatrix[:,column]=qncol
     end
 end
 
-function getRankMatrix(sortedArrayNoNAs::AbstractArray,allRanks::Dict{Int,Array{Int}},goodIndices::Array{Bool})
-    rankColumns=0
+function setMeanForEqualOrigValues(sortedArrayNoNAs::AbstractArray,qnmatrix::SharedArray{Float64},column::Int,goodIndices::Array{Bool})
     nrows=length(sortedArrayNoNAs)
-    lastValue=sortedArrayNoNAs[1]
+    foundIndices=zeros(Int,nrows)
     goodIndices2=(1:length(goodIndices))[goodIndices]
     count=1
+    lastValue=sortedArrayNoNAs[1]
     for i in 2:nrows
         nextValue=sortedArrayNoNAs[i]
-        if !checkForNotANumber(nextValue) && !checkForNotANumber(lastValue) && nextValue==lastValue
-            if haskey(allRanks,rankColumns+1)
-                allRanks[rankColumns+1]=vcat(allRanks[rankColumns+1],Array{Int}([goodIndices2[i-1],goodIndices2[i]]))
+        if nextValue==lastValue
+            if count==1
+                foundIndices[count]=goodIndices2[i-1]
+                count+=1
+                foundIndices[count]=goodIndices2[i]
             else
-                allRanks[rankColumns+1]=Array{Int}([goodIndices2[i-1],goodIndices2[i]])
+                foundIndices[count]=goodIndices2[i]
             end
             count+=1
         else
             if count>1
-                rankColumns+=1
+                qnmatrix[foundIndices[1:(count-1)],column].=mean([ x for x in qnmatrix[foundIndices[1:(count-1)],column] ])
             end
             count=1
         end
-        lastValue=sortedArrayNoNAs[i]
+        lastValue=nextValue
     end
     if count>1
-        rankColumns+=1
+        qnmatrix[foundIndices[1:(count-1)],column].=mean([ x for x in qnmatrix[foundIndices[1:(count-1)],column] ])
     end
-    rankColumns        
 end
 
 @doc "
@@ -159,8 +144,6 @@ Parameters:
     naIncreasesRank: if true than any NA increases the following ranks by 1
     resultMatrix: if true than return a dictionary of rank keys and array of indices values
 
-    If the input array can be altered use sampleRanks!(matrix::AbstractArray) to be more memory efficient.    
-    
 Example:
     
     using NormalizeQuantiles
@@ -176,25 +159,25 @@ r is the vector of ranks.
 m is a dictionary with rank as keys and as value the indices of all values of this rank.
 
 "
-function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank=false,resultMatrix=false)
+function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank::Bool=false,resultMatrix::Bool=false)
     nrows=length(array)
-    goodIndices=[ !checkForNotANumber(x) for x in array ]
-    reducedArray=[ Float64(x) for x in array[goodIndices] ]
-    reducedArraySortedIndices=sortperm(reducedArray)
-    reducedArraySorted=reducedArray[reducedArraySortedIndices]
-    naCounts=similar(reducedArraySortedIndices,Int)
+    goodIndices=falses(nrows)
+    naCounts=zeros(Int,nrows)
     naCount=0
     reducedIndex=1
     for arrayIndex in 1:length(array)
-        if checkForNotANumber(array[arrayIndex])
+        if NormalizeQuantiles.checkForNotANumber(array[arrayIndex])
             naCount+=1
         else
+            goodIndices[arrayIndex]=true
             naCounts[reducedIndex]=naCount
             reducedIndex+=1
         end
     end
-    result=Array{Union{Missing,Int}}(undef,nrows)
-    result[:].=missing
+    reducedArraySorted=[ Float64(x) for x in array[goodIndices] ]
+    reducedArraySortedIndices=sortperm(reducedArraySorted)
+    reducedArraySorted=reducedArraySorted[reducedArraySortedIndices]
+    result=Array{Union{Missing,Int}}(missing,nrows)
     rankMatrix=Dict{Int,Array{Int}}()
     group = Array{Int,1}()
     firstFound = true
@@ -214,16 +197,17 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
                     doIncreaseRank=false
                 end
             end
+            reducedArrayIndex=reducedArraySortedIndices[groupIndex]
             if !firstFound && lastFound != reducedArraySorted[groupIndex]
-                nextRank = setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
-                group = [naCounts[reducedArraySortedIndices[groupIndex]]+reducedArraySortedIndices[groupIndex]]
+                nextRank = NormalizeQuantiles.setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
+                group = [naCounts[reducedArrayIndex]+reducedArrayIndex]
                 if doIncreaseRank
                     nextRank+=rankIncrement
                     rankIncrement=0
                     doIncreaseRank=false
                 end
             else
-                push!(group,naCounts[reducedArraySortedIndices[groupIndex]]+reducedArraySortedIndices[groupIndex])
+                push!(group,naCounts[reducedArrayIndex]+reducedArrayIndex)
             end
             lastFound = reducedArraySorted[groupIndex]
             firstFound = false
@@ -238,11 +222,11 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
             end
         end
     end
-    setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
+    NormalizeQuantiles.setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
     (result,rankMatrix)
 end 
 
-function setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
+function setRank!(group::Array{Int},nextRank::Int,tiesMethod::qnTiesMethods,result::Array{Union{Missing,Int}},resultMatrix::Bool,rankMatrix::Dict{Int,Array{Int}})
     ranksCount=length(group)
     ranks=nextRank:(nextRank+ranksCount-1)
     if tiesMethod==tmMin
@@ -298,6 +282,5 @@ function setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
     end
     nextRank
 end
-
 
 end # module

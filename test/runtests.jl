@@ -12,7 +12,7 @@ using Statistics
 @test 1 == 1
 
 testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
-r=normalizeQuantiles(testfloat)
+r=NormalizeQuantiles.normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
@@ -20,7 +20,7 @@ r=normalizeQuantiles(testfloat)
 
 sa=SharedArray{Float64}((size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
-r=normalizeQuantiles(sa)
+r=NormalizeQuantiles.normalizeQuantiles(sa)
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
 @test mean(r[:,2]) >= 4.8124 && mean(r[:,2]) <= 4.8126
 @test mean(r[:,3]) >= 4.8124 && mean(r[:,3]) <= 4.8126
@@ -28,14 +28,14 @@ r=normalizeQuantiles(sa)
 
 testfloat[2,2]=NaN
 testfloat[3,4]=NaN
-r=normalizeQuantiles(testfloat)
+r=NormalizeQuantiles.normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.91 && mean(r[:,1]) <= 4.92
 @test isnan(r[2,2])
 @test isnan(r[3,4])
 @test mean(r[:,3]) >= 4.91 && mean(r[:,3]) <= 4.92
 
 testfloat = [ 3.5 2.0 8.1 1.0 ; 4.5 5.0 6.0 2.0 ; 9.0 7.6 8.2 3.0 ; 5.0 2.0 8.0 4.0 ]
-r=normalizeQuantiles(testfloat)
+r=NormalizeQuantiles.normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
@@ -43,7 +43,7 @@ r=normalizeQuantiles(testfloat)
 
 sa=SharedArray{Float64}((size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
-r=normalizeQuantiles(sa)
+r=NormalizeQuantiles.normalizeQuantiles(sa)
 @test mean(r[:,1]) >= 4.93124 && mean(r[:,1]) <= 4.93125
 @test mean(r[:,2]) >= 4.93124 && mean(r[:,2]) <= 4.93125
 @test mean(r[:,3]) >= 4.93124 && mean(r[:,3]) <= 4.93125
@@ -51,26 +51,26 @@ r=normalizeQuantiles(sa)
 
 testfloat=[ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
 check=[ 2.0 3.0 2.0 ; 4.0 6.0 4.0 ; 8.0 8.0 7.0 ; 6.0 3.0 7.0 ]
-qn=normalizeQuantiles(testfloat)
+qn=NormalizeQuantiles.normalizeQuantiles(testfloat)
 @test qn == check
 
 sa=SharedArray{Float64}((size(testfloat,1),size(testfloat,2)));
 sa[:]=testfloat[:]
-qn=normalizeQuantiles(sa)
+qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test qn == check
 
 testint = [ 1 1 1 ; 1 1 1 ; 1 1 1 ]
-qn=normalizeQuantiles(testint)
+qn=NormalizeQuantiles.normalizeQuantiles(testint)
 @test qn == testint
 
 sa=SharedArray{Int}((size(testint,1),size(testint,2)));
 sa[:]=testint[:]
-qn=normalizeQuantiles(sa)
+qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test qn == testint
 
 dafloat=Array{Union{Missing, Float64}}(testfloat)
 dafloat[2,2]=missing
-qn=normalizeQuantiles(dafloat)
+qn=NormalizeQuantiles.normalizeQuantiles(dafloat)
 @test isnan(qn[2,2])
 @test qn[1,2]==3.5
 @test qn[2,1]==5.0
@@ -78,13 +78,13 @@ qn=normalizeQuantiles(dafloat)
 dafloat[2,2]=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
-qn=normalizeQuantiles(sa)
+qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test isnan(qn[2,2])
 @test qn[1,2]==3.5
 @test qn[2,1]==5.0
 
 dafloat[2,:].=missing
-qn=normalizeQuantiles(dafloat)
+qn=NormalizeQuantiles.normalizeQuantiles(dafloat)
 @test isnan(qn[2,1])
 @test isnan(qn[2,2])
 @test isnan(qn[2,3])
@@ -92,20 +92,20 @@ qn=normalizeQuantiles(dafloat)
 dafloat[2,:].=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
-qn=normalizeQuantiles(sa)
+qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test isnan(qn[2,1])
 @test isnan(qn[2,2])
 @test isnan(qn[2,3])
 
 dafloat[3,1:2].=missing
-qn=normalizeQuantiles(dafloat)
+qn=NormalizeQuantiles.normalizeQuantiles(dafloat)
 @test isnan(qn[3,1])
 @test isnan(qn[3,2])
 
 dafloat[3,1:2].=NaN
 sa=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
-qn=normalizeQuantiles(sa)
+qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test isnan(qn[3,1])
 @test isnan(qn[3,2])
 
@@ -113,7 +113,7 @@ dafloat[1,:].=missing
 dafloat[2,:].=missing
 dafloat[3,:].=missing
 dafloat[4,:].=missing
-qn = normalizeQuantiles(dafloat)
+qn = NormalizeQuantiles.normalizeQuantiles(dafloat)
 @test isnan(qn[1,1])
 @test isnan(qn[1,2])
 @test isnan(qn[1,3])
@@ -133,7 +133,7 @@ dafloat[3,:].=NaN
 dafloat[4,:].=NaN
 a=SharedArray{Float64}((size(dafloat,1),size(dafloat,2)));
 sa[:]=dafloat[:]
-qn=normalizeQuantiles(sa)
+qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test isnan(qn[1,1])
 @test isnan(qn[1,2])
 @test isnan(qn[1,3])
@@ -152,7 +152,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,4,0,2])
@@ -161,7 +161,7 @@ testfloat = [ 2.0 2.0 8.0 7.0 0.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[5]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[5]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,3,2,0])
@@ -170,7 +170,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmOrder,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmOrder,naIncreasesRank=true,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,2,5,0,3])
@@ -179,7 +179,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMax,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMax,naIncreasesRank=false,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([2,2,4,0,3])
@@ -188,7 +188,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmRandom,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmRandom,naIncreasesRank=false,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,2,4,0,3]) || r==Array{Int}([2,1,4,0,3])
@@ -197,7 +197,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmAverage,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmAverage,naIncreasesRank=false,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([2,2,4,0,3])
@@ -206,7 +206,7 @@ testfloat = [ 2.0 2.0 8.0 0.0 7.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[4]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
 r[4]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,3,0,2])
@@ -214,7 +214,7 @@ r=[ Int(x) for x in r ]
 testfloat = [ 5.0 2.0 4.0 3.0 1.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([5,2,4,3,1])
 
@@ -222,7 +222,7 @@ testfloat = [ 2.0 2.0 0.0 2.0 2.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[3]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,0,1,1])
@@ -231,7 +231,7 @@ testfloat = [ 2.0 2.0 0.0 2.0 4.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[3]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,0,1,3])
@@ -240,7 +240,7 @@ testfloat = [ 2.0 2.0 0.0 2.0 4.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
 r[3]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,0,1,2])
@@ -249,7 +249,7 @@ testfloat = [ 2.0 2.0 0.0 3.0 4.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[3]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,0,3,4])
@@ -258,7 +258,7 @@ testfloat = [ 2.0 2.0 0.0 3.0 4.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[3]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
 r[3]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,0,2,3])
@@ -267,7 +267,7 @@ testfloat = [ 0.0 2.0 5.0 3.0 4.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[1]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([0,2,5,3,4])
@@ -276,7 +276,7 @@ testfloat = [ 0.0 2.0 5.0 3.0 4.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
 a[1]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true)
 r[1]=0
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([0,1,4,2,3])
@@ -288,7 +288,7 @@ a[1]=missing
 a[3]=missing
 a[5]=missing
 a[7]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r[3]=0
 r[5]=0
@@ -303,7 +303,7 @@ a[1]=missing
 a[3]=missing
 a[5]=missing
 a[7]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r[3]=0
 r[5]=0
@@ -318,7 +318,7 @@ a[1]=missing
 a[3]=missing
 a[5]=missing
 a[7]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r[3]=0
 r[5]=0
@@ -334,7 +334,7 @@ a[3]=missing
 a[5]=missing
 a[6]=missing
 a[8]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r[3]=0
 r[5]=0
@@ -351,7 +351,7 @@ a[3]=missing
 a[5]=missing
 a[6]=missing
 a[8]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r[3]=0
 r[5]=0
@@ -368,7 +368,7 @@ a[2]=missing
 a[4]=missing
 a[6]=missing
 a[8]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r[1]=0
 r[2]=0
 r[4]=0
@@ -380,14 +380,14 @@ r=[ Int(x) for x in r ]
 testfloat = [ 2.0 2.0 2.0 2.0 2.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
-(r,m)=sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=true,resultMatrix=true)
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([1,1,1,1,1])
 
 testfloat = [ 2.0 2.0 2.0 2.0 2.0 ]
 a=Array{Union{Missing, Float64}}(undef,(size(testfloat,1),size(testfloat,2)));
 a[:]=testfloat[:]
-(r,m)=sampleRanks(a,tiesMethod=tmReverse,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmReverse,naIncreasesRank=true,resultMatrix=true)
 r=[ Int(x) for x in r ]
 @test r==Array{Int}([5,4,3,2,1])
 
@@ -397,7 +397,7 @@ a[:]=testfloat[:]
 a[5]=missing
 a[8]=missing
 a[3]=missing
-(r,m)=sampleRanks(a,tiesMethod=tmReverse,naIncreasesRank=true,resultMatrix=true)
+(r,m)=NormalizeQuantiles.sampleRanks(a,tiesMethod=tmReverse,naIncreasesRank=true,resultMatrix=true)
 @test r[1]==1
 @test r[2]==4
 @test ismissing(r[3])==true
