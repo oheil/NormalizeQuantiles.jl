@@ -62,31 +62,27 @@ function normalizeQuantiles(matrix::AbstractArray)
 end
 
 function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
-    #@sync begin
-        tcol=1
-        @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
-        #for scolumn in eachindex(matrix[end,:])
-            sortcol=matrix[:,scolumn]
-            goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in sortcol ]
-            missingIndices=.!goodIndices
-            sortcol[goodIndices]=Array{Float64}(sortcol[goodIndices])
-            length(findall(missingIndices))>0 ? sortcol[missingIndices].=NaN : nothing
-            sort!(sortcol)
-            for missingPos in eachindex(missingIndices)
-                if missingIndices[missingPos]
-                    sortcol[(missingPos+1):end]=sortcol[missingPos:(end-1)]
-                    sortcol[missingPos]=NaN
-                end
+    tcol=1
+    @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
+        sortcol=matrix[:,scolumn]
+        goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in sortcol ]
+        missingIndices=.!goodIndices
+        sortcol[goodIndices]=Array{Float64}(sortcol[goodIndices])
+        length(findall(missingIndices))>0 ? sortcol[missingIndices].=NaN : nothing
+        sort!(sortcol)
+        for missingPos in eachindex(missingIndices)
+            if missingIndices[missingPos]
+                sortcol[(missingPos+1):end]=sortcol[missingPos:(end-1)]
+                sortcol[missingPos]=NaN
             end
-            qnmatrix[:,tcol]=sortcol
-            tcol+=1
         end
-    #end
+        qnmatrix[:,tcol]=sortcol
+        tcol+=1
+    end
 end
 
 function meanRows!(qnmatrix::SharedArray{Float64},nrows)
     @inbounds @sync @distributed for row = 1:nrows
-    #for row = 1:nrows        
         goodIndices=[ ! NormalizeQuantiles.checkForNotANumber(x) for x in qnmatrix[row,:] ]
         rowmean=mean(qnmatrix[row,goodIndices])
         qnmatrix[row,goodIndices].=rowmean
@@ -94,23 +90,20 @@ function meanRows!(qnmatrix::SharedArray{Float64},nrows)
 end
 
 function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows,ncols)
-    #@sync begin
-        qncol=Array{Float64}(undef,nrows,1)
-        tcol=1
-        @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
-        #for scolumn in eachindex(matrix[end,:])
-            goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in vec(matrix[:,scolumn]) ]
-            sortp=sortperm([ Float64(x) for x in vec(matrix[goodIndices,scolumn]) ])
-            goodIndices2=[ !NormalizeQuantiles.checkForNotANumber(x) for x in vec(qnmatrix[:,tcol]) ]
-            if length(sortp)>0
-                NormalizeQuantiles.setMeanForEqualOrigValues(matrix[goodIndices,scolumn][sortp],qnmatrix,tcol,goodIndices2)
-            end
-            fill!(qncol,NaN)
-            qncol[(1:nrows)[goodIndices2][sortp]]=vec(qnmatrix[(1:nrows)[goodIndices2],tcol])
-            qnmatrix[:,tcol]=qncol
-            tcol+=1
+    qncol=Array{Float64}(undef,nrows,1)
+    tcol=1
+    @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
+        goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in vec(matrix[:,scolumn]) ]
+        sortp=sortperm([ Float64(x) for x in vec(matrix[goodIndices,scolumn]) ])
+        goodIndices2=[ !NormalizeQuantiles.checkForNotANumber(x) for x in vec(qnmatrix[:,tcol]) ]
+        if length(sortp)>0
+            NormalizeQuantiles.setMeanForEqualOrigValues(matrix[goodIndices,scolumn][sortp],qnmatrix,tcol,goodIndices2)
         end
-    #end
+        fill!(qncol,NaN)
+        qncol[(1:nrows)[goodIndices2][sortp]]=vec(qnmatrix[(1:nrows)[goodIndices2],tcol])
+        qnmatrix[:,tcol]=qncol
+        tcol+=1
+    end
 end
 
 function setMeanForEqualOrigValues(sortedArrayNoNAs::AbstractArray,qnmatrix::SharedArray{Float64},column::Int,goodIndices::Array{Bool})
