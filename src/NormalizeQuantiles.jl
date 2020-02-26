@@ -178,16 +178,18 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
     naCounts=zeros(Int,nrows)
     naCount=0
     reducedIndex=1
-    for arrayIndex in 1:length(array)
+    goodIndex=1
+    for arrayIndex in eachindex(array)
         if NormalizeQuantiles.checkForNotANumber(array[arrayIndex])
             naCount+=1
         else
-            goodIndices[arrayIndex]=true
+            goodIndices[goodIndex]=true
             naCounts[reducedIndex]=naCount
             reducedIndex+=1
         end
+        goodIndex+=1
     end
-    reducedArraySorted=[ Float64(x) for x in array[goodIndices] ]
+    reducedArraySorted=[ Float64(x) for x in array[firstindex(array):lastindex(array)][goodIndices] ]
     reducedArraySortedIndices=sortperm(reducedArraySorted)
     reducedArraySorted=reducedArraySorted[reducedArraySortedIndices]
     result=Array{Union{Missing,Int}}(missing,nrows)
