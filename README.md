@@ -281,7 +281,7 @@ julia> oa
 ```
 qn=normalizeQuantiles(oa);
 ```
-
+The quantile normalized result is not an OffsetArray:
 ```
 julia> qn
 4×3 Array{Float64,2}:
