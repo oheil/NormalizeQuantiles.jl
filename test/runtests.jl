@@ -68,6 +68,12 @@ sa[:]=testint[:]
 qn=NormalizeQuantiles.normalizeQuantiles(sa)
 @test qn == testint
 
+testint = [ 1 missing 1 ; 1 1 missing ; 1 1 1 ]
+qn=NormalizeQuantiles.normalizeQuantiles(testint)
+qn = [ NormalizeQuantiles.checkForNotANumber(x) ? 0 : Int(x) for x in qn ]
+testint[ismissing.(testint)].=0
+@test qn == testint
+
 dafloat=Array{Union{Missing, Float64}}(testfloat)
 dafloat[2,2]=missing
 qn=NormalizeQuantiles.normalizeQuantiles(dafloat)

@@ -40,6 +40,7 @@ of a given vector or matrix.
   * [General usage](#general-usage)
   * [Missing Values](#missing-values)
   * [SharedArray and multicore usage examples](#sharedarray-and-multicore-usage-examples)
+  * [OffsetArrays](#offsetarrays)
 * [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
 * [Data prerequisites](#data-prerequisites)
 * [Remarks on data with missing values](#remarks-on-data-with-missing-values)
@@ -258,12 +259,44 @@ Using non-SharedArrays in a multicore setup is slowest:
 	  5.776685 seconds (294.06 k allocations: 92.532 MiB, 0.28% gc time)
 ```
 
+#### OffsetArrays
+
+> Remark: with Julia 1.3.1 OffsetArrays are not supported until https://github.com/JuliaLang/julia/pull/34886 is released (expected in Julia 1.5)
+
+```
+using NormalizeQuantiles, OffsetArrays
+
+array = [ 3 missing 1 ; 4 5 6 ; missing 7 8 ; 5 2 8 ];
+oa = OffsetArray(array,-1,-1);
+```
+```
+julia> oa
+4×3 OffsetArray(::Array{Union{Missing, Int64},2}, 0:3, 0:2) with eltype Union{Missing, Int64} with indices 0:3×0:2:
+ 3          missing  1
+ 4         5         6
+  missing  7         8
+ 5         2         8
+```
+
+```
+qn = normalizeQuantiles(oa);
+```
+The quantile normalized result is not an OffsetArray:
+```
+julia> qn
+4×3 Array{Float64,2}:
+   2.0      NaN        2.0
+   4.0        6.5      4.0
+ NaN          6.66667  6.58333
+   6.66667    4.0      6.58333
+```
+
 ## Behaviour of function `normalizeQuantiles`
 
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-The function `normalizeQuantiles` expects an array with dimension <= 2 and always returns a matrix of equal size as the input matrix and of type `Array{Float64,2}`.
+The function `normalizeQuantiles` expects an array with dimension <= 2 and always returns a matrix of same dimensions as the input matrix and of type `Array{Float64,2}`.
 
 `NaN` values of type `Float64` and any other non-numbers, like strings, are treated as random missing values and the result value will be `NaN`. See "Remarks on data with missing values" below.
 
