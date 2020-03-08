@@ -15,9 +15,8 @@ matrix:
   - julia_version: latest
 
 branches:
-  only:
-    - master
-    - /release-.*/
+  except:
+    - /backport.*/
 
 notifications:
   - provider: Email
