@@ -261,8 +261,39 @@ Using non-SharedArrays in a multicore setup is slowest:
 
 #### OffsetArrays
 
+```
+using NormalizeQuantiles, OffsetArrays
 
+a=[1,4,missing,2,6,4,missing];
+oa=oa=OffsetArray(a,-2)
+```
+```
+julia> oa=oa=OffsetArray(a,-2)
+7-element OffsetArray(::Array{Union{Missing, Int64},1}, -1:5) with eltype Union{Missing, Int64} with indices -1:5:
+ 1
+ 4
+  missing
+ 2
+ 6
+ 4
+  missing
+```
 
+```
+qn=normalizeQuantiles(oa);
+```
+
+```
+julia> qn
+7×1 Array{Float64,2}:
+   1.0
+   4.0
+ NaN
+   2.0
+   6.0
+   4.0
+ NaN
+```
 
 ## Behaviour of function `normalizeQuantiles`
 
