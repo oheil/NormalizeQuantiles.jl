@@ -65,10 +65,11 @@ function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows
     tcol=1
     @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
         sortcol=matrix[:,scolumn]
+        sortcol=[ NormalizeQuantiles.checkForNotANumber(x) ? NaN : Float64(x) for x in sortcol ]
         goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in sortcol ]
         missingIndices=.!goodIndices
-        sortcol[goodIndices]=Array{Float64}(sortcol[goodIndices])
-        length(findall(missingIndices))>0 ? sortcol[missingIndices].=NaN : nothing
+        #sortcol[goodIndices]=Array{Float64}(sortcol[goodIndices])
+        #length(findall(missingIndices))>0 ? sortcol[missingIndices].=NaN : nothing
         sort!(sortcol)
         for missingPos in eachindex(missingIndices)
             if missingIndices[missingPos]
