@@ -40,6 +40,7 @@ of a given vector or matrix.
   * [General usage](#general-usage)
   * [Missing Values](#missing-values)
   * [SharedArray and multicore usage examples](#sharedarray-and-multicore-usage-examples)
+  * [OffsetArrays](#offsetarrays)
 * [Behaviour of function `normalizeQuantiles`](#behaviour-of-function-normalizequantiles)
 * [Data prerequisites](#data-prerequisites)
 * [Remarks on data with missing values](#remarks-on-data-with-missing-values)
@@ -257,6 +258,11 @@ Using non-SharedArrays in a multicore setup is slowest:
 	julia> normalizeQuantiles(la); @time normalizeQuantiles(la);
 	  5.776685 seconds (294.06 k allocations: 92.532 MiB, 0.28% gc time)
 ```
+
+#### OffsetArrays
+
+
+
 
 ## Behaviour of function `normalizeQuantiles`
 

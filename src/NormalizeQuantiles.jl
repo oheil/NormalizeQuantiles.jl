@@ -167,7 +167,7 @@ m is a dictionary with rank as keys and as value the indices of all values of th
 "
 function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncreasesRank::Bool=false,resultMatrix::Bool=false)
     nrows=length(array)
-    goodIndices=falses(nrows)
+    #goodIndices=falses(nrows)
     naCounts=zeros(Int,nrows)
     naCount=0
     reducedIndex=1
@@ -176,13 +176,15 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
         if NormalizeQuantiles.checkForNotANumber(array[arrayIndex])
             naCount+=1
         else
-            goodIndices[goodIndex]=true
+            #goodIndices[goodIndex]=true
             naCounts[reducedIndex]=naCount
             reducedIndex+=1
         end
         goodIndex+=1
     end
-    reducedArraySorted=[ Float64(x) for x in array[firstindex(array):lastindex(array)][goodIndices] ]
+    goodIndices=[ !NormalizeQuantiles.checkForNotANumber(x) for x in array ]
+    #reducedArraySorted=[ Float64(x) for x in array[firstindex(array):lastindex(array)][goodIndices] ]
+    reducedArraySorted=Float64.(array[goodIndices])
     reducedArraySortedIndices=sortperm(reducedArraySorted)
     reducedArraySorted=reducedArraySorted[reducedArraySortedIndices]
     result=Array{Union{Missing,Int}}(missing,nrows)
@@ -195,7 +197,9 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
     doIncreaseRank=false
     headingNA=false
     groupIndex=1
-    for resultIndex in 1:nrows
+    offset=firstindex(array)-groupIndex
+    #for resultIndex in 1:nrows
+    for resultIndex in eachindex(array)
         if goodIndices[resultIndex]
             if headingNA
                 headingNA=false
@@ -207,15 +211,15 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
             end
             reducedArrayIndex=reducedArraySortedIndices[groupIndex]
             if !firstFound && lastFound != reducedArraySorted[groupIndex]
-                nextRank = NormalizeQuantiles.setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
-                group = [naCounts[reducedArrayIndex]+reducedArrayIndex]
+                nextRank = NormalizeQuantiles.setRank!(group,nextRank,offset,tiesMethod,result,resultMatrix,rankMatrix)
+                group = [naCounts[reducedArrayIndex]+reducedArrayIndex+offset]
                 if doIncreaseRank
                     nextRank+=rankIncrement
                     rankIncrement=0
                     doIncreaseRank=false
                 end
             else
-                push!(group,naCounts[reducedArrayIndex]+reducedArrayIndex)
+                push!(group,naCounts[reducedArrayIndex]+reducedArrayIndex+offset)
             end
             lastFound = reducedArraySorted[groupIndex]
             firstFound = false
@@ -230,30 +234,30 @@ function sampleRanks(array::AbstractArray;tiesMethod::qnTiesMethods=tmMin,naIncr
             end
         end
     end
-    NormalizeQuantiles.setRank!(group,nextRank,tiesMethod,result,resultMatrix,rankMatrix)
+    NormalizeQuantiles.setRank!(group,nextRank,offset,tiesMethod,result,resultMatrix,rankMatrix)
     (result,rankMatrix)
 end 
 
-function setRank!(group::Array{Int},nextRank::Int,tiesMethod::qnTiesMethods,result::Array{Union{Missing,Int}},resultMatrix::Bool,rankMatrix::Dict{Int,Array{Int}})
+function setRank!(group::Array{Int},nextRank::Int,offset::Int,tiesMethod::qnTiesMethods,result::Array{Union{Missing,Int}},resultMatrix::Bool,rankMatrix::Dict{Int,Array{Int}})
     ranksCount=length(group)
     ranks=nextRank:(nextRank+ranksCount-1)
     if tiesMethod==tmMin
         minRank=minimum(ranks)
-        result[group].=minRank
+        result[group.-offset].=minRank
         if resultMatrix
             rankMatrix[minRank]=group
         end
         nextRank+=1
     elseif tiesMethod==tmMax
         maxRank=maximum(ranks)
-        result[group].=maxRank
+        result[group.-offset].=maxRank
         if resultMatrix
             rankMatrix[maxRank]=group
         end
         nextRank=maxRank+1
     elseif tiesMethod==tmOrder
         maxRank=maximum(ranks)
-        result[group]=ranks
+        result[group.-offset]=ranks
         if resultMatrix
             for rankIndex in 1:length(ranks)
                 rankMatrix[ranks[rankIndex]]=[group[rankIndex]]
@@ -263,7 +267,7 @@ function setRank!(group::Array{Int},nextRank::Int,tiesMethod::qnTiesMethods,resu
     elseif tiesMethod==tmReverse
         maxRank=maximum(ranks)
         ranks=reverse(ranks,dims=1)
-        result[group]=ranks
+        result[group.-offset]=ranks
         if resultMatrix
             for rankIndex in 1:length(ranks)
                 rankMatrix[ranks[rankIndex]]=[group[rankIndex]]
@@ -273,7 +277,7 @@ function setRank!(group::Array{Int},nextRank::Int,tiesMethod::qnTiesMethods,resu
     elseif tiesMethod==tmRandom
         maxRank=maximum(ranks)
         ranks=ranks[randperm(ranksCount)]
-        result[group]=ranks
+        result[group.-offset]=ranks
         if resultMatrix
             for rankIndex in 1:length(ranks)
                 rankMatrix[ranks[rankIndex]]=[group[rankIndex]]
@@ -282,7 +286,7 @@ function setRank!(group::Array{Int},nextRank::Int,tiesMethod::qnTiesMethods,resu
         nextRank=maxRank+1
     elseif tiesMethod==tmAverage
         rankMean=round(Int,mean(ranks))
-        result[group].=rankMean
+        result[group.-offset].=rankMean
         if resultMatrix
             rankMatrix[rankMean]=group
         end
