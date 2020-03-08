@@ -296,7 +296,7 @@ julia> qn
 After quantile normalization the sets of values of each column have the same statistical properties.
 This is quantile normalization without a reference column.
 
-The function `normalizeQuantiles` expects an array with dimension <= 2 and always returns a matrix of equal size as the input matrix and of type `Array{Float64,2}`.
+The function `normalizeQuantiles` expects an array with dimension <= 2 and always returns a matrix of same dimensions as the input matrix and of type `Array{Float64,2}`.
 
 `NaN` values of type `Float64` and any other non-numbers, like strings, are treated as random missing values and the result value will be `NaN`. See "Remarks on data with missing values" below.
 
