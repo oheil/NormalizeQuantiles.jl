@@ -279,7 +279,7 @@ julia> oa
 ```
 
 ```
-qn=normalizeQuantiles(oa);
+qn = normalizeQuantiles(oa);
 ```
 The quantile normalized result is not an OffsetArray:
 ```
