@@ -261,7 +261,7 @@ Using non-SharedArrays in a multicore setup is slowest:
 
 #### OffsetArrays
 
-> Remark: with Julia 1.3.1 OffsetArrays are not supported until https://github.com/JuliaLang/julia/pull/34886 is released
+> Remark: with Julia 1.3.1 OffsetArrays are not supported until https://github.com/JuliaLang/julia/pull/34886 is released (expected in Julia 1.5)
 
 ```
 using NormalizeQuantiles, OffsetArrays
