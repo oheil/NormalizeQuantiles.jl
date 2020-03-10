@@ -1,3 +1,17 @@
+## 1.1.0 (2020-02-08)
+
+####Features:
+
+* OffsetArrays now possible
+	
+####Bug fixes:
+
+* Array/Matrix of Int with missings problem resolved
+
+####Remarks:
+
+  * with Julia 1.3 OffsetArrays are not working, need to wait until https://github.com/JuliaLang/julia/pull/34886) is released
+
 ## 0.3.3 (2017-12-20)
 
 ####Features:
