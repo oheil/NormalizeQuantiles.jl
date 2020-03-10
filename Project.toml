@@ -1,6 +1,6 @@
 name = "NormalizeQuantiles"
 uuid = "d366530f-4af1-5ff1-9928-73bf22b88830"
-version = "1.0.0"
+version = "1.2.0"
 
 [deps]
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
