@@ -4,6 +4,10 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/ohe
 [pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/N/NormalizeQuantiles.svg
 [pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
 
+[![deps](https://juliahub.com/docs/NormalizeQuantiles/deps.svg)](https://juliahub.com/ui/Packages/NormalizeQuantiles/D7PQ0?t=2)
+[![version](https://juliahub.com/docs/NormalizeQuantiles/version.svg)](https://juliahub.com/ui/Packages/NormalizeQuantiles/D7PQ0)
+[![pkgeval](https://juliahub.com/docs/NormalizeQuantiles/pkgeval.svg)](https://juliahub.com/ui/Packages/NormalizeQuantiles/D7PQ0)
+
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master)
 [![PkgEval][pkgeval-img]][pkgeval-url]
