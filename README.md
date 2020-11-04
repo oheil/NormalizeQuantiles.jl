@@ -1,6 +1,23 @@
 Linux: [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=master&svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/master)
 
+
+<p>
+  <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
+    <img src="https://img.shields.io/github/workflow/status/oheil/NormalizeQuantiles.jl/Mac%20OS%20X?label=OSX&logo=Apple&logoColor=white&style=flat-square">
+  </a>
+  <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
+    <img src="https://img.shields.io/github/workflow/status/oheil/NormalizeQuantiles.jl/Linux?label=Linux&logo=Linux&logoColor=white&style=flat-square">
+  </a>
+  <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
+    <img src="https://img.shields.io/github/workflow/status/oheil/NormalizeQuantiles.jl/Windows?label=Windows&logo=Windows&logoColor=white&style=flat-square">
+  </a>
+  <a href="https://codecov.io/gh/JuliaOcean/AIBECS.jl">
+    <img src="https://img.shields.io/codecov/c/github/oheil/NormalizeQuantiles.jl/master?label=Codecov&logo=codecov&logoColor=white&style=flat-square">
+  </a>
+</p>
+
+
 [pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/N/NormalizeQuantiles.svg
 [pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
 
