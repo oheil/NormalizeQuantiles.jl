@@ -12,9 +12,12 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/ohe
   <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
     <img src="https://img.shields.io/github/workflow/status/oheil/NormalizeQuantiles.jl/Windows?label=Windows&logo=Windows&logoColor=white&style=flat-square">
   </a>
+</p>
+<p>
   <a href="https://codecov.io/gh/oheil/NormalizeQuantiles.jl">
     <img src="https://img.shields.io/codecov/c/github/oheil/NormalizeQuantiles.jl/master?label=Codecov&logo=codecov&logoColor=white&style=flat-square">
   </a>
+	[![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master)
 </p>
 
 
@@ -22,7 +25,6 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/ohe
 [pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master)
 [![PkgEval][pkgeval-img]][pkgeval-url]
 
 [![deps](https://juliahub.com/docs/NormalizeQuantiles/deps.svg)](https://juliahub.com/ui/Packages/NormalizeQuantiles/D7PQ0?t=2)
