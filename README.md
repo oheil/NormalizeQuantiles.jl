@@ -1,6 +1,3 @@
-Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=master&svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/master)
-
-
 <p>
   <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
     <img src="https://img.shields.io/github/workflow/status/oheil/NormalizeQuantiles.jl/Mac%20OS%20X?label=OSX&logo=Apple&logoColor=white&style=flat-square">
