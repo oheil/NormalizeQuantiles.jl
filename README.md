@@ -1,4 +1,3 @@
-Linux: [![Build Status](https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master)](https://travis-ci.org/oheil/NormalizeQuantiles.jl)
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=master&svg=true)](https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/master)
 
 
@@ -17,9 +16,9 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/github/ohe
   <a href="https://codecov.io/gh/oheil/NormalizeQuantiles.jl">
     <img src="https://img.shields.io/codecov/c/github/oheil/NormalizeQuantiles.jl/master?label=Codecov&logo=codecov&logoColor=white&style=flat-square">
   </a>
-	[![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master)
 </p>
 
+[![Coverage Status](https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master)](https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master)
 
 [pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/N/NormalizeQuantiles.svg
 [pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
