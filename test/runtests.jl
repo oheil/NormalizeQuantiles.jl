@@ -11,6 +11,9 @@ using Statistics
 # write your own tests here
 @test 1 == 1
 
+m3d=zeros(10,10,10)
+@test_throws ArgumentError NormalizeQuantiles.normalizeQuantiles(m3d)
+
 testfloat = [ 3.0 2.0 8.0 1.0 ; 4.0 5.0 6.0 2.0 ; 9.0 7.0 8.0 3.0 ; 5.0 2.0 8.0 4.0 ]
 r=NormalizeQuantiles.normalizeQuantiles(testfloat)
 @test mean(r[:,1]) >= 4.8124 && mean(r[:,1]) <= 4.8126
