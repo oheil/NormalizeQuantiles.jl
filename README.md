@@ -315,6 +315,8 @@ The function `normalizeQuantiles` expects an array with dimension <= 2 and alway
 
 `NaN` values of type `Float64` and any other non-numbers, like strings, are treated as random missing values and the result value will be `NaN`. See "Remarks on data with missing values" below.
 
+Equal values in a column of the input matrix will have different quantile normalized values. Those different result values can't be assigned back to the proper original positions because they are indistinguishable. The mean value of the different result values are therefor put back into original positions.
+
 ## Data prerequisites
 
 To use quantile normalization your data should have the following properties:
