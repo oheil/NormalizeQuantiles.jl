@@ -6,7 +6,7 @@ using NormalizeQuantiles
 using Test
 using SharedArrays
 using Statistics
-
+using OffsetArrays
 
 # write your own tests here
 @test 1 == 1
