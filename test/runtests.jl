@@ -8,15 +8,16 @@ using SharedArrays
 using Statistics
 using OffsetArrays
 
-
-array = [ 3 missing 1 ; 4 5 6 ; missing 7 8 ; 5 2 8 ]
-oa = OffsetArray(array,-1,-1)
-r = NormalizeQuantiles.normalizeQuantiles(oa)
-@test isnan(r[3,1])
-@test mean(r[[1,2,4],1]) >= 4.2222 && mean(r[[1,2,4],1]) <= 4.2223
-@test isnan(r[1,2])
-@test mean(r[[2,3,4],2]) >= 5.7222 && mean(r[[2,3,4],2]) <= 5.7223
-@test mean(r[:,3]) >= 4.7916 && mean(r[:,3]) <= 4.7917
+if VERSION >= v"1.5"
+    array = [ 3 missing 1 ; 4 5 6 ; missing 7 8 ; 5 2 8 ]
+    oa = OffsetArray(array,-1,-1)
+    r = NormalizeQuantiles.normalizeQuantiles(oa)
+    @test isnan(r[3,1])
+    @test mean(r[[1,2,4],1]) >= 4.2222 && mean(r[[1,2,4],1]) <= 4.2223
+    @test isnan(r[1,2])
+    @test mean(r[[2,3,4],2]) >= 5.7222 && mean(r[[2,3,4],2]) <= 5.7223
+    @test mean(r[:,3]) >= 4.7916 && mean(r[:,3]) <= 4.7917
+end
 
 (r,m)=NormalizeQuantiles.sampleRanks(oa; resultMatrix=true)
 @test ismissing(r[3])
