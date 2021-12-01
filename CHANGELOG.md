@@ -1,71 +1,71 @@
 ## 1.2.1 (2021-04-16)
 
-####Features:
+#### Features:
 
 * OffsetArrays tests added
 	
-####Bug fixes:
+#### Bug fixes:
 
 * none
 
-####Remarks:
+#### Remarks:
 
 * none
 
 ## 1.2.0 (2020-02-08)
 
-####Features:
+#### Features:
 
 * OffsetArrays now possible
 	
-####Bug fixes:
+#### Bug fixes:
 
 * Array/Matrix of Int with missings problem resolved
 
-####Remarks:
+#### Remarks:
 
   * with Julia 1.3 OffsetArrays are not working, need to wait until https://github.com/JuliaLang/julia/pull/34886) is released
 
 ## 0.3.3 (2017-12-20)
 
-####Features:
+#### Features:
 
 * none
 	
-####Bug fixes:
+#### Bug fixes:
 
 * none
 
-####Remarks:
+#### Remarks:
 
   * julia 0.7-DEV introduces "missing", therefor major recoding is needed.
   * This version will be freezed for julia 0.4 to 0.6(including)
 
 ## 0.3.2
 
-####Features:
+#### Features:
 
 * none
 	
-####Bug fixes:
+#### Bug fixes:
 
 * none
 
-####Remarks:
+#### Remarks:
 
   * Julia 0.7-DEV sharedArrayes removed from base
 
 ## 0.3.1 (2017-05-16)
 
-####Features:
+#### Features:
 
 * none
 	
-####Bug fixes:
+#### Bug fixes:
 
 * none
 
-####Remarks:
+#### Remarks:
 
   * Julia 0.6 syntax change and deprecation
   
@@ -73,45 +73,45 @@
 
 ## 0.3.0 (2017-01-20)
 
-####Features:
+#### Features:
 
   - none
 	
-####Bug fixes:
+#### Bug fixes:
 
   - none
 
-####Remarks:
+#### Remarks:
 
   - dropped julia 0.3 support
 
 ## 0.2.1 (2017-01-20)
 
-####Features:
+#### Features:
 
   - none
 	
-####Bug fixes:
+#### Bug fixes:
 
   - none
 
-####Remarks:
+#### Remarks:
 
   - Only changes to reflect changes in syntax coming with julia 0.6
   - This version still supports julia 0.3
 
 ## 0.2.0 (2016-08-11)
 
-####Features:
+#### Features:
 
   - started changelog
   - for function `sampleRanks` removed methods with optional parameters in favor of methods with keyword parameters
 	
-####Bug fixes:
+#### Bug fixes:
 
   - none
 
-####Remarks:
+#### Remarks:
 
 In julia 0.5 and 0.6 using optional parameters in functions like
 
