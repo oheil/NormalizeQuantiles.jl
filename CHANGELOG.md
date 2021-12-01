@@ -1,3 +1,17 @@
+## 1.2.1 (2021-04-16)
+
+####Features:
+
+* OffsetArrays tests added
+	
+####Bug fixes:
+
+* none
+
+####Remarks:
+
+* none
+
 ## 1.2.0 (2020-02-08)
 
 ####Features:
