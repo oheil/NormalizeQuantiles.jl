@@ -317,6 +317,22 @@ The function `normalizeQuantiles` expects an array with dimension <= 2 and alway
 
 Equal values in a column of the input matrix will have different quantile normalized values. Those different result values can't be assigned back to the proper original positions because they are indistinguishable. The mean value of the different result values are therefor put back into original positions.
 
+Example:
+```
+julia> array = [ 1 2 ; 2  3 ; 2 5 ]
+3×2 Matrix{Int64}:
+ 1  2
+ 2  3
+ 2  5
+
+julia> qn = normalizeQuantiles(array)
+3×2 Matrix{Float64}:
+ 1.5  1.5
+ 3.0  2.5
+ 3.0  3.5
+```
+In row 2 and 3 instead if `2.5` and `3.5` the mean `3.0` is the result in both rows.
+
 ## Data prerequisites
 
 To use quantile normalization your data should have the following properties:
