@@ -2,8 +2,6 @@ name: Mac OS X
 
 on:
   push:
-  schedule:
-    - cron:  '0 7 * * 0,3'
 
 jobs:
   test:
