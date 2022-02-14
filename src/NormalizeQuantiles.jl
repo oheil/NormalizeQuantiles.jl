@@ -62,8 +62,11 @@ function normalizeQuantiles(matrix::AbstractArray)
 end
 
 function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64})
-    tcol=1
-    @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
+    ncols=size(matrix,2)
+    tcols=1:ncols
+    scolumns=collect(eachindex(matrix[end,:]))
+    @inbounds @sync @distributed for tcol in tcols
+        scolumn=scolumns[tcol]
         sortcol=[ NormalizeQuantiles.checkForNotANumber(x) ? NaN : Float64(x) for x in matrix[:,scolumn] ]
         missingIndices=findall(isnan.(sortcol))
         sort!(sortcol)
@@ -83,7 +86,6 @@ function sortColumns!(matrix::AbstractArray,qnmatrix::SharedArray{Float64})
             index-=1
         end
         qnmatrix[:,tcol]=sortcol
-        tcol+=1
     end
 end
 
@@ -108,8 +110,11 @@ function meanRows!(qnmatrix::SharedArray{Float64})
 end
 
 function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::SharedArray{Float64},nrows)
-    tcol=1
-    @inbounds @sync @distributed for scolumn in eachindex(matrix[end,:])
+    ncols=size(matrix,2)
+    tcols=1:ncols
+    scolumns=collect(eachindex(matrix[end,:]))
+    @inbounds @sync @distributed for tcol in tcols
+        scolumn=scolumns[tcol]
         goodIndices=.!isnan.(qnmatrix[:,tcol])
         #matrix can be an OffsetArray
         colview=view(matrix,collect(eachindex(matrix[:,scolumn]))[goodIndices],scolumn)
@@ -118,7 +123,6 @@ function equalValuesInColumnAndOrderToOriginal!(matrix::AbstractArray,qnmatrix::
             NormalizeQuantiles.setMeanForEqualOrigValues!(colview[sortp],qnmatrix,tcol,goodIndices)
         end
         qnmatrix[(1:nrows)[goodIndices][sortp],tcol]=qnmatrix[goodIndices,tcol]
-        tcol+=1
     end
 end
 
