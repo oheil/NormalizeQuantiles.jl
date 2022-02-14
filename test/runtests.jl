@@ -434,6 +434,13 @@ a[3]=missing
 @test r[11]==10
 @test r[12]==12
 
-
+using Distributed
+addprocs(2)
+@everywhere using NormalizeQuantiles
+array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ]
+qn = normalizeQuantiles(array)
+@test qn[1,1]==2.0
+@test qn[2,2]==6.0
+@test qn[3,3]==7.0
 
 
