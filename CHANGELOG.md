@@ -1,3 +1,17 @@
+## 1.2.2 (2022-02-14)
+
+#### Features:
+
+* none
+	
+#### Bug fixes:
+
+* SharedArray/Distributed bug 
+
+#### Remarks:
+
+* none
+
 ## 1.2.1 (2021-04-16)
 
 #### Features:
