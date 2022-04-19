@@ -1,6 +1,7 @@
 name: Mac OS X nightly
 
 on:
+  workflow_dispatch:
   push:
   schedule:
     - cron:  '0 7 * * 0,3'
