@@ -1,6 +1,6 @@
 <p>
   <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/macos_nightly.yml?branch=main">
+    <img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/mac_nightly.yml?branch=main">
   </a>
   <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
     <img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/linux_nightly.yml?branch=main">
