@@ -1,16 +1,9 @@
 <p>
-  <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/mac_nightly.yml?branch=master">
-  </a>
-  <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/linux_nightly.yml?branch=master">
-  </a>
-  <a href="https://github.com/oheil/NormalizeQuantiles.jl/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/windows_nightly.yml?branch=master">
-  </a>
-  <a href="https://codecov.io/gh/oheil/NormalizeQuantiles.jl">
-    <img src="https://img.shields.io/codecov/c/github/oheil/NormalizeQuantiles.jl/master?label=Codecov&logo=codecov&logoColor=white&style=flat-square">
-  </a>
+<a href="https://github.com/oheil/NormalizeQuantiles.jl/actions"><img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/mac_nightly.yml?branch=master"></a>
+<a href="https://github.com/oheil/NormalizeQuantiles.jl/actions"><img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/linux_nightly.yml?branch=master"></a>
+<a href="https://github.com/oheil/NormalizeQuantiles.jl/actions"><img src="https://img.shields.io/github/actions/workflow/status/oheil/NormalizeQuantiles.jl/windows_nightly.yml?branch=master"></a>
+
+<a href="https://codecov.io/gh/oheil/NormalizeQuantiles.jl"><img src="https://img.shields.io/codecov/c/github/oheil/NormalizeQuantiles.jl/master?label=Codecov&logo=codecov&logoColor=white&style=flat-square"></a>
 </p>
 
 [pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/N/NormalizeQuantiles.svg
