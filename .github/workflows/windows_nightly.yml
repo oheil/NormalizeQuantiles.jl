@@ -25,7 +25,7 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - name: Cache artifacts
-        uses: actions/cache@v1
+        uses: julia-actions/cache@v1
         env:
           cache-name: cache-artifacts
         with:
