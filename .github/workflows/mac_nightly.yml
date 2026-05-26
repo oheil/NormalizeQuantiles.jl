@@ -19,7 +19,7 @@ jobs:
         arch:
           - x64
     steps:
-      - uses: julia-actions/cache@v1
+      - uses: julia-actions/cache@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
