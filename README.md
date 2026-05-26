@@ -19,10 +19,6 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![PkgEval][pkgeval-img]][pkgeval-url]
 
-[![deps](https://platform.juliahub.com/ui/Packages/General/NormalizeQuantiles/deps.svg)](https://platform.juliahub.com/ui/Packages/General/NormalizeQuantiles/D7PQ0?t=2)
-[![version](https://platform.juliahub.com/ui/Packages/General/NormalizeQuantiles/version.svg)](https://platform.juliahub.com/ui/Packages/General/NormalizeQuantiles/D7PQ0)
-[![pkgeval](https://platform.juliahub.com/ui/Packages/General/NormalizeQuantiles/pkgeval.svg)](https://platform.juliahub.com/ui/Packages/General/NormalizeQuantiles/D7PQ0)
-
 # NormalizeQuantiles
 
 For julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6
